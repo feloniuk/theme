@@ -1,0 +1,66 @@
+{% sw_extends '@Storefront/storefront/element/blog-index-card.html.twig' %}
+
+
+{% block blog_list_item %}
+    {% set postDetailUrl = seoUrl('frontend.blog.post', {'postId': post.id} ) %}
+    {% set paramPage = app.request.get('p') ? 'p=' ~app.request.get('p') : '' %}
+    {% set paramCategory = app.request.get('c') ? 'c=' ~app.request.get('c') : '' %}
+    {% set paramAuthor = app.request.get('a') ? 'a=' ~app.request.get('a') : '' %}
+    {% set urlParams = [paramPage, paramCategory, paramAuthor] | filter(p => p != '') | join('&') %}
+    {% if false and urlParams %}
+        {% set postDetailUrl = postDetailUrl ~ '?' ~ urlParams %}
+    {% endif %}
+
+    <div class="col-lg-4 col-sm-6 mb-3 mr-blog__card-wrapper">
+        {{ block('blog_list_item_wrapper') }}
+    </div>
+{% endblock %}
+
+{% block blog_content_post_inner_title %}
+  <h4 class="mt-2 mb-0">
+    <a class="blog__title-link" href="{{ postDetailUrl }}">
+      {{ post.translated.title }}
+    </a>
+  </h4>
+{% endblock %}
+
+{% block blog_content_post_inner_image %}
+    {% set image = null %}
+    {% if post.imagepreview %}
+        {% set image = post.imagepreview %}
+    {% elseif post.image %}
+        {% set image = post.image %}
+    {% endif %}
+
+    {% if image %}
+        {% set thumbnailClass = element.config.imageMode.value == "contain" ? "contain" : "cover" %}
+        <a href="{{ postDetailUrl }}">
+            {% if image.mediaType.name == 'IMAGE' %}
+                <div class="mr-blog__image">
+                    {% sw_thumbnails 'blog_card_image_thumbnail' with {
+                        media: image,
+                        sizes: {
+                            'xs': '501px',
+                            'sm': '315px',
+                            'md': '427px',
+                            'lg': '400px',
+                            'xl': '500px'
+                        },
+                        attributes: {
+                            'class': 'card-img-top ' ~ thumbnailClass,
+                            'alt':   image.translated.alt ?: '',
+                            'title': post.translated.title ?: ''
+                        }
+                    } %}
+                </div>
+            {% elseif image.mediaType.name == 'VIDEO' %}
+                <video class="video {{ thumbnailClass }}" controls>
+                    <source src="{{ image.url }}" type="{{ image.mimetype }}">
+                    Your browser does not support HTML5 video.
+                </video>
+            {% endif %}
+        </a>
+    {% else %}
+        <div class="blog-card-paceholder">&nbsp;</div>
+    {% endif %}
+{% endblock %}

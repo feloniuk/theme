@@ -1,0 +1,16 @@
+.donation-input.form-control {
+  height: unset;
+  max-width: 50px;
+  text-align: center;
+}
+
+.donation-currency {
+  margin-right: 15px;
+  margin-left: 5px;
+
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  color: $color-theme-600;
+}

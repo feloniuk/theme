@@ -1,0 +1,150 @@
+{% sw_extends '@Storefront/storefront/page/checkout/address/index.html.twig' %}
+
+{% block base_header %}
+  {% sw_include '@Storefront/storefront/layout/header/header-minimal.html.twig' %}
+{% endblock %}
+
+{% block base_navigation %}{% endblock %}
+
+{% block page_checkout %}
+  <div class="checkout pt-2">
+
+    {% block page_checkout_container %}
+      <div class="checkout-container mx-0">
+
+        <h1 class="checkout-custom-header mb-4">
+          {{ "mm-theme.checkout.checkout"|trans|sw_sanitize }}
+        </h1>
+
+        <div class="checkout-tabs">
+
+          <input
+            class="checkout-tabs__input"
+            type="radio"
+            name="tabs"
+            id="checkout-login-tab-handler"
+            checked="true">
+          <label class="checkout-tabs__label" for="checkout-login-tab-handler">
+            {{ "mm-theme.checkout.login"|trans|sw_sanitize }}
+          </label>
+
+          <input
+            class="checkout-tabs__input"
+            type="radio"
+            name="tabs"
+            id="checkout-register-tab-handler">
+          <label class="checkout-tabs__label" for="checkout-register-tab-handler">
+            {{ "mm-theme.checkout.register"|trans|sw_sanitize }}
+          </label>
+
+          <div class="checkout-custom">
+
+            {% block page_checkout_main_content %}
+              {% block page_checkout_address %}
+
+                {% set globalCoinsRate = context.salesChannel.customFields.custom_coins_rate %}
+                {% set currencyFactor = context.currency.factor %}
+                {% set cartLineItems = page.cart.lineItems.elements %}
+                {% set totalCoinsAmount = 0 %}
+
+                {% for item in cartLineItems %}
+                    {% set coinsRateOverride = item.payload.customFields.custom_product_coins_override %}
+                    {% set coinsRate = item.payload.customFields.custom_product_coins_rate %}
+                    {% set itemPrice = item.price.totalPrice %}
+                    {% if coinsRateOverride == true %}
+                        {% set totalCoinsAmount = totalCoinsAmount + itemPrice / currencyFactor * coinsRate %}
+                    {% else %}
+                        {% set totalCoinsAmount = totalCoinsAmount + itemPrice / currencyFactor * globalCoinsRate %}
+                    {% endif %}
+                {% endfor %}
+
+                <div class="checkout-block" id="checkout-login-tab">
+                  <h2 class="checkout-header">
+                    {{ "mm-theme.checkout.login"|trans|sw_sanitize }}
+                  </h2>
+
+                  <div class="checkout-coins">
+                    {{ "mm-theme.checkout.loginCoins"|trans|sw_sanitize }}
+                    <span class="coins">
+                    {{ totalCoinsAmount|round }}</span>
+                    {{ "mm-theme.checkout.coins"|trans|sw_sanitize }}
+                  </div>
+
+                  {% block page_checkout_address_login %}
+                    {% block page_checkout_address_login_card %}
+                      {% sw_include '@Storefront/storefront/component/account/login.html.twig' %}
+                    {% endblock %}
+                  {% endblock %}
+                </div>
+
+                <div class="checkout-block" id="checkout-register-tab">
+                  <h2 class="checkout-header">
+                    {{ "mm-theme.checkout.register"|trans|sw_sanitize }}
+                  </h2>
+
+                  <div class="checkout-coins">
+                    {{ "mm-theme.checkout.registerCoins"|trans|sw_sanitize }}
+                      <span class="coins">{{ totalCoinsAmount|round }}</span>
+                    {{ "mm-theme.checkout.coins"|trans|sw_sanitize }}
+                  </div>
+
+                  {% block page_checkout_address_register %}
+                    {% block page_checkout_address_register_card %}
+                      {% sw_include '@Storefront/storefront/page/checkout/address/register.html.twig' with {
+                          'cardTitle': "checkout.addressRegisterCardTitle"|trans|sw_sanitize,
+                          'totalCoinsAmount': totalCoinsAmount
+                        } %}
+                    {% endblock %}
+                  {% endblock %}
+                </div>
+              {% endblock %}
+            {% endblock %}
+
+            <div class="checkout-block">
+
+              {% block page_checkout_aside %}
+                {% block page_checkout_aside_container %}
+                  {% block page_checkout_aside_summary %}
+                    {% block page_checkout_address_products %}
+
+                      {% block page_checkout_address_products_header %}
+                        <h2 class="checkout-header">
+                          {{ "checkout.cartHeader"|trans|sw_sanitize }}
+                        </h2>
+                      {% endblock %}
+
+                      {% block page_checkout_address_products_list %}
+                        <div class="checkout-aside-product-list">
+                            {% block page_checkout_confirm_table_items %}
+                                {% for lineItem in page.cart.lineItems %}
+                                    {% block page_checkout_confirm_table_item %}
+                                        {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+                                            redirectTo: 'frontend.checkout.confirm.page',
+                                            showTaxPrice: true,
+                                            displayMode: 'offcanvas'
+                                        } %}
+                                    {% endblock %}
+                                {% endfor %}
+                            {% endblock %}
+
+                        </div>
+                      {% endblock %}
+
+                    {% endblock %}
+                  {% endblock %}
+
+                  {% block page_checkout_aside_actions %}{% endblock %}
+                {% endblock %}
+              {% endblock %}
+
+              {% sw_include '@Storefront/storefront/page/checkout/summary.html.twig' %}
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    {% endblock %}
+  </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{
+  "name": "mm/theme",
+  "description": "MmTheme Plugin",
+  "type": "shopware-platform-plugin",
+  "version": "v5.2.1",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Mmonster Team"
+    }
+  ],
+  "require": {
+    "shopware/core": "^6.5.0",
+    "shopware/administration": "^6.5.0",
+    "shopware/storefront": "^6.5.0",
+    "mm/elements": "*",
+    "mm/core": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "MmTheme\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "MmTheme\\MmTheme",
+    "plugin-icon": "src/Resources/config/logo.png",
+    "label": {
+      "en-GB": "MmTheme Plugin"
+    }
+  }
+}
