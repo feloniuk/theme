@@ -1,0 +1,151 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-item.html.twig' %}
+
+{% block page_account_order_item_overview %}
+    <div class="order-wrapper">
+        <div class="order-item-header">
+            {% set states = [
+                ORDER_TRANSACTION_STATE_FAILED,
+                ORDER_TRANSACTION_STATE_REMINDED,
+                ORDER_TRANSACTION_STATE_UNCONFIRMED,
+                ORDER_TRANSACTION_STATE_CANCELLED
+            ] %}
+
+            {% set orderState = order.stateMachineState.technicalName %}
+            {% set orderPaymentState = order.transactions.last.stateMachineState.technicalName %}
+
+            {% set isPaymentNeeded = orderPaymentState in states and orderState != ORDER_STATE_CANCELLED %}
+
+            <div class="d-flex flex-column">
+                {% block page_account_order_item_order_number_col %}
+                    {% block page_account_order_item_heading %}
+                        <div>
+                            <div class="order-table-header-heading">{{ "account.orderHeadline"|trans|sw_sanitize }} {{ order.orderDateTime|format_date('short', locale=app.request.locale) }}</div>
+                        </div>
+                    {% endblock %}
+
+                    <div class="order-table-header-order">
+                        <div class="order-table-header-order-number">
+                            {% block page_account_order_item_order_number %}
+                                <span class="order-table-header-label">{{ "account.orderNumber"|trans|sw_sanitize }}</span>
+                                <strong class="order-table-body-value">{{ order.orderNumber|sw_sanitize }}</strong>
+                            {% endblock %}
+                        </div>
+
+                         {% block page_account_order_item_status %}
+                            <div class="order-table-header-order-status">
+                                {% if isPaymentNeeded %}
+                                    {% block page_account_order_item_status_badge_payment_process_needed %}
+                                        <a href="{{ path('frontend.account.edit-order.page', { 'orderId': order.id }) }}"
+                                            class="badge badge-lg order-item-status-badge bg-danger">
+                                            {{ "account.orderStatusActionCompletePayment"|trans|sw_sanitize }}
+                                            {% sw_icon 'arrow-medium-right' style { 'size': 'sm', 'pack': 'solid' } %}
+                                        </a>
+                                    {% endblock %}
+                                {% else %}
+                                    {% block page_account_order_item_status_badge %}
+                                        <span class="badge badge-lg order-item-status-badge order-item-status-badge-{{ orderState }}">
+                                            {{ order.stateMachineState.translated.name }}
+                                        </span>
+                                    {% endblock %}
+                                {% endif %}
+                            </div>
+                        {% endblock %}
+                    </div>
+
+                    {% block page_account_order_item_detail_amount %}
+                        <div class="order-table-header-order-total">
+                            {% block page_account_order_item_detail_amount_label %}
+                                <span class="order-table-header-order-total-label">
+                                    {% if order.isTaxFree %}
+                                        {{ "account.orderItemNetTotal"|trans|sw_sanitize }}
+                                    {% else %}
+                                        {{ "account.orderItemTotal"|trans|sw_sanitize }}
+                                    {% endif %}
+                                </span>
+                            {% endblock %}
+                            {% block page_account_order_item_detail_amount_value %}
+                                <span  class="order-table-header-order-total-value">
+                                    {% if order.isTaxFree %}
+                                        {{ order.amountNet|currency(order.currency.isoCode) }}
+                                    {% else %}
+                                        {{ order.amountTotal|currency(order.currency.isoCode) }}
+                                    {% endif %}
+                                </span>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                {% endblock %}
+            </div>
+
+            {% block page_account_order_item_order_table_body_cell_order_status %}
+                <div class="order-table-header-order-table-body-cell">
+                    <span class="order-table-body-label">
+                        {{ "account.orderStatus"|trans|sw_sanitize }}
+                    </span>
+                    <span class="order-table-body-value">{{ order.stateMachineState.translated.name }}</span>
+                </div>
+            {% endblock %}
+
+            {% block page_account_order_item_order_table_body_cell_payment_status %}
+                <div class="order-table-header-order-table-body-cell">
+                    <span class="order-table-body-label">
+                        {{ "account.orderPaymentStatus"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                    </span>
+
+                    <span class="order-table-body-value">{{ order.transactions|last.stateMachineState.translated.name }}</span>
+                </div>
+            {% endblock %}
+
+            {% block page_account_order_item_order_table_body_cell_payment_method %}
+                <div class="order-table-header-order-table-body-cell">
+                    <span class="order-table-body-label">
+                        {{ "account.orderPaymentMethod"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                    </span>
+
+                    <span class="order-table-body-value">{{ order.transactions|last.paymentMethod.translated.name }}</span>
+                </div>
+            {% endblock %}
+
+            {% block page_account_order_item_order_table_body_cell_payment_actions %}
+
+                {% if orderState != ORDER_STATE_CANCELLED and (orderPaymentState in ALLOWED_TRANSACTION_STATES or orderPaymentState == 'in_progress') %}
+                    <div class="order-table-header-order-table-body-cell">
+                        {% block page_account_order_item_context_menu_content_change_payment_button %}
+                            {% if isPaymentNeeded %}
+                                <a
+                                    href="{{ path('frontend.account.edit-order.page', { 'orderId': order.id }) }}">
+                                    <strong>{{ "account.orderStatusActionCompletePayment"|trans|sw_sanitize }}</strong>
+                                </a>
+                            {% else %}
+                                <a
+                                    href="{{ path('frontend.account.edit-order.page', { 'orderId': order.id }) }}">
+                                    <strong>{{ "account.orderContextMenuChangePayment"|trans|sw_sanitize }}</strong>
+                                </a>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% if order.customerComment %}
+                {% block page_account_order_item_detail_table_body_customer_comment %}
+                    <div class="order-detail-content-comment">
+                        {% block page_account_order_customer_comment_header %}
+                            <div>
+                                <strong>{{ "checkout.customerCommentHeader"|trans|sw_sanitize }}</strong>
+                            </div>
+                        {% endblock %}
+
+                        {% block page_account_order_customer_comment_content %}
+                            <div>{{ order.customerComment|sw_sanitize|nl2br }}</div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            {% endif %}
+        </div>
+
+        {% block page_account_order_item_detail %}
+            {% sw_include '@Storefront/storefront/page/account/order-history/order-detail.html.twig' %}
+        {% endblock %}
+    </div>
+{% endblock %}

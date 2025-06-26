@@ -1,0 +1,15 @@
+{% block blog_content_post_inner_author %}
+    {% if config.showauthor and post.author.translated.name %}
+        <div class="author">
+            <div class="name">
+                {{ "netzp.blog.author"|trans }}
+
+                {% if post.author.translated.customFields.mm_theme_blog_author_url %}
+                    <a target="_blank" href="{{post.author.translated.customFields.mm_theme_blog_author_url}}" alt="{{ post.author.translated.name }} bio">{{ post.author.translated.name }}</a>
+                {% else %}
+                    {{ post.author.translated.name }}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

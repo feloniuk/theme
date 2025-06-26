@@ -1,5 +1,28 @@
 {
 	"mm-theme": {
+		"hero": {
+			"service": "24/7 Service",
+			"instant": "Instant Replies",
+			"start": "Start in Minutes",
+			"secure": "Secure & Safe",
+			"placeholder": "Mmonster, I want mythic gear...",
+			"excellent": "Excellent",
+			"positive": "positive of",
+			"reviews": "Reviews on",
+			"any": "Any wish. Any game.",
+			"makes": "makes it real.",
+			"mmonster": "Mmonster",
+			"positiveCountPercent": "99.63%",
+			"reviewsCount": "10,266"
+		},
+		"game": {
+			"title": "Choose your game",
+			"btnAll": "All Games",
+			"btnBest": "Best Sellers",
+			"btnSale": "% Sale",
+			"inputSearch": "Search for Games",
+			"btnShow": "Show more games"
+		},
 		"currency-switcher": {
 			"title": "Possible Region Mismatch",
 			"text": "It seems you're in a different region.",
@@ -106,6 +129,10 @@
 		"amazon-pay": {
 			"unregisteredWarning": "You must be logged into your MmonsteR account to use Amazon Pay",
 			"checkoutLoginRequest": "Use your Amazon account to authorize payment"
+		},
+		"footer": {
+			"expandNavList": "More...",
+			"collapseNavList": "Collapse"
 		}
 	}
 }

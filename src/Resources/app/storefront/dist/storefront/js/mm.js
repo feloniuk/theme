@@ -142,8 +142,7 @@
 			mmVideoPlayer.src = ''
 		})
 	}
-})()
-
+})();
 
 // Sprite loader
 addEventListener("DOMContentLoaded", (event) => {

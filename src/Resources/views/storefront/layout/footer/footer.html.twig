@@ -81,22 +81,34 @@
               <div id="collapseFooter{{ loop.index }}" class="footer-column-content collapse js-footer-column-content" aria-labelledby="collapseFooterTitle{{ loop.index }}">
                 <div class="footer-column-content-inner">
                   {% block layout_footer_navigation_information_links %}
-                    <ul class="list-unstyled">
-                      {% for treeItem in root.children %}
+                    <ul class="list-unstyled mb-0">
+                      {% for treeItem in root.children|slice(0, 12) %}
                         {% set category = treeItem.category %}
                         {% set name = category.translated.name %}
                         {% set externalLink = category.translated.externalLink %}
-                        {% block layout_footer_navigation_information_link_item %}
-                          <li class="footer-link-item">
-                            {% block layout_footer_navigation_information_link %}
-                              <a class="footer-link" href="{% if externalLink %}{{ externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: category.id }) }}{% endif %}" title="{{ name }}">
-                                {{ name }}
-                              </a>
-                            {% endblock %}
-                          </li>
-                        {% endblock %}
+
+                        {{ block('layout_footer_navigation_information_link_item') }}
                       {% endfor %}
                     </ul>
+
+                    {% if root.children|length > 12 %}
+
+                    <input id="footer_{{root.id}}" type="checkbox" class="footer-column-content-cut-trigger">
+
+                    <label for="footer_{{root.id}}" class="footer-column-content-cut-label footer-column-content-cut-label--expand">{{ "mm-theme.footer.expandNavList"|trans|sw_sanitize }}</label>
+
+                    <ul class="list-unstyled mb-0">
+                      {% for treeItem in root.children|slice(12) %}
+                        {% set category = treeItem.category %}
+                        {% set name = category.translated.name %}
+                        {% set externalLink = category.translated.externalLink %}
+
+                        {{ block('layout_footer_navigation_information_link_item') }}
+                      {% endfor %}
+                    </ul>
+
+                    <label for="footer_{{root.id}}" class="footer-column-content-cut-label footer-column-content-cut-label--collapse">{{ "mm-theme.footer.collapseNavList"|trans|sw_sanitize }}</label>
+                    {% endif %}
                   {% endblock %}
                 </div>
               </div>
@@ -115,4 +127,14 @@
   <div class="container">
     <div class="footer-copyright px-4">{{ "footer.copyrightInfo"|trans|sw_sanitize }}</div>
   </div>
+{% endblock %}
+
+{% block layout_footer_navigation_information_link_item %}
+  <li class="footer-link-item cutted">
+    {% block layout_footer_navigation_information_link %}
+      <a class="footer-link" href="{% if externalLink %}{{ externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: category.id }) }}{% endif %}" title="{{ name }}">
+        {{ name }}
+      </a>
+    {% endblock %}
+  </li>
 {% endblock %}

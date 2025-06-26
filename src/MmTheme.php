@@ -41,10 +41,129 @@ class MmTheme extends Plugin implements ThemeInterface
         'mm_theme_category_bg',
         'mm_theme_customer',
         'mm_blog_author',
-        'mm_root_games_category'
+        'custom_category_homepage',
+        'mm_root_games_category',
+        "mm_theme_customer_technical"
     ];
 
     private $fields = [
+        [
+            'name' => 'custom_category_homepage',
+            'global' => true,
+            'config' => [
+                'label' => [
+                    'en-GB' => 'Category For Homepage'
+                ]
+            ],
+            'relations' => [
+                [
+                    'entityName' => 'category'
+                ]
+            ],
+            'customFields' => [
+                [
+                    'name' => 'custom_category_homepage_view',
+                    'type' => CustomFieldTypes::BOOL,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Show Category on Homepage'
+                        ],
+                        'type' => 'checkbox',
+                        'customFieldType' => 'checkbox',
+                        'componentName' => 'sw-switch-field',
+                        'customFieldPosition' => 0,
+                    ]
+                ],
+                [
+                    'name' => 'custom_category_homepage_feature',
+                    'type' => CustomFieldTypes::BOOL,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Show like Feature'
+                        ],
+                        'type' => 'checkbox',
+                        'customFieldType' => 'checkbox',
+                        'componentName' => 'sw-switch-field',
+                        'customFieldPosition' => 0,
+                    ]
+                ],
+                 [
+                     'name' => 'custom_category_homepage_best',
+                     'type' => CustomFieldTypes::BOOL,
+                     'config' => [
+                         'label' => [
+                             'en-GB' => 'Best Sellers'
+                         ],
+                         'type' => 'checkbox',
+                         'customFieldType' => 'checkbox',
+                         'componentName' => 'sw-switch-field',
+                         'customFieldPosition' => 0,
+                     ]
+                 ],
+                [
+                    'name' => 'custom_category_homepage_sale',
+                    'type' => CustomFieldTypes::BOOL,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => '% Sale'
+                        ],
+                        'type' => 'checkbox',
+                        'customFieldType' => 'checkbox',
+                        'componentName' => 'sw-switch-field',
+                        'customFieldPosition' => 0,
+                    ]
+                ],
+                [
+                    'name' => 'custom_category_homepage_icon',
+                    'type' => CustomFieldTypes::TEXT,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Category Homepage Icon'
+                        ],
+                        'componentName' => 'sw-media-field',
+                        'customFieldType' => 'media',
+                        'customFieldPosition' => 1,
+                    ]
+                ],
+                [
+                    'name' => 'custom_category_homepage_title',
+                    'type' => CustomFieldTypes::TEXT,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Category Homepage Title'
+                        ],
+                        'componentName' => 'sw-field',
+                        'customFieldType' => 'text',
+                        'customFieldPosition' => 5,
+                    ]
+                ],
+                [
+                    'name' => 'custom_category_homepage_subtitle',
+                    'type' => CustomFieldTypes::TEXT,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Category Homepage Subtitle'
+                        ],
+                        'componentName' => 'sw-field',
+                        'customFieldType' => 'text',
+                        'customFieldPosition' => 5,
+                    ]
+                ],
+                [
+                    'name' => 'custom_category_homepage_image',
+                    'type' => CustomFieldTypes::TEXT,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Category Homepage Image'
+                        ],
+                        'type' => 'checkbox',
+                        'componentName' => 'sw-media-field',
+                        'customFieldType' => 'media',
+                        'customFieldPosition' => 2,
+                    ]
+                ],
+            ]
+        ],
         [
             'name' => 'mm_blog_author',
             'global' => true,
@@ -157,6 +276,35 @@ class MmTheme extends Plugin implements ThemeInterface
                         'componentName' => 'sw-field',
                         'customFieldType' => 'text',
                         'customFieldPosition' => 5,
+                    ]
+                ]
+            ]
+        ],
+        [
+            'name' => 'mm_theme_customer_technical',
+            'global' => true,
+            'config' => [
+                'label' => [
+                    'en-GB' => 'Technical'
+                ]
+            ],
+            'relations' => [
+                [
+                    'entityName' => 'customer',
+                ]
+            ],
+            'customFields' => [
+                [
+                    'name' => 'mm_theme_developer',
+                    'type' => CustomFieldTypes::BOOL,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'Is developer'
+                        ],
+                        'type' => 'checkbox',
+                        'customFieldType' => 'checkbox',
+                        'componentName' => 'sw-switch-field',
+                        'customFieldPosition' => 0,
                     ]
                 ],
             ]
@@ -380,6 +528,18 @@ class MmTheme extends Plugin implements ThemeInterface
                 ]
             ],
             'customFields' => [
+                [
+                    'name' => 'custom_tp_widget',
+                    'type' => CustomFieldTypes::HTML,
+                    'config' => [
+                        'label' => [
+                            'en-GB' => 'TP Widget'
+                        ],
+                        'componentName' => 'sw-code-editor',
+                        'customFieldType' => 'textEditor',
+                        'customFieldPosition' => 2,
+                    ]
+                ],
                 [
                     'name' => 'custom_reviews_count',
                     'type' => CustomFieldTypes::INT,

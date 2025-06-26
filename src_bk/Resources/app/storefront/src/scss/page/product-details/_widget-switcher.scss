@@ -1,0 +1,104 @@
+/* WIDGET TABS SWITCHER */
+.mmo-widget-switchers {
+  display: flex;
+  flex-flow: wrap;
+
+  position: sticky;
+  top: 60px;
+
+  z-index: 10;
+}
+
+.mmo-widget-switcher__input {
+  display: none;
+}
+
+.mmo-widget-switcher__body {
+  display: none;
+}
+
+.mmo-widget-switcher__body-box {
+  border-top: 1px solid $color-theme-500;
+  flex: 1 0 100%;
+  min-height: 50px;
+}
+
+.mmo-widget-switcher__label {
+  cursor: pointer;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  color: $color-theme-700;
+  user-select: none;
+  font-size: 16px;
+  margin: 0;
+
+  padding: 3px 0;
+  border-bottom: 3px solid transparent;
+
+  &:not(:last-of-type) {
+    margin-right: 30px;
+  }
+}
+
+@media (max-width: 470px) {
+  .mmo-widget-switcher__label {
+    font-size: 14px;
+  }
+}
+
+.mmo-widget-switcher__badge {
+  text-transform: uppercase;
+  font-size: 12px;
+  color: white;
+  display: inline-block;
+  line-height: 1;
+  background: $primary;
+  padding: 2px 5px;
+  transform: translateY(-1px);
+  margin-left: 4px;
+  animation: badge-pulse 6s infinite;
+}
+
+.mmo-widget-switcher__comment {
+  font-size: 14px;
+  line-height: 1.2;
+  font-style: italic;
+  padding: 15px 0;
+}
+
+.mmo-widget-switcher__label-inline {
+  cursor: pointer;
+  // border-bottom: 1px dashed $color-theme-700;
+}
+
+.mmo-widget-switcher__label-inline:hover {
+  cursor: pointer;
+  // border-bottom: 1px dashed white;
+}
+
+.mmo-widget-switcher__label:hover {
+  color: $white;
+  border-bottom: 3px solid transparent;
+}
+
+.mmo-widget-switcher__label:not(:last-child) {
+  // margin-right: 5px;
+}
+
+.mmo-widget-switcher__input:checked + .mmo-widget-switcher__label {
+  color: $primary;
+  border-bottom: 3px solid $primary;
+}
+
+.mmo-widget-switcher__input:checked + .mmo-widget-switcher__label .mmo-widget-switcher__badge {
+  background-color: $black;
+}
+
+.mmo-widget-switcher__input#widget-input:checked ~ #mmo-widget {
+  display: block;
+}
+
+.mmo-widget-switcher__input#options-input:checked ~ #mmo-options {
+  display: block;
+}

@@ -171,3 +171,44 @@ Skin styling for cms elements
 		}
 	}
 }
+
+.with-sidebar {
+	.listing-grid-layout {
+		@include media-breakpoint-only(lg) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@include media-breakpoint-up(xl) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		@media screen and (min-width: 1550px) {
+			grid-template-columns: repeat(5, 1fr);
+		}
+
+
+		&--offer {
+			@include media-breakpoint-only(lg) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		&--modern {
+			@include media-breakpoint-up(lg) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(4, 1fr);
+			}
+
+			@media screen and (min-width: 1550px) {
+				grid-template-columns: repeat(5, 1fr);
+			}
+		}
+	}
+}

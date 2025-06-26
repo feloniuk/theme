@@ -4,7 +4,7 @@
     <div class="product-detail"
         itemscope
         itemtype="https://schema.org/Product">
-    
+
     {% sw_include '@Storefront/storefront/page/product-detail/microdata.html.twig' %}
 
         {% block page_product_detail_inner %}
@@ -19,6 +19,8 @@
 
                                     {# REVIEWS HIDDEN #}
                                     {# {% sw_include '@Storefront/storefront/page/product-detail/review/review-header.html.twig' %} #}
+
+                                    {{ context.salesChannel.translated.customFields.custom_tp_widget|raw }}
                                 </div>
 
                                 <div class="product-detail-notes">

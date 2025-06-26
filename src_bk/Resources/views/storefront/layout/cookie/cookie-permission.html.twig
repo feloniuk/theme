@@ -1,0 +1,51 @@
+{% sw_extends '@Storefront/storefront/layout/cookie/cookie-permission.html.twig' %}
+
+{% block layout_cookie_permission_inner %}
+    {% set acceptAllCookies = config('core.basicInformation.acceptAllCookies') %}
+
+    <div
+        class="cookie-permission-container"
+        data-cookie-permission="true">
+
+            <div class="cookie-permission-backdrop"></div>
+
+            {% block layout_cookie_permission_inner_content %}
+                <div class="cookie-permission-content">
+                    {% sw_icon 'cookies' style {
+                        'namespace': 'MmTheme',
+                        'size': 'fluid'
+                    } %}
+
+                    <div class="cookie-permission-content__box">
+                        {{ "cookie.messageText"|trans({
+                            '%url%': path('frontend.cms.page', { id: config('core.basicInformation.privacyPage') })
+                        })|raw }}
+                    </div>
+                </div>
+            {% endblock %}
+
+            {% block layout_cookie_permission_inner_button %}
+                <div class="cookie-permission-actions">
+                    {% block layout_cookie_permission_inner_button_configuration %}
+                            <span class="js-cookie-configuration-button">
+                                <button
+                                    type="submit"
+                                    class="btn btn-cookies">
+                                    {{ "cookie.configure"|trans|sw_sanitize }}
+                                </button>
+                            </span>
+                    {% endblock %}
+
+                    {% if acceptAllCookies %}
+                        {% block layout_cookie_permission_inner_button_accept_all %}
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-cookies js-cookie-accept-all-button">
+                                {{ "cookie.acceptAll"|trans|sw_sanitize }}
+                            </button>
+                        {% endblock %}
+                    {% endif %}
+                </div>
+            {% endblock %}
+    </div>
+{% endblock %}

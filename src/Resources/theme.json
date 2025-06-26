@@ -14,11 +14,11 @@
 	],
 	"script": [
 		"@Storefront",
+		"@Plugins",
 		"app/storefront/dist/storefront/js/svg-sprite-loader.js",
 		"app/storefront/dist/storefront/js/popper.min.js",
 		"app/storefront/dist/storefront/js/tippy-bundle.umd.min.js",
 		"app/storefront/dist/storefront/js/mm.js",
-		"@Plugins",
 		"app/storefront/dist/storefront/js/mm-theme.js"
 	],
 	"asset": [
@@ -37,6 +37,16 @@
 			"icons": {
 				"label": {
 					"en-GB": "Icons"
+				}
+			},
+			"activators": {
+				"label": {
+					"en-GB": "Activators"
+				}
+			},
+			"intercom": {
+				"label": {
+					"en-GB": "Intercom"
 				}
 			},
 			"ga": {
@@ -123,6 +133,40 @@
 				"tab": "settings",
 				"scss": false,
 				"fullWidth": true
+			},
+			"mm-intercom-header-buttons": {
+				"label": {
+					"en-GB": "Intercom Header Buttons"
+				},
+				"helpText": {
+					"en-GB": "Enter bots with ; (example: Get me full Mythic gear in WoW; Unlock all camos in CoD 6)."
+				},
+				"type": "text",
+				"editable": true,
+				"block": "intercom",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			},
+			"mm-header-activator": {
+				"label": {
+					"en-GB": "Updated Hero Section"
+				},
+				"type": "bool",
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
+			},
+			"mm-games-activator": {
+				"label": {
+					"en-GB": "Updated Game Section"
+				},
+				"type": "bool",
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
 			},
 			"mm-ga-trackers": {
 				"label": {

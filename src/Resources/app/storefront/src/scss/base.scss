@@ -65,6 +65,7 @@
 @import 'components/tns';
 @import 'components/toast';
 @import 'components/tooltips';
+@import 'components/switch';
 @import 'components/video';
 @import 'components/vue-multiselect';
 @import 'components/wishlist';
@@ -91,6 +92,7 @@
 @import 'layout/search-bar';
 @import 'layout/search-suggest';
 @import 'layout/top-bar';
+@import 'layout/sidebar';
 
 @import 'page/account/account';
 @import 'page/account/overview';
@@ -121,6 +123,9 @@
 @import 'page/checkout/checkout';
 @import 'page/checkout/confirm';
 @import 'page/checkout/order';
+
+@import 'page/main/game-section';
+@import 'page/main/hero-section';
 
 @import 'page/register/register';
 

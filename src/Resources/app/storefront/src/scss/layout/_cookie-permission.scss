@@ -4,8 +4,6 @@
 	text-align: left;
 
 	position: fixed;
-	justify-content: center;
-	align-items: center;
 
 	width: 100%;
 
@@ -13,14 +11,20 @@
 	display: none;
 	background: transparent;
 
-	gap: $spacer;
+	.cookie-permission-container-inner {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
 
-	flex-direction: column;
+		gap: $spacer;
+		flex-direction: column;
 
-	@include media-breakpoint-up(md) {
-		padding-bottom: 40px;
-		flex-direction: row;
-		gap: $spacer-lg;
+		@include media-breakpoint-up(md) {
+			padding-bottom: 40px;
+			flex-direction: row;
+			gap: $spacer-lg;
+		}
 	}
 
 	.btn {

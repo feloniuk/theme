@@ -1,0 +1,97 @@
+$foundation-colors: (
+	'facebook': #3c5a99,
+	'google': #eee,
+	'azure': #00a4ef,
+	'amazon': #ff9900,
+	'office365': #00a4ef,
+	'paypal': #0173b9,
+	'generic': #7289da,
+	'discord': #7289da,
+	'twitter': #55acee,
+	'instagram': #eee,
+	'pinterest': #bd081c,
+	'whatsapp': #25d366,
+	'youtube': #ff0000,
+);
+
+@each $color, $value in $foundation-colors {
+	.btn-#{$color} {
+		@include button-variant($value, $value);
+	}
+}
+
+.social-login {
+	display: grid;
+	flex-direction: row;
+	flex-wrap: wrap;
+
+	grid-template-columns: repeat(1, 1fr);
+	gap: 10px;
+
+	@include media-breakpoint-up(xl) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	& > * {
+		flex-basis: 50%;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		flex-wrap: nowrap;
+
+		border: 1px solid $color-theme-500;
+
+		&:hover,
+		&:active {
+			background-color: $color-theme-400;
+			border-color: $color-theme-600;
+		}
+	}
+
+	&__icon {
+		width: 22px;
+		height: 22px;
+		margin-right: 10px;
+
+		fill: $icon-base-color;
+
+		@each $color, $value in $foundation-colors {
+			&--#{$color} {
+				color: $value;
+			}
+		}
+	}
+
+	&__text {
+		font-weight: $font-weight-normal;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__breaker {
+		display: flex;
+		align-items: center;
+
+		&::before,
+		&::after {
+			height: 1px;
+			background: $color-theme-500;
+			content: '';
+			flex: 1;
+		}
+	}
+
+	&__breaker-text {
+		justify-content: center;
+		align-items: center;
+		color: $color-theme-500;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-bold;
+		flex: 0;
+		margin: 5px;
+	}
+}

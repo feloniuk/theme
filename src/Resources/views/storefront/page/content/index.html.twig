@@ -1,9 +1,31 @@
 {% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}
 
 {% block page_content %}
-    <div class="cms-page">
-        {% block page_content_blocks %}
-            {% sw_include "@Storefront/storefront/page/content/detail.html.twig" with {'cmsPage': page.cmsPage} %}
-        {% endblock %}
-    </div>
+    {% if activeRoute == 'frontend.home.page' %}
+        {% block cms_breadcrumb %}{% endblock %}
+
+        {% set heroConfig = theme_config('mm-header-activator') %}
+        {% set gameConfig = theme_config('mm-games-activator') %}
+        {% set isDeveloper = context.customer.customFields.mm_theme_developer %}
+
+        {% if heroConfig or isDeveloper %}
+            {% sw_include '@MmTheme/storefront/page/main/hero-section.html.twig' %}
+        {% endif %}
+
+        {% if gameConfig or isDeveloper %}
+            {% sw_include '@MmTheme/storefront/page/main/game-section.html.twig' %}
+        {% endif %}
+    {% endif %}
+
+    {% if activeRoute == 'frontend.navigation.page' %}
+        <div class="sidebar-wrapper">
+            <div class="sidebar">
+                {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
+            </div>
+
+            <div class="with-sidebar">{{ parent() }}</div>
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
 {% endblock %}

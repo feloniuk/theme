@@ -1,0 +1,54 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}is-ctl-{{ controllerName|lower }} is-act-{{ controllerAction|lower }}{% endblock %}
+
+{% block base_body_inner %}
+  {% if activeRoute == 'frontend.home.page' or activeRoute == 'frontend.navigation.page' %}
+    {% set handler = page.header.navigation.active.translated.customFields.mm_theme_category_bg_image %}
+
+    {% if not handler %}
+      {% set handler = context.salesChannel.translated.customFields.mm_theme_category_bg_image %}
+    {% endif %}
+    {% if handler %}
+        {% set mediaCollection = searchMedia([handler], context.context) %}
+        {% if mediaCollection %}
+            {% set image = mediaCollection.get(handler) %}
+            <div class="main-background">
+              <img src="{{image.url}}" loading="lazy">
+            </div>
+        {% endif %}
+    {% endif %}
+  {% endif %}
+
+  {% block base_body_context %}
+    {% set contextOptions = {
+      currency: {
+        shortName: context.currency.shortName,
+        name: context.currency.name,
+        factor: context.currency.factor,
+        symbol: context.currency.symbol,
+        template: 0|currency
+      }
+    } %}
+
+    <template
+      data-context
+      data-context-options='{{ contextOptions|json_encode }}'>
+    </template>
+  {% endblock %}
+
+  {{ parent() }}
+{% endblock %}
+
+{% block base_header %}
+  <header class="header-main">
+  122333
+    {% sw_include '@Storefront/storefront/layout/header/search-bar.html.twig' %}
+
+    <div class="container">
+      {% sw_include '@Storefront/storefront/layout/header/header.html.twig' %}
+    </div>
+  </header>
+{% endblock %}
+
+{% block base_navigation %}{% endblock %}
