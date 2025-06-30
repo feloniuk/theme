@@ -1,0 +1,504 @@
+.game-selection-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #1a1e2e;
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.game-selection-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.game-filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-tab {
+    background-color: #222739;
+    font: Inter;
+    border: none;
+    color: #A3B0DD;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.filter-tab.active {
+    color: #fff;
+    background-color: #5865F2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(88, 101, 242, 0.3);
+}
+
+.filter-tab:hover:not(.active) {
+    background-color: #2d3450;
+    transform: translateY(-1px);
+}
+
+.filter-tab:active {
+    transform: translateY(0);
+}
+
+.game-search {
+    margin-left: auto;
+    position: relative;
+    width: 300px;
+    display: block;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7582B0;
+}
+
+.search-input {
+    background-color: #2a2f42;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 12px 10px 40px;
+    width: 100%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    background-color: #313a58;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+}
+
+.search-input::placeholder {
+    color: #7582B0;
+}
+
+.games-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Исправленные стили для featured games */
+.featured-games-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Исправленные стили для small games */
+.small-games-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* Для экранов шириной до 1600px */
+@media (max-width: 1600px) {
+    .featured-games-row {
+        gap: 16px;
+    }
+    
+    .small-games-row {
+        gap: 16px;
+    }
+}
+
+/* Для планшетов */
+@media (max-width: 992px) {
+    .featured-games-row {
+        gap: 16px;
+    }
+    
+    .small-games-row {
+        gap: 16px;
+    }
+}
+
+/* Для мобильных устройств */
+@media (max-width: 576px) {
+    .featured-games-row {
+        gap: 12px;
+    }
+    
+    .small-games-row {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .game-search {
+        display: none;
+    }
+}
+
+/* Базовые стили для анимации карточек */
+.game-card {
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    perspective: 1000px;
+    will-change: opacity, transform;
+    position: relative;
+}
+
+/* Анимация появления карточек */
+.game-card-appearing {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    animation: fadeInUp 0.7s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+    animation-fill-mode: both;
+    pointer-events: none; /* Предотвращает клики во время анимации */
+}
+
+/* Анимация исчезновения карточек */
+.game-card-hiding {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation: fadeOutDown 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+    pointer-events: none; /* Предотвращает клики во время анимации */
+}
+
+/* Задержка для каскадной анимации */
+.featured-games-row .game-card:nth-child(1) { animation-delay: 0.05s; }
+.featured-games-row .game-card:nth-child(2) { animation-delay: 0.1s; }
+.featured-games-row .game-card:nth-child(3) { animation-delay: 0.15s; }
+.featured-games-row .game-card:nth-child(4) { animation-delay: 0.2s; }
+.featured-games-row .game-card:nth-child(5) { animation-delay: 0.25s; }
+
+.small-games-row .game-card:nth-child(1) { animation-delay: 0.05s; }
+.small-games-row .game-card:nth-child(2) { animation-delay: 0.1s; }
+.small-games-row .game-card:nth-child(3) { animation-delay: 0.15s; }
+.small-games-row .game-card:nth-child(4) { animation-delay: 0.2s; }
+.small-games-row .game-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* Ключевые кадры для появления */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    30% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Ключевые кадры для исчезновения */
+@keyframes fadeOutDown {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+}
+
+/* Исправленные стили для featured карточек */
+.game-card.featured {
+    flex: 0 0 calc(20% - 16px); /* 5 карточек в ряд с учетом gap */
+    min-width: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    height: 25em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                box-shadow 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.game-image {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden; /* Важно для ограничения масштабированного фона */
+}
+
+.game-image-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: top;
+    transition: transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                filter 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+    z-index: 0; /* Размещаем под контентом */
+}
+
+.game-card.featured:hover .game-image-background {
+    transform: scale(1.05);
+}
+
+/* Убедимся, что весь контент находится поверх фона */
+.game-badge, .game-info, .game-logo-new, .game-titles {
+    position: relative;
+    z-index: 1;
+}
+
+.game-titles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.game-logo-new img {
+    margin-right: 12px;
+    object-fit: contain;
+    max-width: 50px;
+    transition: transform 0.3s ease;
+}
+
+.game-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.3em 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: padding 0.3s ease;
+}
+
+.game-subtitle {
+    color: #7582B0;
+}
+
+.game-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f9a826;
+    color: #1a1e2e;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* Исправленные стили для small карточек */
+.small-div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1; /* Занимает доступное пространство */
+    min-width: 0; /* Позволяет тексту сжиматься */
+}
+
+.game-card.small {
+    background-color: var(--Basic-Grey-200, rgba(34, 39, 57, 1));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    height: 5em;
+    padding-right: 10px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                box-shadow 0.4s cubic-bezier(0.215, 0.61, 0.355, 1),
+                background-color 0.3s ease;
+    
+    /* Добавляем фиксированную ширину и флекс-поведение */
+    flex: 0 0 calc(20% - 16px); /* 5 карточек в ряд с учетом gap */
+    min-width: 200px;
+    max-width: none;
+}
+
+.game-card.small:hover {
+    transform: scale(1.03) translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    background-color: rgba(42, 49, 71, 1);
+}
+
+.game-icon-container {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--Basic-Grey-300, rgba(43, 50, 74, 1));
+    transition: background-color 0.3s ease;
+}
+
+.game-card.small:hover .game-icon-container {
+    background-color: rgba(53, 62, 92, 1);
+}
+
+.game-icon {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease;
+}
+
+.game-card.small:hover .game-icon {
+    transform: scale(1.1);
+}
+
+.game-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.game-title {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: Inter;
+    line-height: 140%;
+    letter-spacing: 0%;
+}
+
+/* Исправленные стили для заголовка игры в маленьких карточках */
+.game-card.small .game-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1; /* Занимает оставшееся место */
+    min-width: 0; /* Важно для корректной работы ellipsis */
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Специфические цвета для разных игр */
+.game-icon-container.wow { background-color: #393f5e; } /* Фиолетовый для WoW */
+.game-icon-container.diablo { background-color: #59442e; } /* Коричневый для Diablo */
+.game-icon-container.brawl { background-color: #2a5f8f; } /* Синий для Brawl Star */
+.game-icon-container.division { background-color: #583e29; } /* Оранжевый для Division */
+.game-icon-container.destiny { background-color: #8f2a2a; } /* Красный для Destiny */
+.game-icon-container.dota { background-color: #5d2a2a; } /* Красный для Dota */
+
+.show-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5em;
+    transition: all 0.5s ease;
+}
+
+.show-more-button, .show-less-button {
+    background-color: #252b3d;
+    border: 1px solid rgba(117, 130, 176, 0.8);
+    color: #fff;
+    padding: 13px 60px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 1.5em 0.5em;
+    transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.show-more-button:hover, .show-less-button:hover {
+    background-color: #2d3450;
+    border-color: rgba(117, 130, 176, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.show-more-button:active, .show-less-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Эффект пульсации для кнопок */
+.show-more-button::after, .show-less-button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.show-more-button:hover::after, .show-less-button:hover::after {
+    width: 300%;
+    height: 300%;
+}
+
+/* Стили для сияющего эффекта на поле поиска */
+.glow-effect {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(88, 101, 242, 0.2) 0%, rgba(88, 101, 242, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.data-game-section {
+    z-index: 99;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 1600px) {
+    .game-card.featured {
+        flex: 0 0 calc(25% - 12px); /* 4 карточки в ряд */
+    }
+    
+    .game-card.small {
+        flex: 0 0 calc(25% - 12px); /* 4 карточки в ряд */
+    }
+}
+
+@media (max-width: 992px) {
+    .game-card.featured {
+        flex: 0 0 calc(50% - 8px); /* 2 карточки в ряд */
+    }
+    
+    .game-card.small {
+        flex: 0 0 calc(50% - 8px); /* 2 карточки в ряд */
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    .game-card.featured {
+        flex: 0 0 100%; /* 1 карточка в ряд */
+        min-width: auto;
+    }
+    
+    .game-card.small {
+        flex: 0 0 100%; /* 1 карточка в ряд */
+        min-width: auto;
+    }
+}

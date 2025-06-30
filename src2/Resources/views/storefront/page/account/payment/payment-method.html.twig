@@ -1,0 +1,46 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
+
+{% block component_payment_method_control %}
+    {{ block("component_payment_method_input") }}
+
+    {{ block("component_payment_method_label") }}
+{% endblock %}
+
+{% block component_payment_method_input %}
+    <input type="radio"
+        id="paymentMethod{{ payment.id }}"
+        name="paymentMethodId"
+        value="{{ payment.id }}"
+        {% if payment.id is same as(selectedPaymentMethodId) %}checked="checked"{% endif %}
+        {% if page.isPaymentChangeable is defined and not page.isPaymentChangeable %}
+            disabled="disabled"
+        {% endif %}
+        class="{{ formCheckInputClass }} payment-method-input">
+{% endblock %}
+
+{% block component_payment_method_label %}
+    <label class="custom-control-label payment-method-label py-0"
+        for="paymentMethod{{ payment.id }}">
+        {% block component_payment_method_content %}
+            <div class="payment__details-box">
+                <div class="payment__details-header mb-0">
+                    {{ block("component_payment_method_image") }}
+                    {{ payment.translated.name }}
+                </div>
+            </div>
+        {% endblock %}
+    </label>
+
+    <div class="payment-method-label py-0 my-0">
+        {{ block("component_payment_method_description") }}
+
+        <div class="payment__details-description mb-0">
+            {% if payment.translated.description != '' %}
+                <div class="my-3">{{ payment.translated.description|raw }}</div>
+            {% endif %}
+            {% if payment.translated.customFields['payment_comment'] != '' and payment.translated.customFields['payment_comment'] != 'no comment' %}
+                <div class="my-3">{{ payment.translated.customFields['payment_comment']|raw }}</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

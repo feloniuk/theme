@@ -1,0 +1,36 @@
+.pagination {
+	margin-bottom: 0;
+
+	.page-item {
+		&.disabled {
+			.page-link {
+				cursor: default;
+				opacity: 1;
+				background: $color-theme-200;
+				color: $color-theme-500;
+			}
+
+			a {
+				color: $color-theme-500;
+			}
+
+			.icon {
+				color: $color-theme-500;
+			}
+		}
+
+		&.active {
+			.page-link {
+				color: $white;
+			}
+		}
+	}
+
+	.page-link {
+		cursor: pointer;
+		border-radius: $border-radius-sm;
+
+		color: $color-theme-900;
+		margin-bottom: 0;
+	}
+}

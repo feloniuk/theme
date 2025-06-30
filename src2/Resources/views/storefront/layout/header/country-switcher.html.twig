@@ -1,0 +1,64 @@
+{% block context_country_switcher %}
+  {% set currencies = [] %}
+
+  {% for currency in page.header.currencies %}
+    {% set currencies = currencies|merge([{
+      id: currency.id,
+      isoCode: currency.isoCode,
+      isCurrent: currency.id == context.currencyId
+    }])  %}
+  {% endfor %}
+
+  {% set contextOptions = {
+    currencies: currencies,
+    countryCode: context.extensions['cloudflareCountryCode'].get('countryCode'),
+    swAccessKey: context.salesChannel.accessKey,
+    swToken: context.token,
+  } %}
+
+  <div data-currency-switcher
+       data-currency-switcher-options='{{ contextOptions|json_encode }}'
+       class='currency-switcher d-none'>
+
+       <div class="currency-switcher__panel">
+        <div class="currency-switcher__box">
+          <div class="currency-switcher__message">
+            <div class="currency-switcher__header">
+              {{ "mm-theme.currency-switcher.title"|trans|striptags }}
+            </div>
+            <div class="currency-switcher__text">
+              {{ "mm-theme.currency-switcher.text"|trans|striptags }}
+            </div>
+          </div>
+
+          <div class="currency-switcher__items">
+              <span class="currency-switcher__close" role="button">
+                {% block utilities_offcanvas_close_icon %}
+                    {% sw_icon 'x' style { 'size': 'sm' } %}
+                {% endblock %}
+              </span>
+
+              <div class="currency-switcher__item currency-switcher__item--region d-none" data-currency='USD' role="button">
+                <svg class="currency__icon d-sm-block">
+                    <use xlink:href="#currency-USD"></use>
+                </svg>
+
+                <div class="currency-switcher__name">{{ "mm-theme.currency-switcher.switchTo"|trans|striptags }} US (USD)</div>
+              </div>
+
+              <div class="currency-switcher__item currency-switcher__item--region d-none" data-currency='EUR' role="button">
+                <svg class="currency__icon d-sm-block">
+                    <use xlink:href="#currency-EUR"></use>
+                </svg>
+
+                <div class="currency-switcher__name">{{ "mm-theme.currency-switcher.switchTo"|trans|striptags }} EU (EUR)</div>
+              </div>
+
+              <div class="currency-switcher__item currency-switcher__item--cancel" role="button">
+                Cancel
+              </div>
+          </div>
+        </div>
+      </div>
+  </div>
+{% endblock %}

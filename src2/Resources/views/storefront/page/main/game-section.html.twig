@@ -1,0 +1,104 @@
+{% block page_content %}
+        {% set gameData = [] %}
+        {% for treeItem in page.header.navigation.tree %}
+            {% for children in treeItem.children %}
+                {% if children.category.translated.customFields.custom_category_homepage_view %}
+                    {% set category = children.category %}
+                    {% set name = category.translated.customFields.custom_category_homepage_title ?: category.translated.name %}
+                    {% set categoryId = category.id %}
+                    {% set iconImg = null %}
+                    {% set backgroundImg = null %}
+                    {% set logoImg = null %}
+                    {% set Url = seoUrl('frontend.navigation.page', {navigationId: categoryId})  %}
+                    
+                    {% if category.translated.customFields.custom_category_homepage_icon %}
+                        {% set handler = category.translated.customFields.custom_category_homepage_icon %}
+                        {% set mediaCollection = searchMedia([handler], context.context) %}
+                        {% if mediaCollection %}
+                            {% set image = mediaCollection.get(handler) %}
+                            {% set iconImg = image.url %}
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if category.translated.customFields.custom_category_homepage_image %}
+                        {% set handler = category.translated.customFields.custom_category_homepage_image %}
+                        {% set mediaCollection = searchMedia([handler], context.context) %}
+                        {% if mediaCollection %}
+                            {% set image = mediaCollection.get(handler) %}
+                            {% set backgroundImg = image.url %}
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if category.translated.customFields.custom_category_homepage_icon %}
+                        {% set handler = category.translated.customFields.custom_category_homepage_icon %}
+                        {% set mediaCollection = searchMedia([handler], context.context) %}
+                        {% if mediaCollection %}
+                            {% set image = mediaCollection.get(handler) %}
+                            {% set logoImg = image.url %}
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% set gameData = gameData|merge([{
+                        id: categoryId,
+                        name: name,
+                        subtitle: children.category.translated.customFields.custom_category_homepage_subtitle|default(''),
+                        featured: children.category.translated.customFields.custom_category_homepage_feature ? true : false,
+                        isBestseller: children.category.translated.customFields.custom_category_homepage_best ? true : false,
+                        isOnSale: children.category.translated.customFields.custom_category_homepage_sale ? true : false,
+                        visible: true,
+                        icon: iconImg|default('/media/games/placeholder-icon.png'),
+                        background: backgroundImg|default('/media/games/placeholder-bg.jpg'),
+                        logo: logoImg|default('/media/games/placeholder-logo.png'),
+                        url: Url
+                    }]) %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+<div class="container">
+    <div class="row">
+        
+        <h2 class="game-selection-title">{{ 'mm-theme.game.title'|trans|sw_sanitize }}</h2>
+
+        <div class="data-game-section" data-game-section data-game-section-options="{{ gameData|json_encode }}">
+            <div class="game-filter-tabs">
+                <button class="filter-tab active">{{ 'mm-theme.game.btnAll'|trans|sw_sanitize }}</button>
+                <button class="filter-tab">{{ 'mm-theme.game.btnBest'|trans|sw_sanitize }}</button>
+                <button class="filter-tab">{{ 'mm-theme.game.btnSale'|trans|sw_sanitize }}</button>
+                
+                <div class="game-search">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="{{ 'mm-theme.game.inputSearch'|trans|sw_sanitize }}" class="search-input">
+                </div>
+            </div>
+
+            <div class="games-grid">
+                <!-- Контейнер для featured игр -->
+                <div id="featured-games-container">
+                </div>
+
+                <!-- Контейнер для small игр -->
+                <div id="small-games-container">
+                </div>
+
+                <div class="show-more-container">
+                    <button class="show-more-button">
+                        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <use xlink:href="#show-more-button"></use>
+                        </svg>
+                        {{ 'mm-theme.game.btnShow'|trans|sw_sanitize }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}
+

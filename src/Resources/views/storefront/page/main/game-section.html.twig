@@ -2,6 +2,7 @@
         {% set gameData = [] %}
         {% for treeItem in page.header.navigation.tree %}
             {% for children in treeItem.children %}
+            
                 {% if children.category.translated.customFields.custom_category_homepage_view %}
                     {% set category = children.category %}
                     {% set name = category.translated.customFields.custom_category_homepage_title ?: category.translated.name %}

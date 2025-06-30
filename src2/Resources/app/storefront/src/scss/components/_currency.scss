@@ -1,0 +1,87 @@
+.currency {
+	&__icon {
+		width: 22px;
+		height: 22px;
+
+		fill: $icon-base-color;
+
+		@include media-breakpoint-down(sm) {
+			width: 18px;
+			height: 18px;
+			margin-right: 3px;
+		}
+	}
+
+	&__text {
+		position: relative;
+		text-transform: uppercase;
+		font-weight: $font-weight-bold;
+		color: $color-theme-700;
+		text-wrap: nowrap;
+
+		&:hover {
+			color: $primary;
+		}
+
+		@include media-breakpoint-down(sm) {
+			margin-top: 2px;
+			font-size: 14px;
+		}
+	}
+}
+
+.top-bar-currency {
+	padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+
+	.dropdown-toggle {
+		display: flex;
+		align-items: center;
+	}
+
+	.top-bar-list-label {
+		display: flex;
+		align-items: center;
+	}
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	@include media-breakpoint-down(sm) {
+		position: relative;
+		display: flex;
+		align-items: center;
+		// margin-top: $spacer-xs;
+		// top: 2px;
+	}
+
+	.btn.top-bar-nav-btn {
+		@include media-breakpoint-down(sm) {
+			padding: 0px 6px;
+			// line-height: 24px;
+		}
+	}
+
+	.dropdown-toggle::after {
+		display: none;
+	}
+}
+
+.currencies-menu {
+	border-radius: $border-radius-xl;
+
+	@include media-breakpoint-down(sm) {}
+
+	&.show,
+	&:hover,
+	&:focus {}
+
+	.dropdown-menu {
+		margin-top: 5px;
+		border-radius: $card-border-radius;
+		background-color: $color-theme-50;
+		// display: flex;
+
+		@include media-breakpoint-down(sm) {}
+	}
+}
