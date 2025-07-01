@@ -10,10 +10,6 @@
             </svg>
             Back to Choose Game
         </a>
-        {# <div class="service-title">
-            <span class="wow-icon">W</span>
-            WoW Boost Service
-        </div> #}
     </div>
 
     <!-- Menu Content with Scroll -->
@@ -71,8 +67,9 @@
                                                  data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}">
                                                 <span>{{ firstLevelName }}</span>
                                                 <button class="subcategory-expand" data-subcategory-expand>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M6 9L12 15L18 9"/>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                        <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                                                     </svg>
                                                 </button>
                                             </div>
