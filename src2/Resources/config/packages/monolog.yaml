@@ -1,9 +1,0 @@
-monolog:
-  channels: ['mm_theme']
-  handlers:
-    mm_theme:
-      type: rotating_file
-      path: '%kernel.logs_dir%/mm_theme.log'
-      max_files: 14
-      level: info
-      channels: ['mm_theme']

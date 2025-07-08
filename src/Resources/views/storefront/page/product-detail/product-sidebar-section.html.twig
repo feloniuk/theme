@@ -1,132 +1,273 @@
 {% block wow_boost_menu %}
-{% set targetCategoryName = 'Choose Game' %}
 
-<div class="wow-boost-menu" data-wow-boost-menu>
-    <!-- Header -->
-    <div class="wow-boost-header">
-        <a href="{{ url('frontend.home.page') }}#featured-games-container" class="back-button" data-back-button>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Back to Choose Game
-        </a>
-        {# <div class="service-title">
-            <span class="wow-icon">W</span>
-            WoW Boost Service
-        </div> #}
-    </div>
+{# Проверяем, включен ли сайдбар в настройках плагина #}
+{% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
 
-    <!-- Menu Content with Scroll -->
-    <div class="wow-menu-content">
-        {% if page.header.navigation.tree is defined %}
-            {% set chooseGameCategory = null %}
-            
-            {# Найти категорию "Choose Game" #}
-            {% for treeItem in page.header.navigation.tree %}
-                {% if treeItem.category.translated.name == targetCategoryName %}
-                    {% set chooseGameCategory = treeItem %}
-                    {% break %}
-                {% endif %}
-            {% endfor %}
-            
-            {% if chooseGameCategory and chooseGameCategory.children is defined %}
-                {# Выводим только содержимое категории "Choose Game" #}
-                {% for gameItem in chooseGameCategory.children %}
-                    {% set category = gameItem.category %}
-                    {% set name = category.translated.name %}
-                    {% set categoryId = category.id %}
-                    {% set hasChildren = gameItem.children is defined and gameItem.children|length > 0 %}
-                    
-                    <div class="menu-category" 
-                         data-category-id="{{ categoryId }}"
-                         {% if not hasChildren %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
-                         {% if hasChildren %}data-expandable="true"{% endif %}>
-                        
-                        <div class="category-header">
-                            <span class="category-title">{{ name }}</span>
-                            
+{% if sidebarEnabled %}
+    <div class="wow-boost-menu" data-wow-boost-menu>
+        <!-- Header -->
+        <div class="wow-boost-header">
+            <a href="{{ url('frontend.home.page') }}#featured-games-container" class="back-button" data-back-button>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back to Choose Game
+            </a>
+        </div>
+
+        <!-- Menu Content with Scroll -->
+        <div class="wow-menu-content">
+            {% if page.header.navigation.tree is defined %}
+                {# Проходим по основным категориям первого уровня #}
+                {% for treeItem in page.header.navigation.tree %}
+                    {% set category = treeItem.category %}
+                    {% set customFields = category.translated.customFields %}
+
+                    {# Проверяем, отмечена ли категория для показа в сайдбаре #}
+                    {% if customFields.mm_theme_sidebar_enabled %}
+                        {% set name = category.translated.name %}
+                        {% set categoryId = category.id %}
+
+                        {# Собираем дочерние категории второго уровня, которые отмечены для сайдбара #}
+                        {% set secondLevelCategories = [] %}
+                        {% if treeItem.children is defined %}
+                            {% for secondLevelItem in treeItem.children %}
+                                {% set secondLevelCategory = secondLevelItem.category %}
+                                {% set secondLevelCustomFields = secondLevelCategory.translated.customFields %}
+
+                                {# Проверяем третий уровень, чтобы понять структуру #}
+                                {% set thirdLevelCategories = [] %}
+                                {% set hasTaggedThirdLevel = false %}
+
+                                {% if secondLevelItem.children is defined %}
+                                    {% for thirdLevelItem in secondLevelItem.children %}
+                                        {% set thirdLevelCategory = thirdLevelItem.category %}
+                                        {% set thirdLevelCustomFields = thirdLevelCategory.translated.customFields %}
+
+                                        {% if thirdLevelCustomFields.mm_theme_sidebar_enabled %}
+                                            {% set hasTaggedThirdLevel = true %}
+                                            {% set thirdLevelCategories = thirdLevelCategories|merge([thirdLevelItem]) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                {# Если есть отмеченные категории третьего уровня, показываем второй уровень как родительский #}
+                                {% if hasTaggedThirdLevel %}
+                                    {% set secondLevelCategories = secondLevelCategories|merge([{
+                                        item: secondLevelItem,
+                                        children: thirdLevelCategories
+                                    }]) %}
+                                {# Если второй уровень сам отмечен, показываем его #}
+                                {% elseif secondLevelCustomFields.mm_theme_sidebar_enabled %}
+                                    {% set secondLevelCategories = secondLevelCategories|merge([{
+                                        item: secondLevelItem,
+                                        children: []
+                                    }]) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% set hasChildren = secondLevelCategories|length > 0 %}
+
+                        <div class="menu-category"
+                             data-category-id="{{ categoryId }}"
+                             {% if not hasChildren %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                             {% if hasChildren %}data-expandable="true"{% endif %}>
+
+                            <div class="category-header">
+                                <h3 class="category-title">{{ name }}</h3>
+
+                                {% if hasChildren %}
+                                    <button class="expand-button" data-expand-button>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                            <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                {% endif %}
+                            </div>
+
                             {% if hasChildren %}
-                                <button class="expand-button" data-expand-button>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-                                        <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
+                                <div class="subcategories" data-subcategories style="display: none;">
+                                    {% for secondLevelData in secondLevelCategories %}
+                                        {% set secondLevelItem = secondLevelData.item %}
+                                        {% set secondLevelCategory = secondLevelItem.category %}
+                                        {% set secondLevelName = secondLevelCategory.translated.name %}
+                                        {% set secondLevelId = secondLevelCategory.id %}
+                                        {% set thirdLevelItems = secondLevelData.children %}
+
+                                        {% if thirdLevelItems|length > 0 %}
+                                            {# Категория второго уровня с подкатегориями третьего уровня #}
+                                            <div class="subcategory-group" data-subcategory-group>
+                                                <div class="subcategory-title"
+                                                     data-subcategory-id="{{ secondLevelId }}"
+                                                     data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}">
+                                                    <span>{{ secondLevelName }}</span>
+                                                    <button class="subcategory-expand" data-subcategory-expand>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M6 9L12 15L18 9"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <div class="subcategory-items" data-subcategory-items style="display: none;">
+                                                    {% for thirdLevelItem in thirdLevelItems %}
+                                                        {% set thirdLevelCategory = thirdLevelItem.category %}
+                                                        {% set thirdLevelName = thirdLevelCategory.translated.name %}
+                                                        {% set thirdLevelId = thirdLevelCategory.id %}
+                                                        {% set subcategoryName = thirdLevelName|lower %}
+
+                                                        <div class="subcategory-subitem"
+                                                             data-subcategory-id="{{ thirdLevelId }}"
+                                                             data-subcategory-url="{% if thirdLevelCategory.externalLink %}{{ thirdLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: thirdLevelId }) }}{% endif %}"
+                                                             {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                             {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
+                                                            {{ thirdLevelName }}
+                                                            {% if 'Badge' in secondLevelName %}
+                                                                <span class="item-badge">Badge</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            {# Простая категория второго уровня без подкатегорий #}
+                                            {% set subcategoryName = secondLevelName|lower %}
+                                            <div class="subcategory-item"
+                                                 data-subcategory-id="{{ secondLevelId }}"
+                                                 data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
+                                                 {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                 {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
+                                                {{ secondLevelName }}
+                                                {% if 'Badge' in secondLevelName %}
+                                                    <span class="item-badge">Badge</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             {% endif %}
                         </div>
-                        
-                        {% if hasChildren %}
-                            <div class="subcategories" data-subcategories>
-                                {% for firstLevelItem in gameItem.children %}
-                                    {% set firstLevelCategory = firstLevelItem.category %}
-                                    {% set firstLevelName = firstLevelCategory.translated.name %}
-                                    {% set firstLevelId = firstLevelCategory.id %}
-                                    {% set hasSubChildren = firstLevelItem.children is defined and firstLevelItem.children|length > 0 %}
-                                    
-                                    {% if hasSubChildren %}
-                                        {# Category with subcategories #}
-                                        <div class="subcategory-group" data-subcategory-group>
-                                            <div class="subcategory-title" 
-                                                 data-subcategory-id="{{ firstLevelId }}"
-                                                 data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}">
-                                                <span>{{ firstLevelName }}</span>
-                                                <button class="subcategory-expand" data-subcategory-expand>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M6 9L12 15L18 9"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <div class="subcategory-items" data-subcategory-items>
-                                                {% for secondLevelItem in firstLevelItem.children %}
-                                                    {% set secondLevelCategory = secondLevelItem.category %}
-                                                    {% set secondLevelName = secondLevelCategory.translated.name %}
-                                                    {% set secondLevelId = secondLevelCategory.id %}
-                                                    {% set subcategoryName = secondLevelName|lower %}
-                                                    
-                                                    <div class="subcategory-subitem" 
-                                                         data-subcategory-id="{{ secondLevelId }}"
-                                                         data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
-                                                         {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
-                                                         {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
-                                                        {{ secondLevelName }}
-                                                        {% if 'Badge' in firstLevelName %}
-                                                            <span class="item-badge">Badge</span>
-                                                        {% endif %}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
+                    {% endif %}
+                {% endfor %}
+
+                {# Дополнительно проверяем категории второго уровня, которые могут быть отмечены напрямую #}
+                {% for treeItem in page.header.navigation.tree %}
+                    {% if treeItem.children is defined %}
+                        {% for secondLevelItem in treeItem.children %}
+                            {% set secondLevelCategory = secondLevelItem.category %}
+                            {% set secondLevelCustomFields = secondLevelCategory.translated.customFields %}
+
+                            {# Если категория второго уровня отмечена, но родительская нет #}
+                            {% if secondLevelCustomFields.mm_theme_sidebar_enabled and not treeItem.category.translated.customFields.mm_theme_sidebar_enabled %}
+                                {% set name = secondLevelCategory.translated.name %}
+                                {% set categoryId = secondLevelCategory.id %}
+
+                                {# Собираем дочерние категории третьего уровня #}
+                                {% set thirdLevelCategories = [] %}
+                                {% if secondLevelItem.children is defined %}
+                                    {% for thirdLevelItem in secondLevelItem.children %}
+                                        {% set thirdLevelCategory = thirdLevelItem.category %}
+                                        {% set thirdLevelCustomFields = thirdLevelCategory.translated.customFields %}
+
+                                        {% if thirdLevelCustomFields.mm_theme_sidebar_enabled %}
+                                            {% set thirdLevelCategories = thirdLevelCategories|merge([thirdLevelItem]) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% set hasChildren = thirdLevelCategories|length > 0 %}
+
+                                <div class="menu-category"
+                                     data-category-id="{{ categoryId }}"
+                                     {% if not hasChildren %}data-category-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                                     {% if hasChildren %}data-expandable="true"{% endif %}>
+
+                                    <div class="category-header">
+                                        <h3 class="category-title">{{ name }}</h3>
+
+                                        {% if hasChildren %}
+                                            <button class="expand-button" data-expand-button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                    <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                </svg>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if hasChildren %}
+                                        <div class="subcategories" data-subcategories style="display: none;">
+                                            {% for thirdLevelItem in thirdLevelCategories %}
+                                                {% set thirdLevelCategory = thirdLevelItem.category %}
+                                                {% set thirdLevelName = thirdLevelCategory.translated.name %}
+                                                {% set thirdLevelId = thirdLevelCategory.id %}
+                                                {% set subcategoryName = thirdLevelName|lower %}
+
+                                                <div class="subcategory-item"
+                                                     data-subcategory-id="{{ thirdLevelId }}"
+                                                     data-subcategory-url="{% if thirdLevelCategory.externalLink %}{{ thirdLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: thirdLevelId }) }}{% endif %}"
+                                                     {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                     {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
+                                                    {{ thirdLevelName }}
+                                                </div>
+                                            {% endfor %}
                                         </div>
-                                    {% else %}
-                                        {# Simple category without subcategories #}
-                                        {% set subcategoryName = firstLevelName|lower %}
-                                        <div class="subcategory-item" 
-                                             data-subcategory-id="{{ firstLevelId }}"
-                                             data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
-                                             {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
-                                             {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
-                                            {{ firstLevelName }}
-                                            {% if 'Badge' in firstLevelName %}
-                                                <span class="item-badge">Badge</span>
-                                            {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {# И наконец, категории третьего уровня, отмеченные напрямую #}
+                {% for treeItem in page.header.navigation.tree %}
+                    {% if treeItem.children is defined %}
+                        {% for secondLevelItem in treeItem.children %}
+                            {% if secondLevelItem.children is defined %}
+                                {% for thirdLevelItem in secondLevelItem.children %}
+                                    {% set thirdLevelCategory = thirdLevelItem.category %}
+                                    {% set thirdLevelCustomFields = thirdLevelCategory.translated.customFields %}
+
+                                    {# Если категория третьего уровня отмечена, но родительские нет #}
+                                    {% if thirdLevelCustomFields.mm_theme_sidebar_enabled and
+                                          not secondLevelItem.category.translated.customFields.mm_theme_sidebar_enabled and
+                                          not treeItem.category.translated.customFields.mm_theme_sidebar_enabled %}
+                                        {% set name = thirdLevelCategory.translated.name %}
+                                        {% set categoryId = thirdLevelCategory.id %}
+                                        {% set subcategoryName = name|lower %}
+
+                                        <div class="menu-category"
+                                             data-category-id="{{ categoryId }}"
+                                             data-category-url="{% if thirdLevelCategory.externalLink %}{{ thirdLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}">
+
+                                            <div class="category-header">
+                                                <h3 class="category-title">{{ name }}</h3>
+                                            </div>
                                         </div>
                                     {% endif %}
                                 {% endfor %}
-                            </div>
-                        {% endif %} 
-                    </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
-            {% endif %}
-        {% endif %}
-    </div>
 
-    <!-- Show All Button -->
-    <div class="menu-footer">
-        <button class="show-all-button" data-show-all-button>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9L12 15L18 9"/>
-            </svg>
-            Show All
-        </button>
+            {% else %}
+                <div style="color: white; padding: 20px;">
+                    <p>No navigation tree found.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Show All Button -->
+        <div class="menu-footer">
+            <button class="show-all-button" data-show-all-button style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9L12 15L18 9"/>
+                </svg>
+                Show All
+            </button>
+        </div>
     </div>
-</div>
+{% endif %}
+
 {% endblock %}

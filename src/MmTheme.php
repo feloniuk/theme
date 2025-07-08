@@ -314,7 +314,7 @@ class MmTheme extends Plugin implements ThemeInterface
             'global' => true,
             'config' => [
                 'label' => [
-                    'en-GB' => 'Category Background'
+                    'en-GB' => 'Sidebar'
                 ]
             ],
             'relations' => [
@@ -326,16 +326,29 @@ class MmTheme extends Plugin implements ThemeInterface
                 ],
             ],
             'customFields' => [
+                // [
+                //     'name' => 'mm_theme_category_bg_image',
+                //     'type' => CustomFieldTypes::TEXT,
+                //     'config' => [
+                //         'label' => [
+                //             'en-GB' => 'Background Image'
+                //         ],
+                //         'componentName' => 'sw-media-field',
+                //         'customFieldType' => 'media',
+                //         'customFieldPosition' => 0,
+                //     ]
+                // ],
                 [
-                    'name' => 'mm_theme_category_bg_image',
-                    'type' => CustomFieldTypes::TEXT,
+                    'name' => 'mm_theme_sidebar_enabled',
+                    'type' => CustomFieldTypes::BOOL,
                     'config' => [
                         'label' => [
-                            'en-GB' => 'Background Image'
+                            'en-GB' => 'Show in Sidebar'
                         ],
-                        'componentName' => 'sw-media-field',
-                        'customFieldType' => 'media',
-                        'customFieldPosition' => 0,
+                        'type' => 'checkbox',
+                        'customFieldType' => 'checkbox',
+                        'componentName' => 'sw-switch-field',
+                        'customFieldPosition' => 1,
                     ]
                 ],
             ]
@@ -469,51 +482,6 @@ class MmTheme extends Plugin implements ThemeInterface
                 ],
             ]
         ],
-        // [
-        //     'name' => 'custom_product_coins',
-        //     'global' => true,
-        //     'config' => [
-        //         'label' => [
-        //             'en-GB' => 'Product Coins'
-        //         ]
-        //     ],
-        //     'relations' => [
-        //         [
-        //             'entityName' => 'product'
-        //         ]
-        //     ],
-        //     'customFields' => [
-        //         [
-        //             'name' => 'custom_product_coins_override',
-        //             'type' => CustomFieldTypes::BOOL,
-        //             'config' => [
-        //                 'label' => [
-        //                     'en-GB' => 'Override Global Coins true'
-        //                 ],
-        //                 'type' => 'checkbox',
-        //                 'customFieldType' => 'checkbox',
-        //                 'componentName' => 'sw-switch-field',
-        //                 'customFieldPosition' => 0,
-        //             ]
-        //         ],
-        //         [
-        //             'name' => 'custom_product_coins_rate',
-        //             'type' => CustomFieldTypes::FLOAT,
-        //             'config' => [
-        //                 'label' => [
-        //                     'en-GB' => 'Coins Rate (amount of Coins per one euro)'
-        //                 ],
-        //                 'placeholder' => [
-        //                     'en-GB' => '100'
-        //                 ],
-        //                 'componentName' => 'sw-field',
-        //                 'customFieldType' => 'number',
-        //                 'customFieldPosition' => 1,
-        //                 'numberType' => 'float',
-        //             ]
-        //         ]
-        //     ]
-        // ],
         [
             'name' => 'custom_reviews',
             'global' => true,

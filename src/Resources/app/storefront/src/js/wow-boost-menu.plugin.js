@@ -31,6 +31,7 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     init() {
         this._loadSwiperAndInit();
+        this._initShowAllLogic();
     }
 
     async _loadSwiperAndInit() {
@@ -76,6 +77,85 @@ export default class WowBoostMenuPlugin extends Plugin {
                 }
             }
         });
+    }
+
+    _initShowAllLogic() {
+        // Определяем максимальную высоту для видимых элементов (примерно 80% от высоты экрана)
+        this.maxVisibleHeight = window.innerHeight * 0.8;
+        this.isShowAllActive = false;
+
+        // Скрываем элементы, которые не помещаются на экран
+        this._limitVisibleItems();
+
+        // Обновляем состояние кнопки Show All
+        this._updateShowAllButton();
+    }
+
+    _limitVisibleItems() {
+        if (this.isShowAllActive) return;
+
+        const menuContent = this.el.querySelector('.wow-menu-content');
+        if (!menuContent) return;
+
+        let currentHeight = 0;
+        const categories = this.el.querySelectorAll('.menu-category');
+
+        categories.forEach((category, index) => {
+            const categoryHeight = category.offsetHeight;
+
+            if (currentHeight + categoryHeight > this.maxVisibleHeight && index > 2) {
+                // Скрываем категории, которые не помещаются (но оставляем минимум 3)
+                category.style.display = 'none';
+                category.setAttribute('data-hidden-by-show-all', 'true');
+            } else {
+                currentHeight += categoryHeight;
+                category.style.display = 'block';
+                category.removeAttribute('data-hidden-by-show-all');
+            }
+        });
+    }
+
+    _showAllItems() {
+        const hiddenCategories = this.el.querySelectorAll('[data-hidden-by-show-all]');
+        hiddenCategories.forEach(category => {
+            category.style.display = 'block';
+            category.removeAttribute('data-hidden-by-show-all');
+        });
+        this.isShowAllActive = true;
+    }
+
+    _hideExtraItems() {
+        this.isShowAllActive = false;
+        this._limitVisibleItems();
+
+        // Закрываем все открытые подкатегории
+        this.collapseAllSubcategories();
+    }
+
+    _updateShowAllButton() {
+        const showAllButton = this.el.querySelector(this.options.showAllButtonSelector);
+        if (!showAllButton) return;
+
+        const hasHiddenItems = this.el.querySelectorAll('[data-hidden-by-show-all]').length > 0;
+
+        if (this.isShowAllActive) {
+            showAllButton.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 15L12 9L6 15"/>
+                </svg>
+                Show Less
+            `;
+        } else {
+            showAllButton.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9L12 15L18 9"/>
+                </svg>
+                Show All
+            `;
+        }
+
+        // Показываем кнопку только если есть скрытые элементы или активен Show All режим
+        showAllButton.style.display = (hasHiddenItems || this.isShowAllActive) ? 'flex' : 'none';
     }
 
     _registerEvents() {
@@ -132,11 +212,20 @@ export default class WowBoostMenuPlugin extends Plugin {
         if (showAllButton) {
             showAllButton.addEventListener('click', this._onShowAllButtonClick.bind(this));
         }
+
+        // Обработка изменения размера окна
+        window.addEventListener('resize', () => {
+            this.maxVisibleHeight = window.innerHeight * 0.8;
+            if (!this.isShowAllActive) {
+                this._limitVisibleItems();
+                this._updateShowAllButton();
+            }
+        });
     }
 
     _onCategoryClick(event) {
         // Проверяем, что клик не был по кнопке expand/add
-        if (event.target.closest('[data-expand-button]') || 
+        if (event.target.closest('[data-expand-button]') ||
             event.target.closest('[data-add-button]')) {
             return;
         }
@@ -154,24 +243,24 @@ export default class WowBoostMenuPlugin extends Plugin {
         if (isExpandable) {
             const expandButton = category.querySelector(this.options.expandButtonSelector);
             const subcategories = category.querySelector(this.options.subcategoriesSelector);
-            
+
             if (expandButton && subcategories) {
                 const isExpanded = subcategories.style.display === 'block';
-                
+
                 if (isExpanded) {
                     this._collapseSubcategories(subcategories, expandButton);
                 } else {
                     this._expandSubcategories(subcategories, expandButton);
                 }
             }
-            
+
             // Публикуем событие без перехода
             this.$emitter.publish('categoryExpanded', {
                 categoryId,
                 categoryName,
                 categoryElement: category
             });
-            
+
             return;
         }
 
@@ -191,7 +280,7 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     _onSubcategoryClick(event) {
         event.stopPropagation();
-        
+
         const subcategory = event.currentTarget;
         const subcategoryId = subcategory.dataset.subcategoryId;
         const subcategoryUrl = subcategory.dataset.subcategoryUrl;
@@ -246,15 +335,15 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     _onExpandButtonClick(event) {
         event.stopPropagation();
-        
+
         const button = event.currentTarget;
         const category = button.closest('.menu-category');
         const subcategories = category.querySelector(this.options.subcategoriesSelector);
-        
+
         if (!subcategories) return;
 
         const isExpanded = subcategories.style.display === 'block';
-        
+
         if (isExpanded) {
             this._collapseSubcategories(subcategories, button);
         } else {
@@ -264,15 +353,15 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     _onSubcategoryExpandClick(event) {
         event.stopPropagation();
-        
+
         const button = event.currentTarget;
         const subcategoryGroup = button.closest('.subcategory-group');
         const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
-        
+
         if (!subcategoryItems) return;
 
         const isExpanded = subcategoryItems.style.display === 'block';
-        
+
         if (isExpanded) {
             this._collapseSubcategoryItems(subcategoryItems, button);
         } else {
@@ -281,18 +370,28 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _expandSubcategories(subcategories, button) {
+        const category = button.closest('.menu-category');
+
+        // Добавляем полоску слева для выделения
+        category.classList.add('expanded');
+
         subcategories.style.display = 'block';
         subcategories.style.opacity = '0';
         subcategories.style.transform = 'translateY(-10px)';
-        
+
+        // Обновляем иконку на "минус"
+        button.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        `;
+
         requestAnimationFrame(() => {
             subcategories.style.transition = 'all 0.3s ease';
             subcategories.style.opacity = '1';
             subcategories.style.transform = 'translateY(0)';
         });
-        
-        button.style.transform = 'rotate(180deg)';
-        
+
         setTimeout(() => {
             if (this.swiper) {
                 this.swiper.update();
@@ -303,35 +402,56 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _collapseSubcategories(subcategories, button) {
+        const category = button.closest('.menu-category');
+
+        // Убираем полоску слева
+        category.classList.remove('expanded');
+
         subcategories.style.transition = 'all 0.3s ease';
         subcategories.style.opacity = '0';
         subcategories.style.transform = 'translateY(-10px)';
-        
+
+        // Обновляем иконку на "плюс"
+        button.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        `;
+
         setTimeout(() => {
             subcategories.style.display = 'none';
             if (this.swiper) {
                 this.swiper.update();
             }
         }, 300);
-        
-        button.style.transform = 'rotate(0deg)';
 
         this.$emitter.publish('subcategoriesCollapsed', { subcategories, button });
     }
 
     _expandSubcategoryItems(subcategoryItems, button) {
+        const subcategoryGroup = button.closest('.subcategory-group');
+
+        // Добавляем класс для выделения подгруппы
+        subcategoryGroup.classList.add('expanded');
+
         subcategoryItems.style.display = 'block';
         subcategoryItems.style.opacity = '0';
         subcategoryItems.style.transform = 'translateY(-8px)';
-        
+
+        // Обновляем иконку стрелки
+        button.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15L12 9L6 15"/>
+            </svg>
+        `;
+
         requestAnimationFrame(() => {
             subcategoryItems.style.transition = 'all 0.3s ease';
             subcategoryItems.style.opacity = '1';
             subcategoryItems.style.transform = 'translateY(0)';
         });
-        
-        button.style.transform = 'rotate(180deg)';
-        
+
         setTimeout(() => {
             if (this.swiper) {
                 this.swiper.update();
@@ -342,25 +462,35 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _collapseSubcategoryItems(subcategoryItems, button) {
+        const subcategoryGroup = button.closest('.subcategory-group');
+
+        // Убираем класс выделения подгруппы
+        subcategoryGroup.classList.remove('expanded');
+
         subcategoryItems.style.transition = 'all 0.3s ease';
         subcategoryItems.style.opacity = '0';
         subcategoryItems.style.transform = 'translateY(-8px)';
-        
+
+        // Обновляем иконку стрелки
+        button.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9L12 15L18 9"/>
+            </svg>
+        `;
+
         setTimeout(() => {
             subcategoryItems.style.display = 'none';
             if (this.swiper) {
                 this.swiper.update();
             }
         }, 300);
-        
-        button.style.transform = 'rotate(0deg)';
 
         this.$emitter.publish('subcategoryItemsCollapsed', { subcategoryItems, button });
     }
 
     _onAddButtonClick(event) {
         event.stopPropagation();
-        
+
         const button = event.currentTarget;
         const category = button.closest('.menu-category');
         const categoryId = category.dataset.categoryId;
@@ -382,15 +512,26 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _onShowAllButtonClick(event) {
-        const button = event.currentTarget;
-        const icon = button.querySelector('svg');
-        
-        if (icon) {
-            const currentRotation = icon.style.transform;
-            icon.style.transform = currentRotation === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
+        if (this.isShowAllActive) {
+            this._hideExtraItems();
+        } else {
+            this._showAllItems();
         }
 
-        this.$emitter.publish('showAllButtonClicked', { button });
+        this._updateShowAllButton();
+
+        // Прокручиваем к началу меню при сворачивании
+        if (!this.isShowAllActive) {
+            const menuContent = this.el.querySelector('.wow-menu-content');
+            if (menuContent) {
+                menuContent.scrollTop = 0;
+            }
+        }
+
+        this.$emitter.publish('showAllButtonClicked', {
+            button: event.currentTarget,
+            isShowAllActive: this.isShowAllActive
+        });
     }
 
     _addClickFeedback(element) {

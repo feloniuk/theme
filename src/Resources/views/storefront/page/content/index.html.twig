@@ -17,10 +17,14 @@
         {% endif %}
     {% endif %}
 
-    {% if activeRoute == 'frontend.navigation.page' %}
+    {% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
+
+    {% if activeRoute != 'frontend.home.page' and sidebarEnabled %}
         <div class="sidebar-wrapper">
             <div class="sidebar">
-                {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
+                <div class="sidebar-inner">
+                    {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
+                </div>
             </div>
 
             <div class="with-sidebar">{{ parent() }}</div>

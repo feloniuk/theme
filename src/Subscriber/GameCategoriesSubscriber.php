@@ -2,7 +2,7 @@
 
 namespace MmTheme\Subscriber;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Storefront\Page\Page;
@@ -12,9 +12,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class GameCategoriesSubscriber implements EventSubscriberInterface
 {
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
 
-    public function __construct(EntityRepositoryInterface $categoryRepository)
+    public function __construct(EntityRepository $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
     }
@@ -30,21 +30,21 @@ class GameCategoriesSubscriber implements EventSubscriberInterface
     {
         $page = $event->getPage();
         $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
-        
+
         // Получаем ID корневой категории игр из кастомных полей
         $rootGameCategoryId = $salesChannel->getCustomFields()['mm_root_games_category'] ?? '30131c331ce147b1934323b3abd0b448';
-        
+
         if (!$rootGameCategoryId) {
             return;
         }
-        
+
         // Получаем подкатегории
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('parentId', $rootGameCategoryId));
         $criteria->addAssociation('media');
-        
+
         $categories = $this->getCategoriesByName("Choose Game");
-        
+
         $formattedCategories = [];
         foreach ($categories as $category) {
             $formattedCategories[] = [
@@ -52,10 +52,10 @@ class GameCategoriesSubscriber implements EventSubscriberInterface
                 'name' => $category->getTranslated()['name'],
                 'active' => $category->getActive(),
                 'mediaUrl' => $category->getMedia() ? $category->getMedia()->getUrl() : null,
-                'url' => '/category/' . $category->getId(), 
+                'url' => '/category/' . $category->getId(),
             ];
         }
-        
+
         // Добавляем данные категорий в страницу
         $page->addExtension('gameCategories', $formattedCategories);
     }

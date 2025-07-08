@@ -168,6 +168,20 @@
 				"scss": false,
 				"fullWidth": false
 			},
+			"mm-sidebar-enabled": {
+				"label": {
+					"en-GB": "Enable Sidebar Categories"
+				},
+				"helpText": {
+					"en-GB": "Master switch to enable/disable sidebar categories display on all pages"
+				},
+				"type": "bool",
+				"editable": true,
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
+			},
 			"mm-ga-trackers": {
 				"label": {
 					"en-GB": "Google Trackers"
