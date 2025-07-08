@@ -14,38 +14,106 @@
 
     <!-- Menu Content with Scroll -->
     <div class="wow-menu-content">
-        {% for category in page.extensions.sidebarCategories %}
-            <div class="menu-category" 
-                    data-category-id="{{ category.id }}"
-                    data-category-url="{{ category.url }}"
-                    data-expandable="{{ category.hasChildren ? 'true' : 'false' }}">
-                
-                <div class="category-header">
-                    <h3 class="category-title">{{ category.name }}</h3>
-                    
-                    {% if category.hasChildren %}
-                        <button class="expand-button" data-expand-button>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-                                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    {% endif %}
-                </div>
-
-                {% if category.hasChildren %}
-                    <div class="subcategories" data-subcategories style="display: none;">
-                        {% for child in category.children %}
-                            <div class="subcategory-item" 
-                                    data-subcategory-id="{{ child.id }}"
-                                    data-subcategory-url="{{ child.url }}">
-                                {{ child.name }}
-                            </div>
-                        {% endfor %}
-                    </div>
+        {% if page.header.navigation.tree is defined %}
+            {% set chooseGameCategory = null %}
+            
+            {# Найти категорию "Choose Game" #}
+            {% for treeItem in page.header.navigation.tree %}
+                {% if treeItem.category.translated.name == targetCategoryName %}
+                    {% set chooseGameCategory = treeItem %}
+                    {% break %}
                 {% endif %}
-            </div>
-        {% endfor %}
+            {% endfor %}
+            
+            {% if chooseGameCategory and chooseGameCategory.children is defined %}
+                {# Выводим только содержимое категории "Choose Game" #}
+                {% for gameItem in chooseGameCategory.children %}
+                    {% set category = gameItem.category %}
+                    {% set name = category.translated.name %}
+                    {% set categoryId = category.id %}
+                    {% set hasChildren = gameItem.children is defined and gameItem.children|length > 0 %}
+                    
+                    <div class="menu-category" 
+                         data-category-id="{{ categoryId }}"
+                         {% if not hasChildren %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                         {% if hasChildren %}data-expandable="true"{% endif %}>
+                        
+                        <div class="category-header">
+                            <span class="category-title">{{ name }}</span>
+                            
+                            {% if hasChildren %}
+                                <button class="expand-button" data-expand-button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% if hasChildren %}
+                            <div class="subcategories" data-subcategories>
+                                {% for firstLevelItem in gameItem.children %}
+                                    {% set firstLevelCategory = firstLevelItem.category %}
+                                    {% set firstLevelName = firstLevelCategory.translated.name %}
+                                    {% set firstLevelId = firstLevelCategory.id %}
+                                    {% set hasSubChildren = firstLevelItem.children is defined and firstLevelItem.children|length > 0 %}
+                                    
+                                    {% if hasSubChildren %}
+                                        {# Category with subcategories #}
+                                        <div class="subcategory-group" data-subcategory-group>
+                                            <div class="subcategory-title" 
+                                                 data-subcategory-id="{{ firstLevelId }}"
+                                                 data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}">
+                                                <span>{{ firstLevelName }}</span>
+                                                <button class="subcategory-expand" data-subcategory-expand>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                        <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div class="subcategory-items" data-subcategory-items>
+                                                {% for secondLevelItem in firstLevelItem.children %}
+                                                    {% set secondLevelCategory = secondLevelItem.category %}
+                                                    {% set secondLevelName = secondLevelCategory.translated.name %}
+                                                    {% set secondLevelId = secondLevelCategory.id %}
+                                                    {% set subcategoryName = secondLevelName|lower %}
+                                                    
+                                                    <div class="subcategory-subitem" 
+                                                         data-subcategory-id="{{ secondLevelId }}"
+                                                         data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
+                                                         {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                         {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
+                                                        {{ secondLevelName }}
+                                                        {% if 'Badge' in firstLevelName %}
+                                                            <span class="item-badge">Badge</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        {# Simple category without subcategories #}
+                                        {% set subcategoryName = firstLevelName|lower %}
+                                        <div class="subcategory-item" 
+                                             data-subcategory-id="{{ firstLevelId }}"
+                                             data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
+                                             {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                             {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}>
+                                            {{ firstLevelName }}
+                                            {% if 'Badge' in firstLevelName %}
+                                                <span class="item-badge">Badge</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %} 
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
     </div>
 
     <!-- Show All Button -->
