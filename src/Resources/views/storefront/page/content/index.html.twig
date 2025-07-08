@@ -17,7 +17,7 @@
         {% endif %}
     {% endif %}
 
-    {% if activeRoute == 'frontend.navigation.page' %}
+    {% if activeRoute == 'frontend.navigation.page' and page.extensions.sidebarEnabled and page.extensions.sidebarCategories %}
         <div class="sidebar-wrapper">
             <div class="sidebar">
                 {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
