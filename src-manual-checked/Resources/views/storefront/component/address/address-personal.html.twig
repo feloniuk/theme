@@ -1,0 +1,64 @@
+{% sw_extends '@Storefront/storefront/component/address/address-personal.html.twig' %}
+
+{% block component_address_personal_fields_salutation_title %}
+  {# {% for id, salutation in page.salutations|filter(salutation => salutation.salutationKey == 'not_specified') %}
+    <input
+      type="hidden"
+      name="{% if prefix %}{{ prefix }}[salutationId]{% else %}salutationId{% endif %}"
+      value="{{ id }}">
+  {% endfor %} #}
+{% endblock %}
+
+{% block component_address_personal_fields_name %}
+    <div class="{{ formRowClass }}">
+        {% block component_address_personal_fields_first_name %}
+            <div class="form-group col-sm-12">
+                {% if formViolations.getViolations("/firstName") is not empty %}
+                    {% set violationPath = "/firstName" %}
+                {% else %}
+                    {% set requiredMessage = "error.VIOLATION::IS_BLANK_ERROR"|trans({ '%field%': "account.personalFirstNameLabel"|trans|sw_sanitize }) %}
+                {% endif %}
+
+                {% block component_address_personal_fields_first_name_label %}
+                    <label class="form-label"
+                            for="{{ idPrefix ~ prefix }}personalFirstName">
+                        {{ "account.personalFirstNameLabel"|trans|sw_sanitize }}{{ "general.required"|trans|sw_sanitize }}
+                    </label>
+                {% endblock %}
+
+                {% block component_address_personal_fields_first_name_input %}
+                    <input type="text"
+                            class="form-control{% if violationPath is not empty %} is-invalid{% endif %}"
+                            autocomplete="section-personal given-name"
+                            id="{{ idPrefix ~ prefix }}personalFirstName"
+                            placeholder="{{ "account.personalFirstNamePlaceholder"|trans|striptags }}"
+                            name="{% if prefix %}{{ prefix }}[firstName]{% else %}firstName{% endif %}"
+                            value="{{ data.get('firstName') }}"
+                            data-form-validation-required
+                            {% if requiredMessage is defined %}data-form-validation-required-message="{{ requiredMessage }}"{% endif %}
+                            required="required">
+                {% endblock %}
+
+                {% block component_address_personal_fields_first_name_input_error %}
+                    {% if violationPath %}
+                        {% sw_include '@Storefront/storefront/utilities/form-violation.html.twig' %}
+                    {% endif %}
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block component_address_personal_fields_last_name %}
+            <div class="d-none">
+                {% block component_address_personal_fields_last_name_input %}
+                    <input type="hidden"
+                            class="form-control{% if violationPath %} is-invalid{% endif %}"
+                            autocomplete="section-personal family-name"
+                            id="{{ idPrefix ~ prefix }}personalLastName"
+                            name="{% if prefix %}{{ prefix }}[lastName]{% else %}lastName{% endif %}"
+                            value="{{ data.get('lastName') }}"
+                            required="required">
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+.account-content {
+	@extend .row;
+
+	.account-content-aside {
+		@extend .col-lg-3;
+		@extend .col-xl-3;
+	}
+
+	.account-content-main {
+		@extend .col-lg-9;
+		@extend .col-xl-9;
+
+		margin-left: 0;
+	}
+}
+
+.account-welcome {
+	padding-top: 0;
+}

@@ -1,0 +1,15 @@
+.badge {
+	background-color: var(--primary);
+	line-height: unset;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+a.badge {
+	&:hover {
+		color: $color-theme-200;
+		text-decoration: none;
+	}
+}
