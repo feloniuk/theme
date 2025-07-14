@@ -1,0 +1,16 @@
+{% set url = "mm-theme.blog.blogLink"|trans|sw_sanitize %}
+
+{% if(element.data.page <= 0 and element.data.total <= element.data.numberOfPosts) %}
+{% else %}
+    {% if(element.data.page > 0) %}
+        <a href="{{ url }}?blogpage={{ element.data.page - 1 }}">{{ "netzp.blog.msg.previous"|trans }}</a>
+    {% else %}
+        {{ "netzp.blog.msg.previous"|trans }}
+    {% endif %}
+    |
+    {% if(element.data.total > element.data.numberOfPosts) %}
+        <a href="{{ url }}?blogpage={{ element.data.page + 1 }}">{{ "netzp.blog.msg.next"|trans }}</a>
+    {% else %}
+        {{ "netzp.blog.msg.next"|trans }}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,33 @@
+.form-label {
+	margin-bottom: 3px;
+}
+
+.form-group {
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.form-control {
+	/* stripe plugin fix */
+	height: unset;
+	min-height: calc(1.5em + 1.125rem + 2px);
+
+	/* Workaround for missing placeholder color in chrome */
+	/* stylelint-disable-next-line selector-no-vendor-prefix */
+	&::-webkit-input-placeholder {
+		color: $input-placeholder-color;
+	}
+}
+
+.form-check-input {
+	margin-top: 0.125rem;
+
+	&:checked,
+	&:indeterminate {
+		background-color: transparent;
+	}
+}
+
+.form-check-input.is-invalid:checked {
+	background-color: transparent;
+}

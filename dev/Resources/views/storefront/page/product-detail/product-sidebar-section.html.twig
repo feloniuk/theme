@@ -1,19 +1,26 @@
 {% block wow_boost_menu %}
 
-{# Получаем данные из extensions #}
-{% set sidebarCategories = page.getExtension('sidebarCategories') %}
-{% set contextCategory = page.getExtension('contextCategory') %}
-{% set currentCategoryId = page.getExtension('currentCategoryId') %}
-{% set sidebarEnabled = page.getExtension('sidebarEnabled') %}
+{# DEBUG: Выводим что получаем #}
+<div style="background: red; color: white; padding: 10px; margin: 10px;">
+    <h3>DEBUG SIDEBAR:</h3>
+    <p>sidebarEnabled: {{ sidebarEnabled ? 'YES' : 'NO' }}</p>
+    <p>sidebarCategories count: {{ sidebarCategories ? sidebarCategories|length : 'NULL' }}</p>
+    <p>contextCategory: {{ contextCategory ? 'EXISTS' : 'NULL' }}</p>
+    <p>currentCategoryId: {{ currentCategoryId ? currentCategoryId : 'NULL' }}</p>
+    
+    {% if sidebarCategories %}
+        <p>First category: {{ sidebarCategories[0].name ?? 'NO NAME' }}</p>
+    {% endif %}
+</div>
 
-{% if sidebarEnabled and sidebarEnabled.enabled %}
+{% if sidebarEnabled %}
 <div class="wow-boost-menu" data-wow-boost-menu 
-     {% if currentCategoryId and currentCategoryId.id %}data-current-category="{{ currentCategoryId.id }}"{% endif %}
-     {% if contextCategory and contextCategory.id %}data-context-category="{{ contextCategory.id }}"{% endif %}>
+     {% if currentCategoryId %}data-current-category="{{ currentCategoryId }}"{% endif %}
+     {% if contextCategory %}data-context-category="{{ contextCategory.id }}"{% endif %}>
 
     <!-- Menu Content with Scroll -->
     <div class="wow-menu-content">
-        {% if contextCategory and contextCategory.id %}
+        {% if contextCategory %}
             {# Отображаем контекстную категорию (игру) когда мы внутри продукта или подкатегории #}
             {% set category = contextCategory %}
             {% set name = category.name %}
@@ -25,7 +32,7 @@
                  data-category-id="{{ categoryId }}"
                  {% if not hasChildren %}data-category-url="{{ category.url }}"{% endif %}
                  {% if hasChildren %}data-expandable="true"{% endif %}
-                 {% if categoryId == currentCategoryId.id %}data-current="true"{% endif %}>
+                 {% if categoryId == currentCategoryId %}data-current="true"{% endif %}>
                 
                 <div class="category-header">
                     {% if category.iconId is defined %}
@@ -40,7 +47,7 @@
                     
                     <span class="category-title{% if customFields.mm_theme_sidebar_bold %} font-bold{% endif %}">
                         {{ name }}
-                        {% if categoryId == currentCategoryId.id %}
+                        {% if categoryId == currentCategoryId %}
                             <span class="current-indicator">•</span>
                         {% endif %}
                     </span>
@@ -64,15 +71,15 @@
                             
                             {% if hasSubChildren %}
                                 {# Category with subcategories #}
-                                <div class="subcategory-group{% if firstLevelId == currentCategoryId.id %} active-parent{% endif %}" data-subcategory-group>
+                                <div class="subcategory-group{% if firstLevelId == currentCategoryId %} active-parent{% endif %}" data-subcategory-group>
                                     <div class="subcategory-title" 
                                          data-subcategory-id="{{ firstLevelId }}"
                                          data-subcategory-url="{{ firstLevelItem.url }}"
                                          data-expandable="true"
-                                         {% if firstLevelId == currentCategoryId.id %}data-current="true"{% endif %}>
+                                         {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
                                         <span class="{% if firstLevelCustomFields.mm_theme_sidebar_bold %}font-bold{% endif %}">
                                             {{ firstLevelName }}
-                                            {% if firstLevelId == currentCategoryId.id %}
+                                            {% if firstLevelId == currentCategoryId %}
                                                 <span class="current-indicator">•</span>
                                             {% endif %}
                                         </span>
@@ -81,15 +88,15 @@
                                         {% set shouldExpand = false %}
                                         {% if firstLevelItem.children %}
                                             {% for secondLevelItem in firstLevelItem.children %}
-                                                {% if secondLevelItem.id == currentCategoryId.id %}
+                                                {% if secondLevelItem.id == currentCategoryId %}
                                                     {% set shouldExpand = true %}
                                                     {% break %}
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                         
-                                        <button class="subcategory-expand{% if shouldExpand or firstLevelId == currentCategoryId.id %} expanded{% endif %}" data-subcategory-expand>
-                                            {% if shouldExpand or firstLevelId == currentCategoryId.id %}
+                                        <button class="subcategory-expand{% if shouldExpand or firstLevelId == currentCategoryId %} expanded{% endif %}" data-subcategory-expand>
+                                            {% if shouldExpand or firstLevelId == currentCategoryId %}
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                     <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                                                 </svg>
@@ -102,7 +109,7 @@
                                         </button>
                                     </div>
                                     <div class="subcategory-items" data-subcategory-items 
-                                         {% if shouldExpand or firstLevelId == currentCategoryId.id %}style="display: block;"{% endif %}>
+                                         {% if shouldExpand or firstLevelId == currentCategoryId %}style="display: block;"{% endif %}>
                                         {% if firstLevelItem.children %}
                                             {% for secondLevelItem in firstLevelItem.children %}
                                                 {% set secondLevelId = secondLevelItem.id %}
@@ -115,10 +122,10 @@
                                                      data-subcategory-url="{{ secondLevelItem.url }}"
                                                      {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                                      {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
-                                                     {% if secondLevelId == currentCategoryId.id %}data-current="true"{% endif %}>
+                                                     {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
                                                     <span class="{% if secondLevelCustomFields.mm_theme_sidebar_bold %}font-bold{% endif %}">
                                                         {{ secondLevelName }}
-                                                        {% if secondLevelId == currentCategoryId.id %}
+                                                        {% if secondLevelId == currentCategoryId %}
                                                             <span class="current-indicator">•</span>
                                                         {% endif %}
                                                         {% if 'Badge' in secondLevelName %}
@@ -133,15 +140,15 @@
                             {% else %}
                                 {# Simple category without subcategories #}
                                 {% set subcategoryName = firstLevelName|lower %}
-                                <div class="subcategory-item{% if firstLevelId == currentCategoryId.id %} active-current{% endif %}" 
+                                <div class="subcategory-item{% if firstLevelId == currentCategoryId %} active-current{% endif %}" 
                                      data-subcategory-id="{{ firstLevelId }}"
                                      data-subcategory-url="{{ firstLevelItem.url }}"
                                      {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                      {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
-                                     {% if firstLevelId == currentCategoryId.id %}data-current="true"{% endif %}>
+                                     {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
                                     <span class="{% if firstLevelCustomFields.mm_theme_sidebar_bold %}font-bold{% endif %}">
                                         {{ firstLevelName }}
-                                        {% if firstLevelId == currentCategoryId.id %}
+                                        {% if firstLevelId == currentCategoryId %}
                                             <span class="current-indicator">•</span>
                                         {% endif %}
                                         {% if 'Badge' in firstLevelName %}
@@ -163,7 +170,7 @@
         {# Отображаем все остальные игровые категории #}
         {% if sidebarCategories %}
             {% for gameItem in sidebarCategories %}
-                {% if not contextCategory or not contextCategory.id or gameItem.id != contextCategory.id %}
+                {% if not contextCategory or gameItem.id != contextCategory.id %}
                     {% set category = gameItem %}
                     {% set name = category.name %}
                     {% set categoryId = category.id %}
@@ -174,7 +181,7 @@
                          data-category-id="{{ categoryId }}"
                          {% if not hasChildren %}data-category-url="{{ category.url }}"{% endif %}
                          {% if hasChildren %}data-expandable="true"{% endif %}
-                         {% if categoryId == currentCategoryId.id %}data-current="true"{% endif %}>
+                         {% if categoryId == currentCategoryId %}data-current="true"{% endif %}>
                         
                         <div class="category-header">
                             {% if category.iconId is defined %}
@@ -189,7 +196,7 @@
                             
                             <span class="category-title{% if customFields.mm_theme_sidebar_bold %} font-bold{% endif %}">
                                 {{ name }}
-                                {% if categoryId == currentCategoryId.id %}
+                                {% if categoryId == currentCategoryId %}
                                     <span class="current-indicator">•</span>
                                 {% endif %}
                             </span>
@@ -276,6 +283,8 @@
                     </div>
                 {% endif %}
             {% endfor %}
+        {% else %}
+            <div style="color: red;">NO SIDEBAR CATEGORIES FOUND!</div>
         {% endif %}
     </div>
 
@@ -289,6 +298,10 @@
         </button>
     </div>
 </div>
+{% else %}
+    <div style="background: orange; color: black; padding: 10px;">
+        SIDEBAR DISABLED OR NOT ENABLED
+    </div>
 {% endif %}
 
 {% endblock %}

@@ -1,0 +1,6 @@
+{% sw_extends '@Storefront/storefront/layout/header/logo.html.twig' %}
+
+{% block layout_header_logo_image %}
+    <img src="{{ asset('/assets/logo/mmonster_logo.svg', 'theme') }}" class="img-fluid logo d-none d-sm-block" alt="Mmonster. Your One-Stop Shop for Gaming Boosts">
+    <img src="{{ asset('/assets/logo/mmonster_letter.svg', 'theme') }}" class="img-fluid logo d-block d-sm-none" alt="Mmonster. Your One-Stop Shop for Gaming Boosts">
+{% endblock %}

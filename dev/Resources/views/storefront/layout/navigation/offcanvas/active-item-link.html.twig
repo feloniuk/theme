@@ -1,0 +1,15 @@
+{% block layout_navigation_offcanvas_navigation_category_headline %}
+    {% set cfg = getObjectFromJson(item.customFields.custom_category_megamenu|trim)%}
+
+    <a class="nav-item nav-link navigation-offcanvas-headline"
+       href="{{ seoUrl('frontend.navigation.page', { 'navigationId': item.id}) }}"
+       itemprop="url">
+        {% block layout_navigation_offcanvas_navigation_category_headline_text %}
+            <div class="navigation-offcanvas-link-inner">
+                <meta itemprop="name" content="{{ name }}">
+                {% if cfg.icon %}<svg><use xlink:href="{{cfg.icon}}"></use></svg>{% endif %}
+                <span>{{ item.translated.name }}</span>
+            </div>
+        {% endblock %}
+    </a>
+{% endblock %}
