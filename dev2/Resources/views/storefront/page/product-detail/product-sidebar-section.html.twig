@@ -1,15 +1,99 @@
 {% block wow_boost_menu %}
 
-{# DEBUG: Выводим что получаем #}
-<div style="background: red; color: white; padding: 10px; margin: 10px;">
-    <h3>DEBUG SIDEBAR:</h3>
-    <p>sidebarEnabled: {{ sidebarEnabled ? 'YES' : 'NO' }}</p>
-    <p>sidebarCategories count: {{ sidebarCategories ? sidebarCategories|length : 'NULL' }}</p>
-    <p>contextCategory: {{ contextCategory ? 'EXISTS' : 'NULL' }}</p>
-    <p>currentCategoryId: {{ currentCategoryId ? currentCategoryId : 'NULL' }}</p>
+{# DETAILED DEBUG INFORMATION #}
+<div style="background: red; color: white; padding: 10px; margin: 10px; font-size: 12px;">
+    <h3>🔍 DETAILED DEBUG SIDEBAR:</h3>
     
-    {% if sidebarCategories %}
-        <p>First category: {{ sidebarCategories[0].name ?? 'NO NAME' }}</p>
+    <div style="background: rgba(0,0,0,0.3); padding: 10px; margin: 5px 0;">
+        <h4>Basic Info:</h4>
+        <p>sidebarEnabled: {{ sidebarEnabled ? 'YES' : 'NO' }}</p>
+        <p>sidebarCategories: {{ sidebarCategories is null ? 'NULL' : (sidebarCategories is empty ? 'EMPTY ARRAY' : sidebarCategories|length) }}</p>
+        <p>contextCategory: {{ contextCategory ? 'EXISTS' : 'NULL' }}</p>
+        <p>currentCategoryId: {{ currentCategoryId ? currentCategoryId : 'NULL' }}</p>
+        <p>Active Route: {{ activeRoute }}</p>
+        <p>Controller: {{ controllerName|default('NONE') }}</p>
+    </div>
+
+    {% if debugInfo is defined %}
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; margin: 5px 0;">
+            <h4>Current Category:</h4>
+            {% if debugInfo.currentCategory %}
+                <p>Name: {{ debugInfo.currentCategory.name }}</p>
+                <p>ID: {{ debugInfo.currentCategory.id }}</p>
+                <p>Level: {{ debugInfo.currentCategory.level }}</p>
+                <p>Parent ID: {{ debugInfo.currentCategory.parentId ?? 'ROOT' }}</p>
+                {% if debugInfo.currentCategory.breadcrumb %}
+                    <p>Breadcrumb: {{ debugInfo.currentCategory.breadcrumb|join(' > ') }}</p>
+                {% endif %}
+            {% else %}
+                <p style="color: yellow;">NO CURRENT CATEGORY</p>
+            {% endif %}
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; margin: 5px 0;">
+            <h4>🔍 Search Results:</h4>
+            {% for name, result in debugInfo.searchResults %}
+                <div style="margin: 5px 0; padding: 5px; background: rgba(255,255,255,0.1);">
+                    <strong>"{{ name }}":</strong>
+                    {% if result.found %}
+                        <span style="color: #90EE90;">✅ FOUND</span>
+                        <br>• ID: {{ result.id }}
+                        <br>• Level: {{ result.level }}
+                        <br>• Has Children: {{ result.hasChildren ? 'YES' : 'NO' }}
+                    {% else %}
+                        <span style="color: #FFB6C1;">❌ NOT FOUND</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; margin: 5px 0;">
+            <h4>⚙️ Custom Field:</h4>
+            <p>mm_root_games_category: 
+                {% if debugInfo.customField == 'NOT SET' %}
+                    <span style="color: #FFB6C1;">NOT SET</span>
+                {% else %}
+                    <span style="color: #90EE90;">{{ debugInfo.customField }}</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; margin: 5px 0;">
+            <h4>📋 All Top Level Categories (Level 2):</h4>
+            {% if debugInfo.allTopLevelCategories is empty %}
+                <p style="color: #FFB6C1;">NO CATEGORIES FOUND AT LEVEL 2</p>
+            {% else %}
+                {% for category in debugInfo.allTopLevelCategories %}
+                    <div style="margin: 3px 0; padding: 3px; background: rgba(255,255,255,0.05);">
+                        • {{ category.name }} 
+                        <small>(ID: {{ category.id }}, Level: {{ category.level }}, Children: {{ category.hasChildren ? 'YES' : 'NO' }})</small>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div style="background: rgba(255,165,0,0.8); color: black; padding: 10px; margin: 5px 0;">
+            <h4>💡 RECOMMENDED ACTIONS:</h4>
+            <ol style="margin: 0; padding-left: 20px;">
+                {% set foundAny = false %}
+                {% for name, result in debugInfo.searchResults %}
+                    {% if result.found %}
+                        {% set foundAny = true %}
+                        <li>Found "{{ name }}" - check if it has child categories</li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if not foundAny %}
+                    <li>Create a category named "Choose Game" or "Games"</li>
+                    <li>Make sure it's active and has child categories</li>
+                    <li>OR set mm_root_games_category custom field in sales channel</li>
+                {% endif %}
+                
+                {% if debugInfo.customField != 'NOT SET' %}
+                    <li>Custom field is set - check if category with ID {{ debugInfo.customField }} exists and is active</li>
+                {% endif %}
+            </ol>
+        </div>
     {% endif %}
 </div>
 
@@ -283,8 +367,6 @@
                     </div>
                 {% endif %}
             {% endfor %}
-        {% else %}
-            <div style="color: red;">NO SIDEBAR CATEGORIES FOUND!</div>
         {% endif %}
     </div>
 
@@ -298,10 +380,6 @@
         </button>
     </div>
 </div>
-{% else %}
-    <div style="background: orange; color: black; padding: 10px;">
-        SIDEBAR DISABLED OR NOT ENABLED
-    </div>
 {% endif %}
 
 {% endblock %}

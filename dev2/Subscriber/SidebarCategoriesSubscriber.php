@@ -7,6 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -73,13 +74,13 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
 
         $page = $event->getPage();
         
-        // Используем assign для передачи переменных напрямую в Twig
-        $page->assign([
-            'sidebarCategories' => $sidebarCategories,
-            'sidebarEnabled' => $sidebarEnabled,
-            'contextCategory' => $contextCategoryData,
-            'currentCategoryId' => $currentCategory ? $currentCategory->getId() : null
-        ]);
+        // Используем addExtension для передачи данных в Twig
+        $page->addExtension('sidebarCategories', new ArrayStruct($sidebarCategories));
+        $page->addExtension('sidebarEnabled', new ArrayStruct(['enabled' => true]));
+        $page->addExtension('contextCategory', new ArrayStruct($contextCategoryData ?: []));
+        $page->addExtension('currentCategoryId', new ArrayStruct([
+            'id' => $currentCategory ? $currentCategory->getId() : null
+        ]));
     }
 
     private function getProductParentCategory(ProductEntity $product, SalesChannelContext $salesChannelContext)
@@ -96,7 +97,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
         foreach ($categories as $category) {
             $customFields = $category->getCustomFields() ?? [];
             if (
-                isset($customFields['mm_theme_sidebar_enabled']) && 
+                isset($customFields['mm_theme_sidebar_enabled']) &&
                 $customFields['mm_theme_sidebar_enabled'] === true &&
                 $category->getLevel() > $maxLevel
             ) {
@@ -118,7 +119,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
 
         // Ищем к какой игровой категории принадлежит текущая категория
         $gameCategories = $this->getGameCategories($chooseGameCategory->getId(), $salesChannelContext);
-        
+
         return $this->findParentGameCategory($currentCategory, $gameCategories);
     }
 
@@ -127,7 +128,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', $name));
         $criteria->addFilter(new EqualsFilter('active', true));
-        
+
         $result = $this->categoryRepository->search($criteria, $salesChannelContext->getContext());
         return $result->first();
     }
@@ -140,20 +141,20 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
         $criteria->addAssociation('children.children.children');
         $criteria->addAssociation('media');
         $criteria->addSorting(new FieldSorting('position', FieldSorting::ASCENDING));
-        
+
         return $this->categoryRepository->search($criteria, $salesChannelContext->getContext());
     }
 
     private function findParentGameCategory($currentCategory, $gameCategories)
     {
         $currentId = $currentCategory->getId();
-        
+
         foreach ($gameCategories as $gameCategory) {
             if ($this->isCategoryInTree($currentId, $gameCategory)) {
                 return $this->formatCategoryForSidebar($gameCategory);
             }
         }
-        
+
         return null;
     }
 
@@ -162,7 +163,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
         if ($category->getId() === $searchId) {
             return true;
         }
-        
+
         if ($category->getChildren()) {
             foreach ($category->getChildren() as $child) {
                 if ($this->isCategoryInTree($searchId, $child)) {
@@ -170,7 +171,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -184,7 +185,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
 
         // Получаем игровые категории
         $gameCategories = $this->getGameCategories($chooseGameCategory->getId(), $salesChannelContext);
-        
+
         $formattedCategories = [];
         foreach ($gameCategories as $category) {
             $formattedCategories[] = $this->formatCategoryForSidebar($category);
@@ -198,7 +199,7 @@ class SidebarCategoriesSubscriber implements EventSubscriberInterface
         $customFields = $category->getCustomFields() ?? [];
         $translated = $category->getTranslated();
         $name = $translated['name'] ?? $category->getName();
-        
+
         $formattedCategory = [
             'id' => $category->getId(),
             'name' => $name,
