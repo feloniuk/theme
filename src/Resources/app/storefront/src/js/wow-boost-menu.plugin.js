@@ -159,25 +159,25 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _registerEvents() {
-        // Обработка кликов по категориям
+        // Обработка кликов по категориям первого уровня
         const categories = this.el.querySelectorAll(this.options.categorySelector);
         categories.forEach(category => {
             category.addEventListener('click', this._onCategoryClick.bind(this));
         });
 
-        // Обработка кликов по подкатегориям (простые элементы)
+        // Обработка кликов по подкатегориям (простые элементы без детей)
         const subcategories = this.el.querySelectorAll(this.options.subcategorySelector);
         subcategories.forEach(subcategory => {
             subcategory.addEventListener('click', this._onSubcategoryClick.bind(this));
         });
 
-        // Обработка кликов по подэлементам (вложенные элементы)
+        // Обработка кликов по подэлементам (вложенные элементы третьего уровня)
         const subcategorySubitems = this.el.querySelectorAll(this.options.subcategorySubitemSelector);
         subcategorySubitems.forEach(subitem => {
             subitem.addEventListener('click', this._onSubcategoryClick.bind(this));
         });
 
-        // Обработка кликов по заголовкам групп подкатегорий
+        // Обработка кликов по заголовкам групп подкатегорий (второй уровень)
         const subcategoryTitles = this.el.querySelectorAll(this.options.subcategoryTitleSelector);
         subcategoryTitles.forEach(title => {
             title.addEventListener('click', this._onSubcategoryTitleClick.bind(this));
@@ -311,15 +311,45 @@ export default class WowBoostMenuPlugin extends Plugin {
             return;
         }
 
+        // Останавливаем всплытие события, чтобы не сработал клик родительской категории
+        event.stopPropagation();
+
         const title = event.currentTarget;
         const subcategoryId = title.dataset.subcategoryId;
         const subcategoryUrl = title.dataset.subcategoryUrl;
-        const subcategoryName = title.textContent.trim();
+        const subcategoryName = title.querySelector('span').textContent.trim();
+        const isExpandable = title.dataset.expandable === 'true';
 
         // Добавляем визуальную обратную связь
         this._addClickFeedback(title);
 
-        // Если есть URL, переходим по нему
+        // Если есть подкатегории (раскрываемый), раскрываем/сворачиваем
+        if (isExpandable) {
+            const expandButton = title.querySelector('[data-subcategory-expand]');
+            const subcategoryGroup = title.closest('.subcategory-group');
+            const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
+
+            if (expandButton && subcategoryItems) {
+                const isExpanded = subcategoryItems.style.display === 'block';
+
+                if (isExpanded) {
+                    this._collapseSubcategoryItems(subcategoryItems, expandButton);
+                } else {
+                    this._expandSubcategoryItems(subcategoryItems, expandButton);
+                }
+            }
+
+            // Публикуем событие без перехода
+            this.$emitter.publish('subcategoryExpanded', {
+                subcategoryId,
+                subcategoryName,
+                subcategoryElement: title
+            });
+
+            return;
+        }
+
+        // Если не раскрываемый и есть URL, переходим по нему
         if (subcategoryUrl) {
             window.location.href = subcategoryUrl;
             return;
@@ -439,10 +469,10 @@ export default class WowBoostMenuPlugin extends Plugin {
         subcategoryItems.style.opacity = '0';
         subcategoryItems.style.transform = 'translateY(-8px)';
 
-        // Обновляем иконку стрелки
+        // Обновляем иконку на "минус" (как у первого уровня)
         button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 15L12 9L6 15"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
         `;
 
@@ -471,10 +501,11 @@ export default class WowBoostMenuPlugin extends Plugin {
         subcategoryItems.style.opacity = '0';
         subcategoryItems.style.transform = 'translateY(-8px)';
 
-        // Обновляем иконку стрелки
+        // Обновляем иконку на "плюс" (как у первого уровня)
         button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9L12 15L18 9"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
         `;
 

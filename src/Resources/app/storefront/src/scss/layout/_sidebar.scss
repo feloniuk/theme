@@ -257,6 +257,7 @@ $header-height: 65px;
         animation: slideDown 0.3s ease-out;
       }
 
+       
       .subcategory-item {
         padding: 12px 0 12px 16px;
         font-size: 14px;
@@ -347,6 +348,7 @@ $header-height: 65px;
 
             &:hover {
               color: #ffffff;
+              background: #2B324A;
             }
 
             &[data-difficulty="heroic"] {
@@ -454,4 +456,9 @@ $header-height: 65px;
       padding: 16px;
     }
   }
+}
+
+// Текущий элемент
+&[data-current="true"] {
+  color: #e94449 !important;
 }

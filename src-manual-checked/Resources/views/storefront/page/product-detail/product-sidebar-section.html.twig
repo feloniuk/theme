@@ -34,7 +34,7 @@
                     {% set hasChildren = gameItem.children is defined and gameItem.children|length > 0 %}
                     
                     {# Проверяем, включена ли категория в сайдбаре #}
-                    {% set isEnabled = category.translated.customFields.mm_theme_sidebar_enabled is defined and category.translated.customFields.mm_theme_sidebar_enabled == true %}
+                    {% set isEnabled = category.translated.customFields.mm_theme_sidebar_enabled is defined and category.translated.customFields.mm_theme_sidebar_enabled = true %}
                     
                     {% if isEnabled %}
                         <div class="menu-category" 
