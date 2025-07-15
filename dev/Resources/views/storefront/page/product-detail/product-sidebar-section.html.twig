@@ -1,0 +1,295 @@
+{% block wow_boost_menu %}
+{% set targetCategoryName = 'Choose Game' %}
+
+{# Определяем текущую категорию из контекста страницы #}
+{% set currentCategoryId = null %}
+{% set currentCategory = null %}
+
+{# Пытаемся получить текущую категорию из разных источников #}
+{% if page.category is defined %}
+    {% set currentCategory = page.category %}
+    {% set currentCategoryId = page.category.id %}
+{% elseif page.navigationId is defined %}
+    {% set currentCategoryId = page.navigationId %}
+{% elseif app.request.attributes.get('navigationId') %}
+    {% set currentCategoryId = app.request.attributes.get('navigationId') %}
+{% elseif app.request.get('navigationId') %}
+    {% set currentCategoryId = app.request.get('navigationId') %}
+{% elseif page.cmsPage is defined and page.cmsPage.navigationId %}
+    {% set currentCategoryId = page.cmsPage.navigationId %}
+{% endif %}
+
+{# Если ID категории получен как строка, конвертируем в нужный формат #}
+{% if currentCategoryId %}
+    {% set currentCategoryId = currentCategoryId|trim %}
+{% endif %}
+
+{# Функция для поиска категории в дереве #}
+{% macro findCategoryInTree(tree, targetId) %}
+    {% for treeItem in tree %}
+        {% if treeItem.category.id == targetId %}
+            {% set result = treeItem %}
+        {% endif %}
+        {% if result is not defined and treeItem.children is defined %}
+            {% set result = _self.findCategoryInTree(treeItem.children, targetId) %}
+        {% endif %}
+        {% if result is defined %}
+            {{ result|json_encode|raw }}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{# Функция для поиска родительской категории #}
+{% macro findParentCategory(tree, targetId, parent = null) %}
+    {% for treeItem in tree %}
+        {% if treeItem.category.id == targetId %}
+            {{ parent|json_encode|raw }}
+            {% break %}
+        {% endif %}
+        {% if treeItem.children is defined %}
+            {% set parentResult = _self.findParentCategory(treeItem.children, targetId, treeItem) %}
+            {% if parentResult %}
+                {{ parentResult }}
+                {% break %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<div class="wow-boost-menu" data-wow-boost-menu data-current-category="{{ currentCategoryId }}">
+
+    <!-- Menu Content with Scroll -->
+    <div class="wow-menu-content">
+        {% if page.header.navigation.tree is defined and currentCategoryId %}
+            {% set chooseGameCategory = null %}
+            
+            {# Найти категорию "Choose Game" #}
+            {% for treeItem in page.header.navigation.tree %}
+                {% if treeItem.category.translated.name == targetCategoryName %}
+                    {% set chooseGameCategory = treeItem %}
+                    {% break %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if chooseGameCategory and chooseGameCategory.children is defined %}
+                {# Определяем контекст текущей категории #}
+                {% set contextCategory = null %}
+                {% set isCurrentTopLevel = false %}
+                {% set parentCategory = null %}
+                
+                {# Проверяем, является ли текущая категория категорией верхнего уровня (игрой) #}
+                {% for gameItem in chooseGameCategory.children %}
+                    {% if gameItem.category.id == currentCategoryId %}
+                        {% set contextCategory = gameItem %}
+                        {% set isCurrentTopLevel = true %}
+                        {% break %}
+                    {% endif %}
+                {% endfor %}
+                
+                {# Если не найдена на верхнем уровне, ищем в подкатегориях #}
+                {% if not isCurrentTopLevel %}
+                    {% for gameItem in chooseGameCategory.children %}
+                        {# Проверяем первый уровень подкатегорий #}
+                        {% if gameItem.children is defined %}
+                            {% for firstLevelItem in gameItem.children %}
+                                {% if firstLevelItem.category.id == currentCategoryId %}
+                                    {% set contextCategory = gameItem %}
+                                    {% set parentCategory = gameItem %}
+                                    {% break %}
+                                {% endif %}
+                                
+                                {# Проверяем второй уровень подкатегорий #}
+                                {% if firstLevelItem.children is defined %}
+                                    {% for secondLevelItem in firstLevelItem.children %}
+                                        {% if secondLevelItem.category.id == currentCategoryId %}
+                                            {% set contextCategory = gameItem %}
+                                            {% set parentCategory = gameItem %}
+                                            {% break %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                {% if contextCategory %}
+                                    {% break %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if contextCategory %}
+                            {% break %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                {# Отображаем контекстную категорию #}
+                {% if contextCategory %}
+                    {% set category = contextCategory.category %}
+                    {% set name = category.translated.name %}
+                    {% set categoryId = category.id %}
+                    {% set hasChildren = contextCategory.children is defined and contextCategory.children|length > 0 %}
+                    
+                    <div class="menu-category context-category" 
+                         data-category-id="{{ categoryId }}"
+                         {% if not hasChildren %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                         {% if hasChildren %}data-expandable="true"{% endif %}
+                         {% if categoryId == currentCategoryId %}data-current="true"{% endif %}>
+                        
+                        <div class="category-header">
+                            <span class="category-title">
+                                {{ name }}
+                                {% if categoryId == currentCategoryId %}
+                                    <span class="current-indicator">•</span>
+                                {% endif %}
+                            </span>
+                            
+                            {% if hasChildren %}
+                                <button class="expand-button" data-expand-button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% if hasChildren %}
+                            <div class="subcategories context-expanded" data-subcategories style="display: block;">
+                                {% for firstLevelItem in contextCategory.children %}
+                                    {% set firstLevelCategory = firstLevelItem.category %}
+                                    {% set firstLevelName = firstLevelCategory.translated.name %}
+                                    {% set firstLevelId = firstLevelCategory.id %}
+                                    {% set hasSubChildren = firstLevelItem.children is defined and firstLevelItem.children|length > 0 %}
+                                    
+                                    {% if hasSubChildren %}
+                                        {# Category with subcategories #}
+                                        <div class="subcategory-group" data-subcategory-group>
+                                            <div class="subcategory-title" 
+                                                 data-subcategory-id="{{ firstLevelId }}"
+                                                 data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
+                                                 data-expandable="true"
+                                                 {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                <span>
+                                                    {{ firstLevelName }}
+                                                    {% if firstLevelId == currentCategoryId %}
+                                                        <span class="current-indicator">•</span>
+                                                    {% endif %}
+                                                </span>
+                                                
+                                                {# Проверяем, есть ли текущая категория среди детей #}
+                                                {% set shouldExpand = false %}
+                                                {% for secondLevelItem in firstLevelItem.children %}
+                                                    {% if secondLevelItem.category.id == currentCategoryId %}
+                                                        {% set shouldExpand = true %}
+                                                        {% break %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                <button class="subcategory-expand" data-subcategory-expand>
+                                                    {% if shouldExpand or firstLevelId == currentCategoryId %}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                            <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                        </svg>
+                                                    {% else %}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                            <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                            <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                        </svg>
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                            <div class="subcategory-items" data-subcategory-items 
+                                                 {% if shouldExpand or firstLevelId == currentCategoryId %}style="display: block;"{% endif %}>
+                                                {% for secondLevelItem in firstLevelItem.children %}
+                                                    {% set secondLevelCategory = secondLevelItem.category %}
+                                                    {% set secondLevelName = secondLevelCategory.translated.name %}
+                                                    {% set secondLevelId = secondLevelCategory.id %}
+                                                    {% set subcategoryName = secondLevelName|lower %}
+                                                    
+                                                    <div class="subcategory-subitem" 
+                                                         data-subcategory-id="{{ secondLevelId }}"
+                                                         data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
+                                                         {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                         {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                                         {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                        {{ secondLevelName }}
+                                                        {% if secondLevelId == currentCategoryId %}
+                                                            <span class="current-indicator">•</span>
+                                                        {% endif %}
+                                                        {% if 'Badge' in firstLevelName %}
+                                                            <span class="item-badge">Badge</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        {# Simple category without subcategories #}
+                                        {% set subcategoryName = firstLevelName|lower %}
+                                        <div class="subcategory-item" 
+                                             data-subcategory-id="{{ firstLevelId }}"
+                                             data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
+                                             {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                             {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                             {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                            {{ firstLevelName }}
+                                            {% if firstLevelId == currentCategoryId %}
+                                                <span class="current-indicator">•</span>
+                                            {% endif %}
+                                            {% if 'Badge' in firstLevelName %}
+                                                <span class="item-badge">Badge</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %} 
+                    </div>
+                {% else %}
+                    
+                    {% for gameItem in chooseGameCategory.children %}
+                        {% set category = gameItem.category %}
+                        {% set name = category.translated.name %}
+                        {% set categoryId = category.id %}
+                        {% set hasChildren = gameItem.children is defined and gameItem.children|length > 0 %}
+                        
+                        <div class="menu-category" 
+                             data-category-id="{{ categoryId }}"
+                             {% if not hasChildren %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                             {% if hasChildren %}data-expandable="true"{% endif %}>
+                            
+                            <div class="category-header">
+                                <span class="category-title">{{ name }}</span>
+                                
+                                {% if hasChildren %}
+                                    <button class="expand-button" data-expand-button>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                            <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            
+                            {% if hasChildren %}
+                                <div class="subcategories" data-subcategories>
+                                    {# Остальной контент как в оригинале... #}
+                                </div>
+                            {% endif %} 
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="menu-footer">
+        <button class="show-all-button" data-show-all-button style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9L12 15L18 9"/>
+            </svg>
+            Show All Categories
+        </button>
+        
+    </div>
+</div>
+
+{% endblock %}

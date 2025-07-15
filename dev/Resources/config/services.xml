@@ -44,10 +44,6 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="MmTheme\Service\SidebarCategoryService">
-            <argument type="service" id="category.repository"/>
-        </service>
-
         <service id="MmTheme\Twig\MediaTwigExtension">
             <argument type="service" id="media.repository"/>
             <tag name="twig.extension"/>
