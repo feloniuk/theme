@@ -49,19 +49,16 @@ $header-height: 65px;
   }
 }
 
-
 .with-sidebar {
   flex: 1;
   display: flex;
   overflow: auto;
-
   justify-content: flex-start;
 
   &>* {
     width: 100%;
     max-width: $max-content-width;
     overflow: auto;
-
     margin-left: auto;
     margin-right: auto;
 
@@ -69,7 +66,6 @@ $header-height: 65px;
       margin-right: calc((100vw - #{$max-content-width}) / 2);
     }
 
-    // При ширине > 1900 — убираем margin, используем паддинг на wrapper
     @media (min-width: $max-content-width + ($sidebar-width * 2)) {
       margin-left: 0;
       margin-right: 0;
@@ -83,8 +79,6 @@ $header-height: 65px;
   }
 }
 
-
-// Main styles for 
 .wow-boost-menu {
   height: 100%;
   display: flex;
@@ -93,68 +87,11 @@ $header-height: 65px;
   border-radius: 8px;
   overflow: hidden;
 
-  .wow-boost-header {
-    padding: 24px;
-    flex-shrink: 0;
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 14px;
-      cursor: pointer;
-      margin-bottom: 16px;
-      padding: 0;
-      transition: color 0.2s ease;
-      text-decoration: none;
-
-      &:hover {
-        color: #ffffff;
-
-        svg {
-          transform: translateX(-2px);
-        }
-      }
-
-      svg {
-        transition: transform 0.2s ease;
-      }
-    }
-
-    .service-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #ffffff;
-
-      .wow-icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-        color: #000;
-        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-      }
-    }
-  }
-
-  // Контент меню с вертикальным скроллом
   .wow-menu-content {
     flex: 1;
     overflow-y: auto;
     padding: 0 24px;
     
-    // Кастомный скроллбар
     &::-webkit-scrollbar {
       width: 4px;
     }
@@ -181,37 +118,10 @@ $header-height: 65px;
       border-bottom: none;
     }
 
-    // Активная родительская категория (всегда белый цвет)
     &.active-parent {
       .category-title {
         color: #ffffff !important;
         font-weight: 600;
-      }
-    }
-
-    // Категории с подкатегориями (раскрываемые)
-    &[data-expandable="true"] {
-      .category-header {
-        cursor: pointer;
-        padding: 16px 0;
-        
-        &:hover {
-          .category-title {
-            color: #ffffff;
-          }
-        }
-      }
-    }
-
-    // Категории без подкатегорий (ссылки)
-    &:not([data-expandable="true"]) {
-      .category-header {
-        cursor: pointer;
-        padding: 16px 0;
-        
-        &:hover .category-title {
-          color: #ffffff;
-        }
       }
     }
 
@@ -221,6 +131,19 @@ $header-height: 65px;
       justify-content: space-between;
       transition: all 0.2s ease;
       gap: 12px;
+      padding: 16px 0;
+      text-decoration: none;
+      color: inherit;
+      
+      &:hover {
+        .category-title {
+          color: #ffffff;
+        }
+        
+        .category-icon img {
+          filter: brightness(1);
+        }
+      }
     }
 
     .category-icon {
@@ -238,11 +161,6 @@ $header-height: 65px;
         filter: brightness(0.8);
         transition: filter 0.2s ease;
       }
-    }
-
-    &:hover .category-icon img,
-    &.active-parent .category-icon img {
-      filter: brightness(1);
     }
 
     .category-title {
@@ -289,20 +207,20 @@ $header-height: 65px;
 
     .subcategories {
       display: none;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       
       &.expanded,
       &.context-expanded {
         display: block;
         animation: slideDown 0.3s ease-out;
       }
-
        
       .subcategory-item {
+        display: block;
         padding: 12px 0 12px 16px;
         font-size: 14px;
         color: rgba(255, 255, 255, 0.7);
-        cursor: pointer;
+        text-decoration: none;
         transition: all 0.2s ease;
         position: relative;
 
@@ -311,7 +229,7 @@ $header-height: 65px;
           background: rgba(255, 255, 255, 0.05);
         }
 
-        &.active-current {
+        &[data-current="true"] {
           color: #ffffff !important;
           font-weight: 600;
         }
@@ -360,7 +278,7 @@ $header-height: 65px;
           padding: 12px 0 12px 16px;
           font-size: 14px;
           color: rgba(255, 255, 255, 0.7);
-          cursor: pointer;
+          text-decoration: none;
           transition: all 0.2s ease;
           font-weight: 500;
 
@@ -412,10 +330,11 @@ $header-height: 65px;
           }
 
           .subcategory-subitem {
+            display: block;
             padding: 8px 0 8px 32px;
             font-size: 13px;
             color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
+            text-decoration: none;
             transition: all 0.2s ease;
 
             &:hover {
@@ -461,25 +380,6 @@ $header-height: 65px;
     }
   }
 
-  // Разделитель между категориями
-  .category-separator {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.15);
-    margin: 16px 0;
-    position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
-    }
-  }
-
   .menu-footer {
     padding: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -517,7 +417,6 @@ $header-height: 65px;
   }
 }
 
-// Animations
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -529,7 +428,6 @@ $header-height: 65px;
   }
 }
 
-// Состояния меню
 .wow-boost-menu {
   &.loading {
     opacity: 0.6;
@@ -537,23 +435,8 @@ $header-height: 65px;
   }
 }
 
-// Адаптация под мобильные устройства
 @media (max-width: 991px) {
   .wow-boost-menu {
-    .wow-boost-header {
-      padding: 16px;
-      
-      .service-title {
-        font-size: 16px;
-        
-        .wow-icon {
-          width: 28px;
-          height: 28px;
-          font-size: 14px;
-        }
-      }
-    }
-    
     .wow-menu-content {
       padding: 0 16px;
     }
@@ -564,12 +447,6 @@ $header-height: 65px;
   }
 }
 
-// // Текущий элемент
-// &[data-current="true"] {
-//   color: #e94449 !important;
-// }
-
-// Утилитарные классы
 .font-bold {
   font-weight: 700 !important;
 }

@@ -12,6 +12,7 @@
 {# Определяем текущую категорию из контекста страницы #}
 {% set currentCategoryId = null %}
 {% set currentCategory = null %}
+{% set isProductPage = false %}
 
 {# Пытаемся получить текущую категорию из разных источников #}
 {% if page.category is defined %}
@@ -27,24 +28,34 @@
     {% set currentCategoryId = page.cmsPage.navigationId %}
 {% endif %}
 
-{# Для страниц продуктов определяем категорию из продукта #}
-{% if not currentCategoryId and page.product is defined %}
+{# Для страниц продуктов определяем категорию из seoCategory #}
+{% if page.product is defined %}
+    {% set isProductPage = true %}
     {% set product = page.product %}
-    {% if product.categories is defined %}
-        {# Берем самую глубокую категорию продукта #}
-        {% set maxLevel = 0 %}
-        {% for productCategory in product.categories %}
-            {% if productCategory.level > maxLevel %}
-                {% set currentCategoryId = productCategory.id %}
-                {% set currentCategory = productCategory %}
-                {% set maxLevel = productCategory.level %}
-            {% endif %}
-        {% endfor %}
+    
+    {# Проверяем seoCategory - основная категория продукта #}
+    {% if product.seoCategory is defined and product.seoCategory %}
+        {% set currentCategory = product.seoCategory %}
+        {% set currentCategoryId = product.seoCategory.id %}
+    {% elseif product.mainCategories is defined and product.mainCategories|length > 0 %}
+        {# Если нет seoCategory, используем первую главную категорию #}
+        {% set currentCategory = product.mainCategories|first %}
+        {% set currentCategoryId = product.mainCategories|first.id %}
     {% endif %}
 {% endif %}
 
 {% if currentCategoryId %}
     {% set currentCategoryId = currentCategoryId|trim %}
+{% endif %}
+
+{# Для отладки - показываем информацию о продукте #}
+{% if isProductPage %}
+    <!-- DEBUG INFO (remove in production) -->
+    <!-- Current Category ID: {{ currentCategoryId }} -->
+    <!-- Product ID: {{ product.id }} -->
+    <!-- SEO Category: {{ product.seoCategory ? product.seoCategory.translated.name : 'None' }} -->
+    <!-- Has mainCategories: {{ product.mainCategories is defined ? 'Yes' : 'No' }} -->
+    <!-- Has categories: {{ product.categories is defined ? 'Yes' : 'No' }} -->
 {% endif %}
 
 <div class="wow-boost-menu" data-wow-boost-menu data-current-category="{{ currentCategoryId }}">
@@ -165,7 +176,7 @@
                                 <span class="category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} font-bold{% endif %}">
                                     {{ name }}
                                     {% if categoryId == currentCategoryId %}
-                                        <span class="current-indicator"></span>
+                                        <span class="current-indicator">•</span>
                                     {% endif %}
                                 </span>
                                 
@@ -211,7 +222,7 @@
                                                         <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
                                                             {{ firstLevelName }}
                                                             {% if firstLevelId == currentCategoryId %}
-                                                                <span class="current-indicator"></span>
+                                                                <span class="current-indicator">•</span>
                                                             {% endif %}
                                                         </span>
                                                         
@@ -262,7 +273,7 @@
                                                                             {{ secondLevelName }}
                                                                         </span>
                                                                         {% if secondLevelId == currentCategoryId %}
-                                                                            <span class="current-indicator"></span>
+                                                                            <span class="current-indicator">•</span>
                                                                         {% endif %}
                                                                         {% if 'Badge' in secondLevelName %}
                                                                             <span class="item-badge">Badge</span>
@@ -286,7 +297,7 @@
                                                         {{ firstLevelName }}
                                                     </span>
                                                     {% if firstLevelId == currentCategoryId %}
-                                                        <span class="current-indicator"></span>
+                                                        <span class="current-indicator">•</span>
                                                     {% endif %}
                                                     {% if 'Badge' in firstLevelName %}
                                                         <span class="item-badge">Badge</span>
@@ -396,7 +407,7 @@
                                                             <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
                                                                 {{ firstLevelName }}
                                                                 {% if firstLevelId == currentCategoryId %}
-                                                                    <span class="current-indicator"></span>
+                                                                    <span class="current-indicator">•</span>
                                                                 {% endif %}
                                                             </span>
                                                             
@@ -429,7 +440,7 @@
                                                                                 {{ secondLevelName }}
                                                                             </span>
                                                                             {% if secondLevelId == currentCategoryId %}
-                                                                                <span class="current-indicator"></span>
+                                                                                <span class="current-indicator">•</span>
                                                                             {% endif %}
                                                                             {% if 'Badge' in secondLevelName %}
                                                                                 <span class="item-badge">Badge</span>
@@ -453,7 +464,7 @@
                                                             {{ firstLevelName }}
                                                         </span>
                                                         {% if firstLevelId == currentCategoryId %}
-                                                            <span class="current-indicator"></span>
+                                                            <span class="current-indicator">•</span>
                                                         {% endif %}
                                                         {% if 'Badge' in firstLevelName %}
                                                             <span class="item-badge">Badge</span>

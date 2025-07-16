@@ -18,8 +18,15 @@
     {% endif %}
 
     {% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
+    {% set showSidebar = activeRoute != 'frontend.home.page' and sidebarEnabled %}
 
-    {% if activeRoute != 'frontend.home.page' and sidebarEnabled %}
+    {# Для страниц продуктов проверяем, есть ли категории у продукта #}
+    {% if activeRoute == 'frontend.detail.page' and page.product is defined %}
+        {% set hasProductCategories = page.product.categories is defined and page.product.categories|length > 0 %}
+        {% set showSidebar = showSidebar and hasProductCategories %}
+    {% endif %}
+
+    {% if showSidebar %}
         <div class="sidebar-wrapper">
             <div class="sidebar">
                 <div class="sidebar-inner">
