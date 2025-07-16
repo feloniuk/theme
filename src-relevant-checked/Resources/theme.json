@@ -1,0 +1,229 @@
+{
+	"name": "MmTheme",
+	"author": "MMonster Team",
+	"views": [
+		"@Storefront",
+		"@Plugins",
+		"@MmTheme"
+	],
+	"style": [
+		"app/storefront/src/scss/overrides.scss",
+		"@StorefrontBootstrap",
+		"@Plugins",
+		"app/storefront/src/scss/base.scss"
+	],
+	"script": [
+		"@Storefront",
+		"@Plugins",
+		"app/storefront/dist/storefront/js/svg-sprite-loader.js",
+		"app/storefront/dist/storefront/js/popper.min.js",
+		"app/storefront/dist/storefront/js/tippy-bundle.umd.min.js",
+		"app/storefront/dist/storefront/js/mm.js",
+		"app/storefront/dist/storefront/js/mm-theme.js"
+	],
+	"asset": [
+		"app/storefront/dist/assets"
+	],
+	"configInheritance": [],
+	"config": {
+		"tabs": {
+			"settings": {
+				"label": {
+					"en-GB": "Settings"
+				}
+			}
+		},
+		"blocks": {
+			"icons": {
+				"label": {
+					"en-GB": "Icons"
+				}
+			},
+			"activators": {
+				"label": {
+					"en-GB": "Activators"
+				}
+			},
+			"intercom": {
+				"label": {
+					"en-GB": "Intercom"
+				}
+			},
+			"ga": {
+				"label": {
+					"en-GB": "Google Analytics"
+				}
+			},
+			"media": {
+				"label": {
+					"en-GB": "Media"
+				}
+			}
+		},
+		"fields": {
+			"sw-logo-desktop": {
+				"label": {
+					"en-GB": "Desktop"
+				},
+				"helpText": {
+					"en-GB": "Displayed for viewports of above 991px"
+				},
+				"type": "media",
+				"value": "app/storefront/dist/assets/logo/mmonster_word.svg",
+				"editable": true,
+				"block": "media",
+				"order": 100
+			},
+			"sw-logo-tablet": {
+				"label": {
+					"en-GB": "Tablet"
+				},
+				"helpText": {
+					"en-GB": "Displayed between a viewport of 767px to 991px"
+				},
+				"type": "media",
+				"value": "app/storefront/dist/assets/logo/mmonster_word.svg",
+				"editable": true,
+				"block": "media",
+				"order": 200
+			},
+			"sw-logo-mobile": {
+				"label": {
+					"en-GB": "Mobile"
+				},
+				"helpText": {
+					"en-GB": "Displayed up to a viewport of 767px"
+				},
+				"type": "media",
+				"value": "app/storefront/dist/assets/logo/mmonster_word.svg",
+				"editable": true,
+				"block": "media",
+				"order": 300
+			},
+			"sw-logo-share": {
+				"label": {
+					"en-GB": "App & share icon"
+				},
+				"type": "media",
+				"value": "app/storefront/dist/assets/logo/logo.png",
+				"editable": true,
+				"block": "media",
+				"order": 400
+			},
+			"sw-logo-favicon": {
+				"label": {
+					"en-GB": "Favicon"
+				},
+				"type": "media",
+				"value": "app/storefront/dist/assets/logo/favicon.svg",
+				"editable": true,
+				"block": "media",
+				"order": 500
+			},
+			"mm-icons": {
+				"label": {
+					"en-GB": "Icons"
+				},
+				"type": "text",
+				"custom": {
+					"componentName": "sw-code-editor"
+				},
+				"editable": true,
+				"block": "icons",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			},
+			"mm-intercom-header-buttons": {
+				"label": {
+					"en-GB": "Intercom Header Buttons"
+				},
+				"helpText": {
+					"en-GB": "Enter bots with ; (example: Get me full Mythic gear in WoW; Unlock all camos in CoD 6)."
+				},
+				"type": "text",
+				"editable": true,
+				"block": "intercom",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			},
+			"mm-header-activator": {
+				"label": {
+					"en-GB": "Updated Hero Section"
+				},
+				"type": "bool",
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
+			},
+			"mm-games-activator": {
+				"label": {
+					"en-GB": "Updated Game Section"
+				},
+				"type": "bool",
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
+			},
+			"mm-sidebar-enabled": {
+				"label": {
+					"en-GB": "Enable Sidebar Categories"
+				},
+				"helpText": {
+					"en-GB": "Master switch to enable/disable sidebar categories display on all pages"
+				},
+				"type": "bool",
+				"editable": true,
+				"block": "activators",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": false
+			},
+			"mm-ga-trackers": {
+				"label": {
+					"en-GB": "Google Trackers"
+				},
+				"type": "text",
+				"custom": {
+					"componentName": "sw-code-editor"
+				},
+				"editable": true,
+				"block": "ga",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			},
+			"mm-ga-addition": {
+				"label": {
+					"en-GB": "GA Addition"
+				},
+				"type": "text",
+				"custom": {
+					"componentName": "sw-code-editor"
+				},
+				"editable": true,
+				"block": "ga",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			},
+			"mm-ga-blocker": {
+				"label": {
+					"en-GB": "GA Blocker"
+				},
+				"helpText": {
+					"en-GB": "Enter bots with | (example: GPTBot|Google-Extended|BingBot)."
+				},
+				"type": "input",
+				"editable": true,
+				"block": "ga",
+				"tab": "settings",
+				"scss": false,
+				"fullWidth": true
+			}
+		}
+	}
+}

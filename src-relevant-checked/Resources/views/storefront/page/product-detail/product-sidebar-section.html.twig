@@ -1,0 +1,486 @@
+{% block wow_boost_menu %}
+{% set targetCategoryName = 'Choose Game' %}
+
+{# Проверяем включен ли сайдбар в настройках темы #}
+{% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
+
+{% if not sidebarEnabled %}
+    {# Если сайдбар отключен, ничего не показываем #}
+    {% return %}
+{% endif %}
+
+{# Определяем текущую категорию из контекста страницы #}
+{% set currentCategoryId = null %}
+{% set currentCategory = null %}
+
+{# Пытаемся получить текущую категорию из разных источников #}
+{% if page.category is defined %}
+    {% set currentCategory = page.category %}
+    {% set currentCategoryId = page.category.id %}
+{% elseif page.navigationId is defined %}
+    {% set currentCategoryId = page.navigationId %}
+{% elseif app.request.attributes.get('navigationId') %}
+    {% set currentCategoryId = app.request.attributes.get('navigationId') %}
+{% elseif app.request.get('navigationId') %}
+    {% set currentCategoryId = app.request.get('navigationId') %}
+{% elseif page.cmsPage is defined and page.cmsPage.navigationId %}
+    {% set currentCategoryId = page.cmsPage.navigationId %}
+{% endif %}
+
+{# Для страниц продуктов определяем категорию из продукта #}
+{% if not currentCategoryId and page.product is defined %}
+    {% set product = page.product %}
+    {% if product.categories is defined %}
+        {# Берем самую глубокую категорию продукта #}
+        {% set maxLevel = 0 %}
+        {% for productCategory in product.categories %}
+            {% if productCategory.level > maxLevel %}
+                {% set currentCategoryId = productCategory.id %}
+                {% set currentCategory = productCategory %}
+                {% set maxLevel = productCategory.level %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% if currentCategoryId %}
+    {% set currentCategoryId = currentCategoryId|trim %}
+{% endif %}
+
+<div class="wow-boost-menu" data-wow-boost-menu data-current-category="{{ currentCategoryId }}">
+
+    <!-- Menu Content with Scroll -->
+    <div class="wow-menu-content">
+        {% if page.header.navigation.tree is defined %}
+            {% set chooseGameCategory = null %}
+            
+            {# Найти категорию "Choose Game" #}
+            {% for treeItem in page.header.navigation.tree %}
+                {% if treeItem.category.translated.name == targetCategoryName %}
+                    {% set chooseGameCategory = treeItem %}
+                    {% break %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if chooseGameCategory and chooseGameCategory.children is defined %}
+                {# Определяем контекстную категорию #}
+                {% set contextCategory = null %}
+                {% set isCurrentTopLevel = false %}
+                
+                {# Проверяем, является ли текущая категория категорией верхнего уровня (игрой) #}
+                {% if currentCategoryId %}
+                    {% for gameItem in chooseGameCategory.children %}
+                        {% if gameItem.category.id == currentCategoryId %}
+                            {% set contextCategory = gameItem %}
+                            {% set isCurrentTopLevel = true %}
+                            {% break %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {# Если не найдена на верхнем уровне, ищем в подкатегориях #}
+                    {% if not isCurrentTopLevel %}
+                        {% for gameItem in chooseGameCategory.children %}
+                            {% set foundInChildren = false %}
+                            {% if gameItem.children is defined %}
+                                {% for firstLevelItem in gameItem.children %}
+                                    {% if firstLevelItem.category.id == currentCategoryId %}
+                                        {% set contextCategory = gameItem %}
+                                        {% set foundInChildren = true %}
+                                        {% break %}
+                                    {% endif %}
+                                    {% if firstLevelItem.children is defined %}
+                                        {% for secondLevelItem in firstLevelItem.children %}
+                                            {% if secondLevelItem.category.id == currentCategoryId %}
+                                                {% set contextCategory = gameItem %}
+                                                {% set foundInChildren = true %}
+                                                {% break %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if foundInChildren %}
+                                        {% break %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            {% if foundInChildren %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+                
+                {# Отображаем контекстную категорию, если она найдена #}
+                {% if contextCategory %}
+                    {% set category = contextCategory.category %}
+                    {% set name = category.translated.name %}
+                    {% set categoryId = category.id %}
+                    {% set customFields = category.customFields|default({}) %}
+                    {% set shouldShowCategory = customFields.mm_theme_sidebar_enabled|default(false) %}
+                    
+                    {# Проверяем, есть ли видимые дочерние категории #}
+                    {% set hasVisibleChildren = false %}
+                    {% if contextCategory.children is defined %}
+                        {% for firstLevelItem in contextCategory.children %}
+                            {% set firstLevelCustomFields = firstLevelItem.category.customFields|default({}) %}
+                            {% if firstLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                {% set hasVisibleChildren = true %}
+                                {% break %}
+                            {% endif %}
+                            {% if firstLevelItem.children is defined %}
+                                {% for secondLevelItem in firstLevelItem.children %}
+                                    {% set secondLevelCustomFields = secondLevelItem.category.customFields|default({}) %}
+                                    {% if secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                        {% set hasVisibleChildren = true %}
+                                        {% break %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            {% if hasVisibleChildren %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {# Показываем категорию если она отмечена для сайдбара или имеет видимых детей #}
+                    {% if shouldShowCategory or hasVisibleChildren %}
+                        <div class="menu-category context-category" 
+                             data-category-id="{{ categoryId }}"
+                             {% if shouldShowCategory %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                             {% if hasVisibleChildren %}data-expandable="true"{% endif %}
+                             {% if categoryId == currentCategoryId %}data-current="true"{% endif %}>
+                            
+                            <div class="category-header">
+                                {# Иконка категории #}
+                                {% set iconHandler = category.translated.customFields.mm_theme_sidebar_icon|default(null) %}
+                                {% if iconHandler %}
+                                    {% set iconMediaCollection = searchMedia([iconHandler], context.context) %}
+                                    {% if iconMediaCollection %}
+                                        {% set iconImage = iconMediaCollection.get(iconHandler) %}
+                                        <span class="category-icon">
+                                            <img src="{{ iconImage.url }}" alt="{{ name }}" loading="lazy">
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                <span class="category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} font-bold{% endif %}">
+                                    {{ name }}
+                                    {% if categoryId == currentCategoryId %}
+                                        <span class="current-indicator"></span>
+                                    {% endif %}
+                                </span>
+                                
+                                {% if hasVisibleChildren %}
+                                    <button class="expand-button expanded" data-expand-button>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            
+                            {% if hasVisibleChildren %}
+                                <div class="subcategories context-expanded" data-subcategories style="display: block;">
+                                    {% for firstLevelItem in contextCategory.children %}
+                                        {% set firstLevelCategory = firstLevelItem.category %}
+                                        {% set firstLevelName = firstLevelCategory.translated.name %}
+                                        {% set firstLevelId = firstLevelCategory.id %}
+                                        {% set firstLevelCustomFields = firstLevelCategory.customFields|default({}) %}
+                                        {% set firstLevelShouldShow = firstLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                        
+                                        {# Проверяем, есть ли видимые дочерние элементы #}
+                                        {% set firstLevelHasVisibleChildren = false %}
+                                        {% if firstLevelItem.children is defined %}
+                                            {% for secondLevelItem in firstLevelItem.children %}
+                                                {% set secondLevelCustomFields = secondLevelItem.category.customFields|default({}) %}
+                                                {% if secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                                    {% set firstLevelHasVisibleChildren = true %}
+                                                    {% break %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        
+                                        {% if firstLevelShouldShow or firstLevelHasVisibleChildren %}
+                                            {% if firstLevelHasVisibleChildren %}
+                                                {# Category with subcategories #}
+                                                <div class="subcategory-group" data-subcategory-group>
+                                                    <div class="subcategory-title" 
+                                                         data-subcategory-id="{{ firstLevelId }}"
+                                                         {% if firstLevelShouldShow %}data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"{% endif %}
+                                                         data-expandable="true"
+                                                         {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                        <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                            {{ firstLevelName }}
+                                                            {% if firstLevelId == currentCategoryId %}
+                                                                <span class="current-indicator"></span>
+                                                            {% endif %}
+                                                        </span>
+                                                        
+                                                        {# Проверяем, есть ли текущая категория среди детей #}
+                                                        {% set shouldExpand = false %}
+                                                        {% if firstLevelItem.children is defined %}
+                                                            {% for secondLevelItem in firstLevelItem.children %}
+                                                                {% if secondLevelItem.category.id == currentCategoryId %}
+                                                                    {% set shouldExpand = true %}
+                                                                    {% break %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        
+                                                        <button class="subcategory-expand{% if shouldExpand or firstLevelId == currentCategoryId %} expanded{% endif %}" data-subcategory-expand>
+                                                            {% if shouldExpand or firstLevelId == currentCategoryId %}
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                                    <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                                </svg>
+                                                            {% else %}
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                                    <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                                    <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                                </svg>
+                                                            {% endif %}
+                                                        </button>
+                                                    </div>
+                                                    <div class="subcategory-items" data-subcategory-items 
+                                                         {% if shouldExpand or firstLevelId == currentCategoryId %}style="display: block;"{% endif %}>
+                                                        {% if firstLevelItem.children is defined %}
+                                                            {% for secondLevelItem in firstLevelItem.children %}
+                                                                {% set secondLevelCategory = secondLevelItem.category %}
+                                                                {% set secondLevelName = secondLevelCategory.translated.name %}
+                                                                {% set secondLevelId = secondLevelCategory.id %}
+                                                                {% set secondLevelCustomFields = secondLevelCategory.customFields|default({}) %}
+                                                                {% set secondLevelShouldShow = secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                                                
+                                                                {% if secondLevelShouldShow %}
+                                                                    {% set subcategoryName = secondLevelName|lower %}
+                                                                    
+                                                                    <div class="subcategory-subitem" 
+                                                                         data-subcategory-id="{{ secondLevelId }}"
+                                                                         data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
+                                                                         {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                                         {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                                                         {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                                        <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                                            {{ secondLevelName }}
+                                                                        </span>
+                                                                        {% if secondLevelId == currentCategoryId %}
+                                                                            <span class="current-indicator"></span>
+                                                                        {% endif %}
+                                                                        {% if 'Badge' in secondLevelName %}
+                                                                            <span class="item-badge">Badge</span>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% elseif firstLevelShouldShow %}
+                                                {# Simple category without subcategories #}
+                                                {% set subcategoryName = firstLevelName|lower %}
+                                                <div class="subcategory-item" 
+                                                     data-subcategory-id="{{ firstLevelId }}"
+                                                     data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
+                                                     {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                     {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                                     {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                    <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                        {{ firstLevelName }}
+                                                    </span>
+                                                    {% if firstLevelId == currentCategoryId %}
+                                                        <span class="current-indicator"></span>
+                                                    {% endif %}
+                                                    {% if 'Badge' in firstLevelName %}
+                                                        <span class="item-badge">Badge</span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %} 
+                        </div>
+                    {% endif %}
+                {% else %}
+                    {# Показываем все игровые категории, которые отмечены для сайдбара #}
+                    {% for gameItem in chooseGameCategory.children %}
+                        {% set category = gameItem.category %}
+                        {% set name = category.translated.name %}
+                        {% set categoryId = category.id %}
+                        {% set customFields = category.customFields|default({}) %}
+                        {% set shouldShowCategory = customFields.mm_theme_sidebar_enabled|default(false) %}
+                        
+                        {# Проверяем, есть ли видимые дочерние категории #}
+                        {% set hasVisibleChildren = false %}
+                        {% if gameItem.children is defined %}
+                            {% for firstLevelItem in gameItem.children %}
+                                {% set firstLevelCustomFields = firstLevelItem.category.customFields|default({}) %}
+                                {% if firstLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                    {% set hasVisibleChildren = true %}
+                                    {% break %}
+                                {% endif %}
+                                {% if firstLevelItem.children is defined %}
+                                    {% for secondLevelItem in firstLevelItem.children %}
+                                        {% set secondLevelCustomFields = secondLevelItem.category.customFields|default({}) %}
+                                        {% if secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                            {% set hasVisibleChildren = true %}
+                                            {% break %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                {% if hasVisibleChildren %}
+                                    {% break %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% if shouldShowCategory or hasVisibleChildren %}
+                            <div class="menu-category" 
+                                 data-category-id="{{ categoryId }}"
+                                 {% if shouldShowCategory %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
+                                 {% if hasVisibleChildren %}data-expandable="true"{% endif %}>
+                                
+                                <div class="category-header">
+                                    {# Иконка категории #}
+                                    {% set iconHandler = category.translated.customFields.mm_theme_sidebar_icon|default(null) %}
+                                    {% if iconHandler %}
+                                        {% set iconMediaCollection = searchMedia([iconHandler], context.context) %}
+                                        {% if iconMediaCollection %}
+                                            {% set iconImage = iconMediaCollection.get(iconHandler) %}
+                                            <span class="category-icon">
+                                                <img src="{{ iconImage.url }}" alt="{{ name }}" loading="lazy">
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    <span class="category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} font-bold{% endif %}">{{ name }}</span>
+                                    
+                                    {% if hasVisibleChildren %}
+                                        <button class="expand-button" data-expand-button>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                            </svg>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if hasVisibleChildren %}
+                                    <div class="subcategories" data-subcategories>
+                                        {% for firstLevelItem in gameItem.children %}
+                                            {% set firstLevelCategory = firstLevelItem.category %}
+                                            {% set firstLevelName = firstLevelCategory.translated.name %}
+                                            {% set firstLevelId = firstLevelCategory.id %}
+                                            {% set firstLevelCustomFields = firstLevelCategory.customFields|default({}) %}
+                                            {% set firstLevelShouldShow = firstLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                            
+                                            {# Проверяем, есть ли видимые дочерние элементы #}
+                                            {% set firstLevelHasVisibleChildren = false %}
+                                            {% if firstLevelItem.children is defined %}
+                                                {% for secondLevelItem in firstLevelItem.children %}
+                                                    {% set secondLevelCustomFields = secondLevelItem.category.customFields|default({}) %}
+                                                    {% if secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                                        {% set firstLevelHasVisibleChildren = true %}
+                                                        {% break %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            
+                                            {% if firstLevelShouldShow or firstLevelHasVisibleChildren %}
+                                                {% if firstLevelHasVisibleChildren %}
+                                                    {# Category with subcategories #}
+                                                    <div class="subcategory-group" data-subcategory-group>
+                                                        <div class="subcategory-title" 
+                                                             data-subcategory-id="{{ firstLevelId }}"
+                                                             {% if firstLevelShouldShow %}data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"{% endif %}
+                                                             data-expandable="true"
+                                                             {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                            <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                                {{ firstLevelName }}
+                                                                {% if firstLevelId == currentCategoryId %}
+                                                                    <span class="current-indicator"></span>
+                                                                {% endif %}
+                                                            </span>
+                                                            
+                                                            <button class="subcategory-expand" data-subcategory-expand>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                                    <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                                    <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                        <div class="subcategory-items" data-subcategory-items>
+                                                            {% if firstLevelItem.children is defined %}
+                                                                {% for secondLevelItem in firstLevelItem.children %}
+                                                                    {% set secondLevelCategory = secondLevelItem.category %}
+                                                                    {% set secondLevelName = secondLevelCategory.translated.name %}
+                                                                    {% set secondLevelId = secondLevelCategory.id %}
+                                                                    {% set secondLevelCustomFields = secondLevelCategory.customFields|default({}) %}
+                                                                    {% set secondLevelShouldShow = secondLevelCustomFields.mm_theme_sidebar_enabled|default(false) %}
+                                                                    
+                                                                    {% if secondLevelShouldShow %}
+                                                                        {% set subcategoryName = secondLevelName|lower %}
+                                                                        
+                                                                        <div class="subcategory-subitem" 
+                                                                             data-subcategory-id="{{ secondLevelId }}"
+                                                                             data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
+                                                                             {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                                             {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                                                             {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                                            <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                                                {{ secondLevelName }}
+                                                                            </span>
+                                                                            {% if secondLevelId == currentCategoryId %}
+                                                                                <span class="current-indicator"></span>
+                                                                            {% endif %}
+                                                                            {% if 'Badge' in secondLevelName %}
+                                                                                <span class="item-badge">Badge</span>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% elseif firstLevelShouldShow %}
+                                                    {# Simple category without subcategories #}
+                                                    {% set subcategoryName = firstLevelName|lower %}
+                                                    <div class="subcategory-item" 
+                                                         data-subcategory-id="{{ firstLevelId }}"
+                                                         data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
+                                                         {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
+                                                         {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
+                                                         {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
+                                                        <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                            {{ firstLevelName }}
+                                                        </span>
+                                                        {% if firstLevelId == currentCategoryId %}
+                                                            <span class="current-indicator"></span>
+                                                        {% endif %}
+                                                        {% if 'Badge' in firstLevelName %}
+                                                            <span class="item-badge">Badge</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %} 
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="menu-footer">
+        <button class="show-all-button" data-show-all-button style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9L12 15L18 9"/>
+            </svg>
+            Show All Categories
+        </button>
+    </div>
+</div>
+
+{% endblock %}

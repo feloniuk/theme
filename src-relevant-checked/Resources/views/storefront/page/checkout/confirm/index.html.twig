@@ -1,0 +1,133 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm %}
+  {% if isAmazonPayOneClickCheckout %}
+      {% block page_checkout_confirm_swag_amazon_pay_confirm_plugin %}
+          <div id="swag-amazon-pay-confirm-plugin-wrapper"
+                class="is--hidden"
+                data-amazon-pay-confirm-page="true"
+                data-amazon-pay-confirm-page-options='{
+                  "checkoutSessionId": "{{ amazonPayConfirmExtension.checkoutSessionId }}"
+                }'>
+          </div>
+      {% endblock %}
+  {% endif %}
+
+  {% block page_checkout_confirm_header %}{% endblock %}
+
+  {{ block('page_checkout_confirm_alerts') }}
+
+  {% block page_checkout_confirm_tos %}{% endblock %}
+
+  <div class="confirm-payment-box payment">
+    {% block page_checkout_confirm_payment_selector %}
+      <div class="confirm-payment-selector payment__methods">
+        {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-payment-selector.html.twig' %}
+      </div>
+    {% endblock %}
+
+    <div class="confirm-content">
+      {% block page_checkout_confirm_payment %}
+        <div class="confirm-payment-body">
+          {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-payment-body.html.twig' %}
+        </div>
+      {% endblock %}
+
+      {% block page_checkout_additional %}
+        {% if config('core.cart.showCustomerComment') %}
+          {% block page_checkout_finish_customer_comment %}
+            <div class="pb-4">
+              {{ block('page_checkout_confirm_customer_comment_control') }}
+            </div>
+
+            <div class="pb-4">
+              {% sw_include '@Storefront/storefront/page/checkout/confirm/payment-messengers.html.twig' %}
+            </div>
+          {% endblock %}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block page_checkout_summary_header %}{% endblock %}
+
+{% block page_checkout_aside_cart %}
+  {% block page_checkout_confirm_table_items %}
+      {% for lineItem in page.cart.lineItems %}
+          {% block page_checkout_confirm_table_item %}
+              {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+                  redirectTo: 'frontend.checkout.confirm.page',
+                  showTaxPrice: true,
+                  displayMode: 'offcanvas'
+              } %}
+          {% endblock %}
+      {% endfor %}
+  {% endblock %}
+
+  {{ block('page_checkout_confirm_hidden_line_items_information') }}
+
+  {{ block('page_checkout_smile_promotion_app') }}
+
+  {% block page_checkout_confirm_address %}
+    <div class="confirm-address">
+      {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-address.html.twig' %}
+    </div>
+  {% endblock %}
+{% endblock %}
+
+{% block page_checkout_summary_list_container %}
+  {% sw_include '@Storefront/storefront/page/checkout/summary.html.twig' %}
+{% endblock %}
+
+{% block page_checkout_aside_actions %}
+  {% block page_checkout_confirm_tos_custom %}
+    <div class="confirm-tos mb-4">
+      {% block page_checkout_confirm_tos_header %}{% endblock %}
+
+      {% block page_checkout_confirm_revocation_notice %}
+        {% if config('confirm.revocationNotice') %}
+          <div class="revocation-notice">{{ block('page_checkout_confirm_revocation_notice_link') }}</div>
+        {% endif %}
+      {% endblock %}
+
+      {% block page_checkout_confirm_tos_control %}
+          {% block page_checkout_confirm_tos_control_checkbox %}
+              <input type="checkbox"
+                      class="d-none"
+                      required="required"
+                      id="tos"
+                      form="confirmOrderForm"
+                      checked
+                      name="tos">
+          {% endblock %}
+
+          {% block page_checkout_confirm_tos_control_label %}
+              <div>
+                  {{ "checkout.confirmTermsText"|trans({
+                      '%url%': path('frontend.cms.page', { id: config('core.basicInformation.tosPage') })
+                  })|raw }}
+              </div>
+          {% endblock %}
+      {% endblock %}
+    </div>
+  {% endblock %}
+
+  <div class="checkout-aside-action">
+    <form id="confirmOrderForm"
+      action="{{ path('frontend.checkout.custom.order.create') }}"
+      data-form-preserver="true"
+      data-form-submit-loader="true"
+      data-form-add-history="true"
+      data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
+      method="post">
+
+      <input type="hidden" name="orderMessengers" data-order-messengers/>
+      <input type="hidden" name="gaClientId" data-ga-client/>
+
+      {# {{dump(page.cart.errors)}} #}
+
+      {{ block('page_checkout_confirm_form_submit') }}
+    </form>
+  </div>
+{% endblock %}

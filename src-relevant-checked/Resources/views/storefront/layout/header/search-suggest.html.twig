@@ -1,0 +1,75 @@
+{% sw_extends '@Storefront/storefront/layout/header/search-suggest.html.twig' %}
+
+{% block layout_search_suggest_result_price %}
+	{% set fromPrice = product.customFields.custom_options_min_price %}
+	{% set factor = context.currency.factor %}
+	{% if context.currency.isoCode === 'USD' and product.customFields.custom_options_min_price_usd is not empty %}
+			{% set fromPrice = product.customFields.custom_options_min_price_usd %}
+			{% set factor = 1 %}
+	{% endif %}
+
+	{% set discount = product.customFields.custom_options_discount %}
+	{% set simplePrice = product.calculatedPrice.unitPrice %}
+
+	{% set additionalPrice = product.customFields.custom_options_ghost_additional_price %}
+	{% if context.currency.isoCode === 'USD' and product.customFields.custom_options_ghost_additional_price_usd is not empty %}
+			{% set additionalPrice = product.customFields.custom_options_ghost_additional_price_usd %}
+	{% endif %}
+	{% set additionalPriceMode = product.customFields.custom_options_ghost_additional_price_mode %}
+	{% set additionalPriceRounding = product.customFields.custom_options_ghost_additional_price_rounding %}
+
+	<div class="col-auto search-suggest-product-price mr-2">
+		{% if discount == empty and additionalPrice == empty %}
+			{% if fromPrice != empty %}
+				<span class="from-price-label">{{ 'mm-theme.product.from' | trans }}</span>
+				{{ (0 + fromPrice)|currency }}
+			{% else %}
+				{{ simplePrice|currency }}
+			{% endif %}
+		{% else %}
+			{% if fromPrice != empty %}
+				{% set discountedPrice = fromPrice * (100 - discount) / 100 %}
+
+				{% if additionalPriceMode is empty or additionalPriceMode == 'addition' %}
+						{% set ghostPrice = fromPrice + (additionalPrice * factor) %}
+				{% elseif additionalPriceMode == 'multiplication' %}
+						{% set ghostPrice = fromPrice * (additionalPrice * factor) %}
+						{% set ghostPrice = ghostPriceRoundUp(ghostPrice, additionalPriceRounding) %}
+				{% endif %}
+
+				<span class="from-price-label">{{ 'mm-theme.product.from' | trans }}</span>
+				<span class="new-price-label">{{ discountedPrice|currency }}</span>
+				<span class="old-price-label">{{ ghostPrice|currency }}</span>
+			{% else %}
+				{% set discountedPrice = simplePrice * (100 - discount) / 100 %}
+
+				{% if additionalPriceMode is empty or additionalPriceMode == 'addition' %}
+						{% set ghostPrice = simplePrice + (additionalPrice * factor) %}
+				{% elseif additionalPriceMode == 'multiplication' %}
+						{% set ghostPrice = simplePrice * (additionalPrice * factor) %}
+						{% set ghostPrice = ghostPriceRoundUp(ghostPrice, additionalPriceRounding) %}
+				{% endif %}
+
+				<span class="new-price-label">{{ discountedPrice|currency }}</span>
+				<span class="old-price-label">{{ ghostPrice|currency }}</span>
+			{% endif %}
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block layout_search_suggest_result_total_result %}
+		<li class="js-result search-suggest-total">
+			<div class="row align-items-center g-0">
+					{% block layout_search_suggest_result_total_link %}
+							<div class="col">
+									<a href="{{ path('frontend.search.page') }}?search={{ page.searchTerm }}"
+											title="{{ "header.searchAllResults"|trans|striptags }}"
+											class="search-suggest-total-link">
+											{{ "header.searchAllResults"|trans|sw_sanitize }}
+											({{page.searchResult.total}})
+									</a>
+							</div>
+					{% endblock %}
+			</div>
+	</li>
+{% endblock %}

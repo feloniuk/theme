@@ -1,0 +1,91 @@
+body {
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+
+	*:focus {
+		outline: none;
+	}
+
+	@keyframes input_background_autofill {
+		100% {
+			-webkit-text-fill-color: $input-color;
+			-webkit-box-shadow: 0 0 0 30px $input-bg inset;
+		}
+	}
+
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	input:-webkit-autofill:active,
+	textarea:-webkit-autofill,
+	textarea:-webkit-autofill:hover,
+	textarea:-webkit-autofill:focus,
+	textarea:-webkit-autofill:active,
+	select:-webkit-autofill,
+	select:-webkit-autofill:hover,
+	select:-webkit-autofill:focus,
+	select:-webkit-autofill:active {
+		animation: input_background_autofill 0s forwards;
+
+		-webkit-text-fill-color: $input-color;
+		-webkit-box-shadow: 0 0 0 30px $input-bg inset;
+
+		background-color: inherit;
+	}
+
+	font-feature-settings: 'ss01' 1, 'ss03' 1, 'ss05' 1, 'ss08' 1, 'ss09' 1, 'ss11' 1;
+}
+
+:root {
+	--font-light: 400;
+	--font-regular: 400;
+	--font-bold: 700;
+
+	--primary: hsl(358, 79%, 59%);
+	--color-white: white;
+	--color-black: black;
+	--color-primary: hsl(358, 79%, 59%);
+	--color-theme-50: hsl(229, 25%, 9%);
+	--color-theme-100: hsl(229, 25%, 13%);
+	--color-theme-200: hsl(229, 25%, 15%);
+	--color-theme-300: hsl(229, 25%, 15%);
+	--color-theme-400: hsl(229, 25%, 18%);
+	--color-theme-450: hsl(229, 25%, 20%);
+	--color-theme-500: hsl(229, 25%, 25%);
+	--color-theme-550: hsl(228, 25%, 45%);
+	--color-theme-600: hsl(229, 25%, 60%);
+	--color-theme-700: hsl(229, 25%, 75%);
+	--color-theme-800: hsl(229, 25%, 85%);
+	--color-theme-900: hsl(229, 25%, 95%);
+
+	--color-alliance: hsl(213, 76%, 50%);
+	--color-horde: hsl(0, 64%, 50%);
+
+	--gap-size: 20px;
+
+	--grid-slider-gap-size: 14px;
+	--shadow-size: var(--gap-size);
+
+	--focus: 0 0 var(--shadow-size / 2) hsl(223, 10%, 45%);
+	--shadow: 0 0 var(--shadow-size) hsla(223, 10%, 5%, 0.4);
+}
+
+* {
+	scrollbar-color: var(--color-theme-100);
+}
+
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+	background-color: var(--color-theme-100);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--color-theme-600);
+	border-radius: 50px;
+	outline: none;
+
+	&:hover {
+		background-color: var(--color-theme-700);
+	}
+}
