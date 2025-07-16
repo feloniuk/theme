@@ -33,6 +33,7 @@ export default class WowBoostMenuPlugin extends Plugin {
         this._initCurrentContext();
         this._loadSwiperAndInit();
         this._initShowAllLogic();
+        this._addHoverEffects();
     }
 
     _initCurrentContext() {
@@ -60,6 +61,25 @@ export default class WowBoostMenuPlugin extends Plugin {
                 contextCategory.classList.add('active-parent');
             }
         }
+    }
+
+    _addHoverEffects() {
+        // Добавляем hover эффекты для всех интерактивных элементов
+        const hoverElements = this.el.querySelectorAll(
+            '.menu-category, .subcategory-item, .subcategory-title, .subcategory-subitem, a.subcategory-item, a.subcategory-title, a.subcategory-subitem'
+        );
+
+        hoverElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                if (!element.classList.contains('current-category')) {
+                    element.classList.add('hover-effect');
+                }
+            });
+
+            element.addEventListener('mouseleave', () => {
+                element.classList.remove('hover-effect');
+            });
+        });
     }
 
     async _loadSwiperAndInit() {
@@ -199,22 +219,13 @@ export default class WowBoostMenuPlugin extends Plugin {
             category.addEventListener('click', this._onCategoryClick.bind(this));
         });
 
-        // Обработка кликов по подкатегориям (простые элементы без детей)
-        const subcategories = this.el.querySelectorAll(this.options.subcategorySelector);
-        subcategories.forEach(subcategory => {
-            subcategory.addEventListener('click', this._onSubcategoryClick.bind(this));
-        });
-
-        // Обработка кликов по подэлементам (вложенные элементы третьего уровня)
-        const subcategorySubitems = this.el.querySelectorAll(this.options.subcategorySubitemSelector);
-        subcategorySubitems.forEach(subitem => {
-            subitem.addEventListener('click', this._onSubcategoryClick.bind(this));
-        });
-
-        // Обработка кликов по заголовкам групп подкатегорий (второй уровень)
-        const subcategoryTitles = this.el.querySelectorAll(this.options.subcategoryTitleSelector);
+        // Обработка кликов по заголовкам групп подкатегорий (второй уровень) - только для кнопок expand
+        const subcategoryTitles = this.el.querySelectorAll('a.subcategory-title');
         subcategoryTitles.forEach(title => {
-            title.addEventListener('click', this._onSubcategoryTitleClick.bind(this));
+            const expandButton = title.querySelector('[data-subcategory-expand]');
+            if (expandButton) {
+                expandButton.addEventListener('click', this._onSubcategoryExpandClick.bind(this));
+            }
         });
 
         // Обработка кликов по кнопкам раскрытия основных категорий
@@ -311,93 +322,9 @@ export default class WowBoostMenuPlugin extends Plugin {
         });
     }
 
-    _onSubcategoryClick(event) {
-        event.stopPropagation();
-
-        const subcategory = event.currentTarget;
-        const subcategoryId = subcategory.dataset.subcategoryId;
-        const subcategoryUrl = subcategory.dataset.subcategoryUrl;
-        const subcategoryName = subcategory.textContent.trim();
-        const difficulty = subcategory.dataset.difficulty;
-
-        // Добавляем визуальную обратную связь
-        this._addClickFeedback(subcategory);
-
-        // Если есть URL, переходим по нему
-        if (subcategoryUrl) {
-            window.location.href = subcategoryUrl;
-            return;
-        }
-
-        // Публикуем событие
-        this.$emitter.publish('subcategoryClicked', {
-            subcategoryId,
-            subcategoryName,
-            difficulty,
-            subcategoryElement: subcategory
-        });
-    }
-
-    _onSubcategoryTitleClick(event) {
-        // Проверяем, что клик не был по кнопке expand
-        if (event.target.closest('[data-subcategory-expand]')) {
-            return;
-        }
-
-        // Останавливаем всплытие события, чтобы не сработал клик родительской категории
-        event.stopPropagation();
-
-        const title = event.currentTarget;
-        const subcategoryId = title.dataset.subcategoryId;
-        const subcategoryUrl = title.dataset.subcategoryUrl;
-        const subcategoryName = title.querySelector('span').textContent.trim();
-        const isExpandable = title.dataset.expandable === 'true';
-
-        // Добавляем визуальную обратную связь
-        this._addClickFeedback(title);
-
-        // Если есть подкатегории (раскрываемый), раскрываем/сворачиваем
-        if (isExpandable) {
-            const expandButton = title.querySelector('[data-subcategory-expand]');
-            const subcategoryGroup = title.closest('.subcategory-group');
-            const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
-
-            if (expandButton && subcategoryItems) {
-                const isExpanded = subcategoryItems.style.display === 'block';
-
-                if (isExpanded) {
-                    this._collapseSubcategoryItems(subcategoryItems, expandButton);
-                } else {
-                    this._expandSubcategoryItems(subcategoryItems, expandButton);
-                }
-            }
-
-            // Публикуем событие
-            this.$emitter.publish('subcategoryExpanded', {
-                subcategoryId,
-                subcategoryName,
-                subcategoryElement: title
-            });
-
-            return;
-        }
-
-        // Если не раскрываемый и есть URL, переходим по нему
-        if (subcategoryUrl) {
-            window.location.href = subcategoryUrl;
-            return;
-        }
-
-        // Публикуем событие
-        this.$emitter.publish('subcategoryTitleClicked', {
-            subcategoryId,
-            subcategoryName,
-            subcategoryElement: title
-        });
-    }
-
     _onExpandButtonClick(event) {
         event.stopPropagation();
+        event.preventDefault();
 
         const button = event.currentTarget;
         const category = button.closest('.menu-category');
@@ -417,6 +344,7 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     _onSubcategoryExpandClick(event) {
         event.stopPropagation();
+        event.preventDefault();
 
         const button = event.currentTarget;
         const subcategoryGroup = button.closest('.subcategory-group');
@@ -436,8 +364,15 @@ export default class WowBoostMenuPlugin extends Plugin {
     _expandSubcategories(subcategories, button) {
         const category = button.closest('.menu-category');
 
-        // Добавляем полоску слева для выделения
-        category.classList.add('expanded');
+        // Добавляем полоску слева для выделения (но не для контекстных категорий)
+        if (!category.classList.contains('context-category')) {
+            category.classList.add('expanded');
+        }
+
+        // Для контекстных категорий убираем класс, чтобы они могли быть свернуты
+        if (subcategories.classList.contains('context-expanded')) {
+            subcategories.classList.remove('context-expanded');
+        }
 
         subcategories.style.display = 'block';
         subcategories.style.opacity = '0';
@@ -469,8 +404,10 @@ export default class WowBoostMenuPlugin extends Plugin {
     _collapseSubcategories(subcategories, button) {
         const category = button.closest('.menu-category');
 
-        // Убираем полоску слева
-        category.classList.remove('expanded');
+        // Убираем полоску слева только если это не контекстная категория
+        if (!category.classList.contains('context-category')) {
+            category.classList.remove('expanded');
+        }
 
         subcategories.style.transition = 'all 0.3s ease';
         subcategories.style.opacity = '0';

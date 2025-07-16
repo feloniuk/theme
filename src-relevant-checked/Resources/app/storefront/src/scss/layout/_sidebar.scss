@@ -134,6 +134,7 @@ $header-height: 65px;
       padding: 16px 0;
       text-decoration: none;
       color: inherit;
+      cursor: pointer;
       
       &:hover {
         .category-title {
@@ -223,6 +224,7 @@ $header-height: 65px;
         text-decoration: none;
         transition: all 0.2s ease;
         position: relative;
+        cursor: pointer;
 
         &:hover {
           color: #ffffff;
@@ -230,6 +232,11 @@ $header-height: 65px;
         }
 
         &[data-current="true"] {
+          color: #ffffff !important;
+          font-weight: 600;
+        }
+
+        &.current-category {
           color: #ffffff !important;
           font-weight: 600;
         }
@@ -281,9 +288,20 @@ $header-height: 65px;
           text-decoration: none;
           transition: all 0.2s ease;
           font-weight: 500;
+          cursor: pointer;
 
           &:hover {
             color: #ffffff;
+          }
+
+          &[data-current="true"] {
+            color: #ffffff !important;
+            font-weight: 600;
+          }
+
+          &.current-category {
+            color: #ffffff !important;
+            font-weight: 600;
           }
 
           .font-bold {
@@ -336,6 +354,7 @@ $header-height: 65px;
             color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
             transition: all 0.2s ease;
+            cursor: pointer;
 
             &:hover {
               color: #ffffff;
@@ -343,6 +362,11 @@ $header-height: 65px;
             }
 
             &[data-current="true"] {
+              color: #ffffff !important;
+              font-weight: 600;
+            }
+
+            &.current-category {
               color: #ffffff !important;
               font-weight: 600;
             }
