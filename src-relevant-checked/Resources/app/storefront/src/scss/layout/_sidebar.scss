@@ -52,24 +52,15 @@ $header-height: 65px;
 .with-sidebar {
   flex: 1;
   display: flex;
-  overflow: auto;
+  // overflow: auto;
   justify-content: flex-start;
 
   &>* {
     width: 100%;
     max-width: $max-content-width;
-    overflow: auto;
+    // overflow: auto;
     margin-left: auto;
     margin-right: auto;
-
-    @media (min-width: $max-content-width) and (max-width: $max-content-width + ($sidebar-width * 2)) {
-      margin-right: calc((100vw - #{$max-content-width}) / 2);
-    }
-
-    @media (min-width: $max-content-width + ($sidebar-width * 2)) {
-      margin-left: 0;
-      margin-right: 0;
-    }
   }
 
   @media (min-width: $max-content-width + ($sidebar-width * 2)) {
