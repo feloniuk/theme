@@ -1,0 +1,65 @@
+{% block component_address %}
+  <div
+    class="address">
+    {% if address.company %}
+      <p>
+        {{ address.company }}
+        {% if address.department %}
+          -
+          {{ address.department }}
+        {% endif %}
+      </p>
+    {% endif %}
+
+    <p>
+      {% if address.salutation.salutationKey != 'not_specified' %}
+        {{ address.salutation.translated.displayName }}
+      {% endif %}
+
+      {% if address.title %}
+        {{ address.title }}
+        <br/>
+      {% endif %}
+
+      {{ address.firstName }}
+      {% if address.lastName != 'NA' and address.lastName != '' %}
+        {# {{ address.lastName }} #}
+      {% endif %}<br/>
+
+      {% if address.street != 'NA' and address.street != '' %}
+        {{ address.street }}
+        <br/>
+      {% endif %}
+
+      {% if address.additionalAddressLine1 %}
+        {{ address.additionalAddressLine1 }}
+        <br/>
+      {% endif %}
+
+      {% if address.additionalAddressLine2  %}
+        {{ address.additionalAddressLine2 }}
+        <br/>
+      {% endif %}
+
+      {% if address.phoneNumber %}
+        {{ address.phoneNumber }}
+        <br/>
+      {% endif %}
+
+      {% if address.zipcode != 'NA' and address.zipcode != '' %}
+        {{ address.zipcode }}
+      {% endif %}
+      {% if address.city != 'NA' and address.city != '' %}
+        {{ address.city }}
+        <br/>
+      {% endif %}
+
+      {% if address.countryState != '' and address.zipcode != '' %}
+        {{ address.countryState.translated.name }}
+        <br/>
+      {% endif %}
+
+      {{ address.country.translated.name }}
+    </p>
+  </div>
+{% endblock %}

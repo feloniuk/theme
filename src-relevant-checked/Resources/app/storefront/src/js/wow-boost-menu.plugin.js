@@ -200,14 +200,6 @@ export default class WowBoostMenuPlugin extends Plugin {
             category.addEventListener('click', this._onCategoryClick.bind(this));
         });
 
-        const subcategoryTitles = this.el.querySelectorAll('a.subcategory-title');
-        subcategoryTitles.forEach(title => {
-            const expandButton = title.querySelector('[data-subcategory-expand]');
-            if (expandButton) {
-                expandButton.addEventListener('click', this._onSubcategoryExpandClick.bind(this));
-            }
-        });
-
         const expandButtons = this.el.querySelectorAll(this.options.expandButtonSelector);
         expandButtons.forEach(button => {
             button.addEventListener('click', this._onExpandButtonClick.bind(this));
@@ -243,6 +235,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _onCategoryClick(event) {
+        // Проверяем, был ли клик по кнопке expand или add
         if (event.target.closest('[data-expand-button]') ||
             event.target.closest('[data-add-button]')) {
             return;
@@ -256,6 +249,13 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         this._addClickFeedback(category);
 
+        // Если категория имеет URL, сразу переходим по ней
+        if (categoryUrl) {
+            window.location.href = categoryUrl;
+            return;
+        }
+
+        // Если категория раскрываемая, но не имеет URL, то переключаем состояние
         if (isExpandable) {
             const expandButton = category.querySelector(this.options.expandButtonSelector);
             const subcategories = category.querySelector(this.options.subcategoriesSelector);
@@ -269,11 +269,6 @@ export default class WowBoostMenuPlugin extends Plugin {
                 categoryName,
                 categoryElement: category
             });
-        }
-
-        if (!isExpandable && categoryUrl) {
-            window.location.href = categoryUrl;
-            return;
         }
 
         this.$emitter.publish('categoryClicked', {
@@ -293,7 +288,13 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         if (!subcategories) return;
 
-        this._toggleSubcategories(subcategories, button);
+        const isExpanded = subcategories.style.display === 'block' || subcategories.classList.contains('context-expanded');
+        
+        if (isExpanded) {
+            this._collapseSubcategories(subcategories, button);
+        } else {
+            this._expandSubcategories(subcategories, button);
+        }
     }
 
     _onSubcategoryExpandClick(event) {
@@ -306,7 +307,13 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         if (!subcategoryItems) return;
 
-        this._toggleSubcategoryItems(subcategoryItems, button);
+        const isExpanded = subcategoryItems.style.display === 'block';
+        
+        if (isExpanded) {
+            this._collapseSubcategoryItems(subcategoryItems, button);
+        } else {
+            this._expandSubcategoryItems(subcategoryItems, button);
+        }
     }
 
     // ИСПРАВЛЕННЫЕ МЕТОДЫ ОТКРЫТИЯ/ЗАКРЫТИЯ
@@ -331,10 +338,12 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _isElementExpanded(element) {
-        // Унифицированная проверка состояния элемента
-        return element.style.display === 'block' || 
-               element.classList.contains('expanded') ||
-               element.classList.contains('context-expanded');
+        // Более надежная проверка состояния элемента
+        const isDisplayed = element.style.display === 'block';
+        const hasExpandedClass = element.classList.contains('expanded');
+        const hasContextClass = element.classList.contains('context-expanded');
+        
+        return isDisplayed || hasExpandedClass || hasContextClass;
     }
 
     _expandSubcategories(subcategories, button) {
@@ -354,11 +363,18 @@ export default class WowBoostMenuPlugin extends Plugin {
         // Обновляем иконку
         this._updateButtonIcon(button, true);
 
-        // Анимация
-        this._animateExpand(subcategories);
+        // Анимация появления (такая же как у подкатегорий)
+        subcategories.style.opacity = '0';
+        subcategories.style.transform = 'translateY(-8px)';
+
+        requestAnimationFrame(() => {
+            subcategories.style.transition = 'all 0.3s ease';
+            subcategories.style.opacity = '1';
+            subcategories.style.transform = 'translateY(0)';
+        });
 
         // Обновляем Swiper после анимации
-        this._updateSwiperAfterDelay(300);
+        this._updateSwiperAfterDelay(350);
 
         this.$emitter.publish('subcategoriesExpanded', { subcategories, button });
     }
@@ -366,8 +382,15 @@ export default class WowBoostMenuPlugin extends Plugin {
     _collapseSubcategories(subcategories, button) {
         const category = button.closest('.menu-category');
 
+        // Обновляем иконку сразу
+        this._updateButtonIcon(button, false);
+
         // Анимация сворачивания
-        this._animateCollapse(subcategories, () => {
+        subcategories.style.transition = 'all 0.3s ease';
+        subcategories.style.opacity = '0';
+        subcategories.style.transform = 'translateY(-8px)';
+
+        setTimeout(() => {
             subcategories.style.display = 'none';
             subcategories.classList.remove('expanded', 'context-expanded');
             
@@ -375,12 +398,14 @@ export default class WowBoostMenuPlugin extends Plugin {
                 category.classList.remove('expanded');
             }
 
+            // Сбрасываем стили
+            subcategories.style.transition = '';
+            subcategories.style.opacity = '';
+            subcategories.style.transform = '';
+
             // Обновляем Swiper после завершения анимации
             this._updateSwiperAfterDelay(50);
-        });
-
-        // Обновляем иконку
-        this._updateButtonIcon(button, false);
+        }, 300);
 
         this.$emitter.publish('subcategoriesCollapsed', { subcategories, button });
     }
@@ -390,16 +415,22 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         subcategoryGroup.classList.add('expanded');
         subcategoryItems.style.display = 'block';
-        subcategoryItems.classList.add('expanded');
 
         // Обновляем иконку
         this._updateButtonIcon(button, true);
 
-        // Анимация
-        this._animateExpand(subcategoryItems);
+        // Анимация появления (такая же как у основных категорий)
+        subcategoryItems.style.opacity = '0';
+        subcategoryItems.style.transform = 'translateY(-8px)';
+
+        requestAnimationFrame(() => {
+            subcategoryItems.style.transition = 'all 0.3s ease';
+            subcategoryItems.style.opacity = '1';
+            subcategoryItems.style.transform = 'translateY(0)';
+        });
 
         // Обновляем Swiper после анимации
-        this._updateSwiperAfterDelay(300);
+        this._updateSwiperAfterDelay(350);
 
         this.$emitter.publish('subcategoryItemsExpanded', { subcategoryItems, button });
     }
@@ -407,18 +438,26 @@ export default class WowBoostMenuPlugin extends Plugin {
     _collapseSubcategoryItems(subcategoryItems, button) {
         const subcategoryGroup = button.closest('.subcategory-group');
 
+        // Обновляем иконку
+        this._updateButtonIcon(button, false);
+
         // Анимация сворачивания
-        this._animateCollapse(subcategoryItems, () => {
+        subcategoryItems.style.transition = 'all 0.3s ease';
+        subcategoryItems.style.opacity = '0';
+        subcategoryItems.style.transform = 'translateY(-8px)';
+
+        setTimeout(() => {
             subcategoryItems.style.display = 'none';
-            subcategoryItems.classList.remove('expanded');
             subcategoryGroup.classList.remove('expanded');
+
+            // Сбрасываем стили
+            subcategoryItems.style.transition = '';
+            subcategoryItems.style.opacity = '';
+            subcategoryItems.style.transform = '';
 
             // Обновляем Swiper после завершения анимации
             this._updateSwiperAfterDelay(50);
-        });
-
-        // Обновляем иконку
-        this._updateButtonIcon(button, false);
+        }, 300);
 
         this.$emitter.publish('subcategoryItemsCollapsed', { subcategoryItems, button });
     }
@@ -441,27 +480,6 @@ export default class WowBoostMenuPlugin extends Plugin {
             `;
             button.classList.remove('expanded');
         }
-    }
-
-    _animateExpand(element) {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(-10px)';
-
-        requestAnimationFrame(() => {
-            element.style.transition = 'all 0.3s ease';
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        });
-    }
-
-    _animateCollapse(element, callback) {
-        element.style.transition = 'all 0.3s ease';
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(-10px)';
-
-        setTimeout(() => {
-            callback();
-        }, 300);
     }
 
     _updateSwiperAfterDelay(delay = 100) {

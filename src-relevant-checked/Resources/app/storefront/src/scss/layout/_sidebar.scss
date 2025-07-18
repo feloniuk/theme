@@ -224,12 +224,12 @@ $header-height: 65px;
 
         &[data-current="true"] {
           color: #ffffff !important;
-          font-weight: 600;
+          // font-weight: 600;
         }
 
         &.current-category {
           color: #ffffff !important;
-          font-weight: 600;
+          // font-weight: 600;
         }
 
         &[data-difficulty="heroic"] {
@@ -254,7 +254,7 @@ $header-height: 65px;
           background: #f59e0b;
           color: #000;
           font-size: 11px;
-          font-weight: 600;
+          // font-weight: 600;
           padding: 2px 6px;
           border-radius: 4px;
           margin-left: 8px;
@@ -265,7 +265,7 @@ $header-height: 65px;
         &.active-parent {
           .subcategory-title {
             color: #ffffff !important;
-            font-weight: 600;
+            // font-weight: 600;
           }
         }
 
@@ -287,12 +287,12 @@ $header-height: 65px;
 
           &[data-current="true"] {
             color: #ffffff !important;
-            font-weight: 600;
+            // font-weight: 600;
           }
 
           &.current-category {
             color: #ffffff !important;
-            font-weight: 600;
+            // font-weight: 600;
           }
 
           .font-bold {
@@ -354,12 +354,12 @@ $header-height: 65px;
 
             &[data-current="true"] {
               color: #ffffff !important;
-              font-weight: 600;
+              // font-weight: 600;
             }
 
             &.current-category {
               color: #ffffff !important;
-              font-weight: 600;
+              // font-weight: 600;
             }
 
             &[data-difficulty="heroic"] {
@@ -464,4 +464,103 @@ $header-height: 65px;
 
 .font-bold {
   font-weight: 700 !important;
+}
+
+// Добавить к существующим стилям сайдбара
+
+.wow-boost-menu {
+  .menu-category {
+    // Подсветка активной родительской категории
+    &.context-category {
+      .category-title {
+        color: #ffffff !important;
+        // font-weight: 600;
+      }
+      
+      .category-icon img {
+        filter: brightness(1.2);
+      }
+    }
+
+    // Подсветка текущей категории
+    &.current-category {
+      .category-title {
+        color: #ffffff !important;
+        // font-weight: 600;
+      }
+      
+      .category-icon img {
+        filter: brightness(1.2);
+      }
+    }
+
+    // Подсветка активной родительской категории при hover
+    &.active-parent {
+      .category-title {
+        color: #ffffff !important;
+        // font-weight: 600;
+      }
+      
+      .category-icon img {
+        filter: brightness(1.2);
+      }
+    }
+
+    .category-header {
+      // Улучшенная подсветка при наведении
+      &:hover {
+        .category-title {
+          color: #ffffff !important;
+        }
+        
+        .category-icon img {
+          filter: brightness(1.2);
+        }
+      }
+    }
+  }
+
+  // Подсветка активных подкатегорий
+  .subcategory-group {
+    &.active-parent {
+      .subcategory-title {
+        color: #ffffff !important;
+        // font-weight: 600;
+      }
+    }
+  }
+
+  // Плавные переходы для всех элементов
+  .category-title,
+  .subcategory-title,
+  .subcategory-item,
+  .subcategory-subitem {
+    transition: all 0.2s ease;
+  }
+
+  .category-icon img {
+    transition: filter 0.2s ease;
+  }
+
+  // Исправление анимации раскрытия
+  .subcategories {
+    transition: all 0.3s ease;
+    
+    &.expanded,
+    &.context-expanded {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .subcategory-items {
+    transition: all 0.3s ease;
+    
+    &.expanded {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }

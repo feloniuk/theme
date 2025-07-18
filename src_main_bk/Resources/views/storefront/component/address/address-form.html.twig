@@ -1,0 +1,76 @@
+{% sw_extends '@Storefront/storefront/component/address/address-form.html.twig' %}
+
+{% block component_address_form_address_fields %}
+    <div class="row g-2">
+        {% block component_address_form_street %}
+        {% endblock %}
+
+        {% block component_address_form_zipcode_city %}
+        {% endblock %}
+
+        {% block component_address_form_additional_field1 %}
+        {% endblock %}
+
+        {% block component_address_form_additional_field2 %}
+        {% endblock %}
+    </div>
+
+    <div class="row g-2 country-and-state-form-elements" data-country-state-select="true">
+        {% block component_address_form_country %}
+            <div class="form-group col-md-12">
+                {% set initialCountryId = null %}
+
+                {% if data.get('countryId') %}
+                    {% set initialCountryId = data.get('countryId') %}
+                {% elseif page.countries|length == 1 and disableNonShippableCountries is not defined %}
+                    {% set initialCountryId = (page.countries|first).id %}
+                {% endif %}
+
+                {% if formViolations.getViolations("/countryId") is not empty %}
+                    {% set violationPath = "/countryId" %}
+                {% elseif formViolations.getViolations("/#{prefix}/countryId") is not empty %}
+                    {% set violationPath = "/#{prefix}/countryId" %}
+                {% endif %}
+
+                {% block component_address_form_country_label %}
+                    <label class="form-label"
+                            for="{{ idPrefix ~ prefix }}AddressCountry">
+                        {{ "address.countryLabel"|trans|sw_sanitize }}{{ "general.required"|trans|sw_sanitize }}
+                    </label>
+                {% endblock %}
+
+                {% block component_address_form_country_select %}
+                    <select class="country-select form-select{% if violationPath %} is-invalid{% endif %}"
+                            id="{{ idPrefix ~ prefix }}AddressCountry"
+                            name="{{ prefix }}[countryId]"
+                            required="required"
+                            data-initial-country-id="{{ initialCountryId }}">
+                        {% if not initialCountryId %}
+                            <option disabled="disabled"
+                                    value=""
+                                    selected="selected">
+                                {{ "address.countryPlaceholder"|trans|sw_sanitize }}
+                            </option>
+                        {% endif %}
+                        {% for country in page.countries %}
+                            <option {% if country.id == initialCountryId %}
+                                    selected="selected"
+                                    {% endif %}
+                                    value="{{ country.id }}"
+                                    data-zipcode-required="{{ country.postalCodeRequired }}"
+                                    data-vat-id-required="{{ country.vatIdRequired }}"
+                                    data-state-required="{{ country.forceStateInRegistration }}"
+                                    {% if not country.shippingAvailable and disableNonShippableCountries %}
+                                        disabled="disabled"
+                                    {% endif %}>
+                                {{ country.translated.name }}{% if showNoShippingPostfix and not country.shippingAvailable %} {{ "address.countryPostfixNoShipping"|trans|sw_sanitize }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% endblock %}
+            </div>
+
+        {% endblock %}
+    </div>
+{% endblock %}
+

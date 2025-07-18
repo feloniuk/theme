@@ -1,0 +1,44 @@
+.ebay {
+	display: flex;
+	flex-direction: column;
+
+	text-align: center;
+	place-items: center;
+
+	padding: $padding;
+
+	font-size: $font-size-md;
+
+	background-color: $color-theme-400;
+	border-radius: $border-radius-lg;
+
+	&__btn {
+		font-size: $font-size-lg;
+		text-transform: uppercase;
+
+		margin: 0 30px;
+		position: relative;
+
+		line-height: 1.2;
+		padding: $padding / 2;
+
+		white-space: normal;
+	}
+
+	&__spot-event {
+		color: $primary;
+	}
+
+	&__spot-details {
+		font-weight: $font-weight-bold;
+		font-size: $font-size-xl;
+		line-height: 1.4;
+		color: $white;
+
+		margin-bottom: 10px;
+	}
+
+	&__description {
+		margin-bottom: 10px;
+	}
+}

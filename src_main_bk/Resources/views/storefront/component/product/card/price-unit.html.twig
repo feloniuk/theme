@@ -1,0 +1,65 @@
+{% sw_extends '@Storefront/storefront/component/product/card/price-unit.html.twig' %}
+
+{% block component_product_box_price_info %}
+    {% set fromPrice = product.customFields.custom_options_min_price %}
+    {% set factor = context.currency.factor %}
+
+    {% if context.currency.isoCode === 'USD' and product.customFields.custom_options_min_price_usd is not empty %}
+        {% set fromPrice = product.customFields.custom_options_min_price_usd %}
+        {% set factor = 1 %}
+    {% endif %}
+
+    {% set discount = product.customFields.custom_options_discount %}
+    {% set simplePrice = product.calculatedPrice.unitPrice %}
+
+    {% set additionalPrice = product.customFields.custom_options_ghost_additional_price %}
+    {% if context.currency.isoCode === 'USD' and product.customFields.custom_options_ghost_additional_price_usd is not empty %}
+        {% set additionalPrice = product.customFields.custom_options_ghost_additional_price_usd %}
+    {% endif %}
+    {% set additionalPriceMode = product.customFields.custom_options_ghost_additional_price_mode %}
+    {% set additionalPriceRounding = product.customFields.custom_options_ghost_additional_price_rounding %}
+
+    <div class="product-price-info">
+        {% block component_product_box_price %}
+            <div class="product-price">
+                {% if discount == empty and additionalPrice == empty %}
+                  {% if fromPrice != empty %}
+                    <span class="from-price-label">{{ 'mm-theme.product.from' | trans }}</span><br>
+                    {{ (0 + fromPrice * factor)|currency }}
+                  {% else %}
+                    <div class="price-label">{{ (simplePrice)|currency }}</div>
+                  {% endif %}
+                {% else %}
+                  {% if fromPrice != empty %}
+                    {% set discountedPrice = fromPrice * factor * (100 - discount) / 100 %}
+
+                    {% if additionalPriceMode is empty or additionalPriceMode == 'addition' %}
+                        {% set ghostPrice = (fromPrice + additionalPrice) * factor %}
+                    {% elseif additionalPriceMode == 'multiplication' %}
+                        {% set ghostPrice = fromPrice * additionalPrice * factor %}
+                        {% set ghostPrice = ghostPriceRoundUp(ghostPrice, additionalPriceRounding) %}
+                    {% endif %}
+
+                    <span class="from-price-label">{{ 'mm-theme.product.from' | trans }}</span><br>
+                    <span class="new-price-label">{{ (discountedPrice * factor)|currency }}</span>
+                    <span class="old-price-label">{{ (ghostPrice * factor)|currency }}</span>
+                  {% else %}
+                    {% set discountedPrice = simplePrice * (100 - discount) / 100 %}
+
+                    {% if additionalPriceMode is empty or additionalPriceMode == 'addition' %}
+                        {% set ghostPrice = simplePrice + (additionalPrice * factor) %}
+                    {% elseif additionalPriceMode == 'multiplication' %}
+                        {% set ghostPrice = simplePrice * (additionalPrice * factor) %}
+                        {% set ghostPrice = ghostPriceRoundUp(ghostPrice, additionalPriceRounding) %}
+                    {% endif %}
+
+                    <div class="price-label">
+                      <span class="new-price-label">{{ (discountedPrice)|currency }}</span>
+                      <span class="old-price-label">{{ (ghostPrice)|currency }}</span>
+                    </div>
+                  {% endif %}
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
