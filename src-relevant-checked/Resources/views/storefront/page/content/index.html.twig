@@ -27,14 +27,14 @@
     {% endif %}
 
     {% if showSidebar %}
-        <div class="sidebar-wrapper">
-            <div class="sidebar">
-                <div class="sidebar-inner">
+        <div class="all-page-sidebar-wrapper">
+            <div class="all-page-sidebar">
+                <div class="all-page-sidebar-inner">
                     {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
                 </div>
             </div>
 
-            <div class="with-sidebar">{{ parent() }}</div>
+            <div class="all-page-sidebar-with-content">{{ parent() }}</div>
         </div>
     {% else %}
         {{ parent() }}
