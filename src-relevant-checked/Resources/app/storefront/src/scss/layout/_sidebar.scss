@@ -1,76 +1,144 @@
 $sidebar-width: 300px;
 $max-content-width: 1600px;
 $header-height: 65px;
+$sidebar-breakpoint: 1200px; // Новый breakpoint
 
-.sidebar-wrapper {
-  display: flex;
+// Основной контейнер для сайдбара и контента
+.all-page-sidebar-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  
+  // По умолчанию блочная структура (без сайдбара)
+  display: block;
+  
+  // Когда сайдбар активен
+  &.sidebar-active {
+    display: flex;
+  }
 }
 
-.sidebar {
+// Сайдбар - показывается только на экранах больше 1200px
+.all-page-sidebar {
+  // Базовые стили
+  flex: 0 0 $sidebar-width;
+  width: $sidebar-width;
+  min-width: $sidebar-width;
+  max-width: $sidebar-width;
+  
+  position: sticky;
+  top: $header-height;
+  height: calc(100vh - #{$header-height});
+  
+  background-color: #222739;
+  overflow: hidden;
+  z-index: 10;
+  
+  // По умолчанию скрыт
   display: none;
 
-  &>* {
-    &::-webkit-scrollbar-track {
-      box-shadow: inset 0 0 5px $color-theme-100;
-      background-color: $color-theme-400;
-      border-radius: 100px;
+  .all-page-sidebar-inner {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
+    box-sizing: border-box;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
     }
 
-    &::-webkit-scrollbar {
-      border-radius: 100px;
-      width: 5px;
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: $color-theme-500;
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 2px;
-    }
-  }
-
-  @include media-breakpoint-up(lg) {
-    margin: -$padding 0;
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 $sidebar-width;
-
-    position: sticky;
-    top: $header-height;
-    height: calc(100vh - #{$header-height});
-
-    background-color: #222739;
-    overflow: hidden;
-
-    .sidebar-inner {
-      height: 100%;
-      overflow-y: auto;
-      padding: 1rem;
-      box-sizing: border-box;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
     }
   }
 }
 
-.with-sidebar {
-  flex: 1;
+// Контейнер для основного контента
+.all-page-sidebar-with-content {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  
+  // Центрирование контента
   display: flex;
-  // overflow: auto;
-  justify-content: flex-start;
-
-  &>* {
+  justify-content: center;
+  
+  > * {
     width: 100%;
     max-width: $max-content-width;
-    // overflow: auto;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  @media (min-width: $max-content-width + ($sidebar-width * 2)) {
-    padding-left: calc((100vw - #{$max-content-width + ($sidebar-width * 2)}) / 2);
-    padding-right: calc((100vw - #{$max-content-width + ($sidebar-width * 2)}) / 2);
+    margin: 0 auto;
+    padding: 0 20px;
     box-sizing: border-box;
+    overflow-x: hidden;
+    word-wrap: break-word;
   }
 }
 
-.wow-boost-menu {
+// Стили для активного состояния сайдбара (экраны > 1200px)
+.sidebar-active {
+  .all-page-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .all-page-sidebar-with-content {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    max-width: calc(100vw - #{$sidebar-width});
+    
+    > * {
+      max-width: calc(#{$max-content-width} - #{$sidebar-width});
+    }
+  }
+}
+
+// Стили для состояния без сайдбара
+.no-sidebar {
+  .all-page-sidebar-wrapper {
+    display: block !important;
+  }
+  
+  .all-page-sidebar {
+    display: none !important;
+  }
+  
+  .all-page-sidebar-with-content {
+    max-width: 100vw;
+    width: 100%;
+    
+    > * {
+      max-width: $max-content-width;
+    }
+  }
+}
+
+// Стили для состояния с сайдбаром
+.has-sidebar {
+  .all-page-sidebar-wrapper.sidebar-active {
+    display: flex;
+  }
+  
+  .all-page-sidebar-with-content {
+    .container,
+    .container-fluid {
+      max-width: calc(#{$max-content-width} - #{$sidebar-width});
+    }
+  }
+}
+
+// Стили для меню сайдбара (остаются без изменений)
+.all-page-sidebar-boost-menu {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -78,7 +146,7 @@ $header-height: 65px;
   border-radius: 8px;
   overflow: hidden;
 
-  .wow-menu-content {
+  .all-page-sidebar-menu-content {
     flex: 1;
     overflow-y: auto;
     padding: 0 24px;
@@ -102,21 +170,21 @@ $header-height: 65px;
     }
   }
 
-  .menu-category {
+  .all-page-sidebar-menu-category {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     
     &:last-child {
       border-bottom: none;
     }
 
-    &.active-parent {
-      .category-title {
+    &.all-page-sidebar-active-parent {
+      .all-page-sidebar-category-title {
         color: #ffffff !important;
         font-weight: 600;
       }
     }
 
-    .category-header {
+    .all-page-sidebar-category-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -128,17 +196,17 @@ $header-height: 65px;
       cursor: pointer;
       
       &:hover {
-        .category-title {
+        .all-page-sidebar-category-title {
           color: #ffffff;
         }
         
-        .category-icon img {
+        .all-page-sidebar-category-icon img {
           filter: brightness(1);
         }
       }
     }
 
-    .category-icon {
+    .all-page-sidebar-category-icon {
       flex-shrink: 0;
       width: 24px;
       height: 24px;
@@ -155,7 +223,7 @@ $header-height: 65px;
       }
     }
 
-    .category-title {
+    .all-page-sidebar-category-title {
       font-size: 16px;
       font-weight: 500;
       margin: 0;
@@ -163,18 +231,12 @@ $header-height: 65px;
       transition: color 0.2s ease;
       flex: 1;
 
-      .current-indicator {
-        color: #e94449;
-        font-weight: bold;
-        margin-left: 8px;
-      }
-
-      &.font-bold {
+      &.all-page-sidebar-font-bold {
         font-weight: 700;
       }
     }
 
-    .expand-button {
+    .all-page-sidebar-expand-button {
       background: none;
       border: none;
       color: rgba(255, 255, 255, 0.5);
@@ -192,22 +254,22 @@ $header-height: 65px;
         transition: transform 0.3s ease;
       }
       
-      &.expanded svg {
+      &.all-page-sidebar-expanded svg {
         transform: rotate(180deg);
       }
     }
 
-    .subcategories {
+    .all-page-sidebar-subcategories {
       display: none;
       padding-bottom: 10px;
       
-      &.expanded,
-      &.context-expanded {
+      &.all-page-sidebar-expanded,
+      &.all-page-sidebar-context-expanded {
         display: block;
-        animation: slideDown 0.3s ease-out;
+        animation: allPageSidebarSlideDown 0.3s ease-out;
       }
        
-      .subcategory-item {
+      .all-page-sidebar-subcategory-item {
         display: block;
         padding: 12px 0 12px 16px;
         font-size: 14px;
@@ -222,14 +284,9 @@ $header-height: 65px;
           background: rgba(255, 255, 255, 0.05);
         }
 
-        &[data-current="true"] {
+        &[data-current="true"],
+        &.all-page-sidebar-current-category {
           color: #ffffff !important;
-          // font-weight: 600;
-        }
-
-        &.current-category {
-          color: #ffffff !important;
-          // font-weight: 600;
         }
 
         &[data-difficulty="heroic"] {
@@ -240,36 +297,28 @@ $header-height: 65px;
           color: #8b5cf6;
         }
 
-        .font-bold {
+        .all-page-sidebar-font-bold {
           font-weight: 700;
         }
 
-        .current-indicator {
-          color: #e94449;
-          font-weight: bold;
-          margin-left: 8px;
-        }
-
-        .item-badge {
+        .all-page-sidebar-item-badge {
           background: #f59e0b;
           color: #000;
           font-size: 11px;
-          // font-weight: 600;
           padding: 2px 6px;
           border-radius: 4px;
           margin-left: 8px;
         }
       }
 
-      .subcategory-group {
-        &.active-parent {
-          .subcategory-title {
+      .all-page-sidebar-subcategory-group {
+        &.all-page-sidebar-active-parent {
+          .all-page-sidebar-subcategory-title {
             color: #ffffff !important;
-            // font-weight: 600;
           }
         }
 
-        .subcategory-title {
+        .all-page-sidebar-subcategory-title {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -285,27 +334,16 @@ $header-height: 65px;
             color: #ffffff;
           }
 
-          &[data-current="true"] {
+          &[data-current="true"],
+          &.all-page-sidebar-current-category {
             color: #ffffff !important;
-            // font-weight: 600;
           }
 
-          &.current-category {
-            color: #ffffff !important;
-            // font-weight: 600;
-          }
-
-          .font-bold {
+          .all-page-sidebar-font-bold {
             font-weight: 700;
           }
 
-          .current-indicator {
-            color: #e94449;
-            font-weight: bold;
-            margin-left: 8px;
-          }
-
-          .subcategory-expand {
+          .all-page-sidebar-subcategory-expand {
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.5);
@@ -324,21 +362,21 @@ $header-height: 65px;
               transition: transform 0.3s ease;
             }
             
-            &.expanded svg {
+            &.all-page-sidebar-expanded svg {
               transform: rotate(180deg);
             }
           }
         }
 
-        .subcategory-items {
+        .all-page-sidebar-subcategory-items {
           display: none;
           
-          &.expanded {
+          &.all-page-sidebar-expanded {
             display: block;
-            animation: slideDown 0.3s ease-out;
+            animation: allPageSidebarSlideDown 0.3s ease-out;
           }
 
-          .subcategory-subitem {
+          .all-page-sidebar-subcategory-subitem {
             display: block;
             padding: 8px 0 8px 32px;
             font-size: 13px;
@@ -352,14 +390,9 @@ $header-height: 65px;
               background: rgba(255, 255, 255, 0.05);
             }
 
-            &[data-current="true"] {
+            &[data-current="true"],
+            &.all-page-sidebar-current-category {
               color: #ffffff !important;
-              // font-weight: 600;
-            }
-
-            &.current-category {
-              color: #ffffff !important;
-              // font-weight: 600;
             }
 
             &[data-difficulty="heroic"] {
@@ -370,17 +403,11 @@ $header-height: 65px;
               color: #8b5cf6;
             }
 
-            .font-bold {
+            .all-page-sidebar-font-bold {
               font-weight: 700;
             }
 
-            .current-indicator {
-              color: #e94449;
-              font-weight: bold;
-              margin-left: 8px;
-            }
-
-            .item-badge {
+            .all-page-sidebar-item-badge {
               background: #f59e0b;
               color: #000;
               font-size: 10px;
@@ -395,12 +422,12 @@ $header-height: 65px;
     }
   }
 
-  .menu-footer {
+  .all-page-sidebar-menu-footer {
     padding: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
 
-    .show-all-button {
+    .all-page-sidebar-show-all-button {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -425,14 +452,15 @@ $header-height: 65px;
         transition: transform 0.2s ease;
       }
       
-      &.expanded svg {
+      &.all-page-sidebar-expanded svg {
         transform: rotate(180deg);
       }
     }
   }
 }
 
-@keyframes slideDown {
+// Анимации
+@keyframes allPageSidebarSlideDown {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -443,124 +471,73 @@ $header-height: 65px;
   }
 }
 
-.wow-boost-menu {
-  &.loading {
-    opacity: 0.6;
-    pointer-events: none;
-  }
-}
-
-@media (max-width: 991px) {
-  .wow-boost-menu {
-    .wow-menu-content {
-      padding: 0 16px;
-    }
-    
-    .menu-footer {
-      padding: 16px;
-    }
-  }
-}
-
-.font-bold {
+// Утилитарные классы
+.all-page-sidebar-font-bold {
   font-weight: 700 !important;
 }
 
-// Добавить к существующим стилям сайдбара
+// Глобальные исправления переполнения
+// .container,
+// .container-fluid {
+//   max-width: none;
+//   overflow-x: hidden;
+// }
 
-.wow-boost-menu {
-  .menu-category {
-    // Подсветка активной родительской категории
-    &.context-category {
-      .category-title {
-        color: #ffffff !important;
-        // font-weight: 600;
-      }
-      
-      .category-icon img {
-        filter: brightness(1.2);
-      }
-    }
+.table-responsive,
+.product-listing,
+.cms-element {
+  max-width: 100%;
+  overflow-x: auto;
+}
 
-    // Подсветка текущей категории
-    &.current-category {
-      .category-title {
-        color: #ffffff !important;
-        // font-weight: 600;
-      }
-      
-      .category-icon img {
-        filter: brightness(1.2);
-      }
-    }
+img {
+  max-width: 100%;
+  height: auto;
+}
 
-    // Подсветка активной родительской категории при hover
-    &.active-parent {
-      .category-title {
-        color: #ffffff !important;
-        // font-weight: 600;
-      }
-      
-      .category-icon img {
-        filter: brightness(1.2);
-      }
-    }
-
-    .category-header {
-      // Улучшенная подсветка при наведении
-      &:hover {
-        .category-title {
-          color: #ffffff !important;
+// Исправления для компонентов Shopware при активном сайдбаре
+.has-sidebar {
+  .cms-element-product-listing {
+    .listing-grid-layout {
+      // Корректируем сетку продуктов для сайдбара
+      @media (min-width: #{$sidebar-breakpoint + 1px}) {
+        @include media-breakpoint-up(xl) {
+          grid-template-columns: repeat(4, 1fr) !important;
         }
         
-        .category-icon img {
-          filter: brightness(1.2);
+        @include media-breakpoint-only(lg) {
+          grid-template-columns: repeat(3, 1fr) !important;
         }
       }
     }
   }
-
-  // Подсветка активных подкатегорий
-  .subcategory-group {
-    &.active-parent {
-      .subcategory-title {
-        color: #ffffff !important;
-        // font-weight: 600;
+  
+  .product-detail-box {
+    @media (min-width: #{$sidebar-breakpoint + 1px}) {
+      @include media-breakpoint-up(lg) {
+        grid-template-columns: 1fr 450px; // Уменьшаем правую колонку
       }
     }
   }
+}
 
-  // Плавные переходы для всех элементов
-  .category-title,
-  .subcategory-title,
-  .subcategory-item,
-  .subcategory-subitem {
-    transition: all 0.2s ease;
-  }
-
-  .category-icon img {
-    transition: filter 0.2s ease;
-  }
-
-  // Исправление анимации раскрытия
-  .subcategories {
-    transition: all 0.3s ease;
-    
-    &.expanded,
-    &.context-expanded {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
+// Дополнительные медиа-запросы для точной настройки
+@media (min-width: #{$sidebar-breakpoint + 1px}) {
+  // Стили применяются только на экранах больше 1200px
+  .all-page-sidebar-wrapper.sidebar-active {
+    .all-page-sidebar-with-content {
+      > * {
+        padding: 0 15px; // Меньше отступы при активном сайдбаре
+      }
     }
   }
+}
 
-  .subcategory-items {
-    transition: all 0.3s ease;
-    
-    &.expanded {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+
+.footer-main {
+  border-top: 1px solid hsl(358, 79%, 59%);
+}
+
+.container-main {
+  padding: 0 !important;
 }

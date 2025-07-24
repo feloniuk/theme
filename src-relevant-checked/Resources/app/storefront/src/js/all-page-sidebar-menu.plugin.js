@@ -1,6 +1,6 @@
 import Plugin from 'src/plugin-system/plugin.class';
 
-export default class WowBoostMenuPlugin extends Plugin {
+export default class AllPageSidebarMenuPlugin extends Plugin {
     static options = {
         swiperConfig: {
             direction: 'vertical',
@@ -15,18 +15,18 @@ export default class WowBoostMenuPlugin extends Plugin {
                 draggable: true,
             }
         },
-        categorySelector: '.menu-category',
-        subcategorySelector: '.subcategory-item',
-        subcategoryGroupSelector: '.subcategory-group',
-        subcategoryTitleSelector: '.subcategory-title',
-        subcategorySubitemSelector: '.subcategory-subitem',
-        expandButtonSelector: '[data-expand-button]',
-        addButtonSelector: '[data-add-button]',
-        backButtonSelector: '[data-back-button]',
-        showAllButtonSelector: '[data-show-all-button]',
-        subcategoriesSelector: '[data-subcategories]',
-        subcategoryExpandSelector: '[data-subcategory-expand]',
-        subcategoryItemsSelector: '[data-subcategory-items]'
+        categorySelector: '.all-page-sidebar-menu-category',
+        subcategorySelector: '.all-page-sidebar-subcategory-item',
+        subcategoryGroupSelector: '.all-page-sidebar-subcategory-group',
+        subcategoryTitleSelector: '.all-page-sidebar-subcategory-title',
+        subcategorySubitemSelector: '.all-page-sidebar-subcategory-subitem',
+        expandButtonSelector: '[data-all-page-sidebar-expand-button]',
+        addButtonSelector: '[data-all-page-sidebar-add-button]',
+        backButtonSelector: '[data-all-page-sidebar-back-button]',
+        showAllButtonSelector: '[data-all-page-sidebar-show-all-button]',
+        subcategoriesSelector: '[data-all-page-sidebar-subcategories]',
+        subcategoryExpandSelector: '[data-all-page-sidebar-subcategory-expand]',
+        subcategoryItemsSelector: '[data-all-page-sidebar-subcategory-items]'
     };
 
     init() {
@@ -46,32 +46,32 @@ export default class WowBoostMenuPlugin extends Plugin {
         if (this.currentCategoryId) {
             const currentElements = this.el.querySelectorAll(`[data-current="true"]`);
             currentElements.forEach(element => {
-                element.classList.add('active-current');
+                element.classList.add('all-page-sidebar-active-current');
             });
         }
 
         if (this.contextCategoryId) {
             const contextCategory = this.el.querySelector(`[data-category-id="${this.contextCategoryId}"]`);
             if (contextCategory) {
-                contextCategory.classList.add('active-parent');
+                contextCategory.classList.add('all-page-sidebar-active-parent');
             }
         }
     }
 
     _addHoverEffects() {
         const hoverElements = this.el.querySelectorAll(
-            '.menu-category, .subcategory-item, .subcategory-title, .subcategory-subitem, a.subcategory-item, a.subcategory-title, a.subcategory-subitem'
+            '.all-page-sidebar-menu-category, .all-page-sidebar-subcategory-item, .all-page-sidebar-subcategory-title, .all-page-sidebar-subcategory-subitem, a.all-page-sidebar-subcategory-item, a.all-page-sidebar-subcategory-title, a.all-page-sidebar-subcategory-subitem'
         );
 
         hoverElements.forEach(element => {
             element.addEventListener('mouseenter', () => {
-                if (!element.classList.contains('current-category')) {
-                    element.classList.add('hover-effect');
+                if (!element.classList.contains('all-page-sidebar-current-category')) {
+                    element.classList.add('all-page-sidebar-hover-effect');
                 }
             });
 
             element.addEventListener('mouseleave', () => {
-                element.classList.remove('hover-effect');
+                element.classList.remove('all-page-sidebar-hover-effect');
             });
         });
     }
@@ -106,7 +106,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _initializeSwiper() {
-        const swiperContainer = this.el.querySelector('.wow-menu-swiper');
+        const swiperContainer = this.el.querySelector('.all-page-sidebar-menu-swiper');
         if (!swiperContainer) return;
 
         this.swiper = new Swiper(swiperContainer, {
@@ -129,36 +129,36 @@ export default class WowBoostMenuPlugin extends Plugin {
     _limitVisibleItems() {
         if (this.isShowAllActive) return;
 
-        const menuContent = this.el.querySelector('.wow-menu-content');
+        const menuContent = this.el.querySelector('.all-page-sidebar-menu-content');
         if (!menuContent) return;
 
         let currentHeight = 0;
-        const categories = this.el.querySelectorAll('.menu-category');
+        const categories = this.el.querySelectorAll('.all-page-sidebar-menu-category');
 
         categories.forEach((category, index) => {
             const categoryHeight = category.offsetHeight;
 
-            if (category.classList.contains('context-category')) {
+            if (category.classList.contains('all-page-sidebar-context-category')) {
                 currentHeight += categoryHeight;
                 return;
             }
 
             if (currentHeight + categoryHeight > this.maxVisibleHeight && index > 2) {
                 category.style.display = 'none';
-                category.setAttribute('data-hidden-by-show-all', 'true');
+                category.setAttribute('data-all-page-sidebar-hidden-by-show-all', 'true');
             } else {
                 currentHeight += categoryHeight;
                 category.style.display = 'block';
-                category.removeAttribute('data-hidden-by-show-all');
+                category.removeAttribute('data-all-page-sidebar-hidden-by-show-all');
             }
         });
     }
 
     _showAllItems() {
-        const hiddenCategories = this.el.querySelectorAll('[data-hidden-by-show-all]');
+        const hiddenCategories = this.el.querySelectorAll('[data-all-page-sidebar-hidden-by-show-all]');
         hiddenCategories.forEach(category => {
             category.style.display = 'block';
-            category.removeAttribute('data-hidden-by-show-all');
+            category.removeAttribute('data-all-page-sidebar-hidden-by-show-all');
         });
         this.isShowAllActive = true;
     }
@@ -173,7 +173,7 @@ export default class WowBoostMenuPlugin extends Plugin {
         const showAllButton = this.el.querySelector(this.options.showAllButtonSelector);
         if (!showAllButton) return;
 
-        const hasHiddenItems = this.el.querySelectorAll('[data-hidden-by-show-all]').length > 0;
+        const hasHiddenItems = this.el.querySelectorAll('[data-all-page-sidebar-hidden-by-show-all]').length > 0;
 
         if (this.isShowAllActive) {
             showAllButton.innerHTML = `
@@ -236,15 +236,15 @@ export default class WowBoostMenuPlugin extends Plugin {
 
     _onCategoryClick(event) {
         // Проверяем, был ли клик по кнопке expand или add
-        if (event.target.closest('[data-expand-button]') ||
-            event.target.closest('[data-add-button]')) {
+        if (event.target.closest('[data-all-page-sidebar-expand-button]') ||
+            event.target.closest('[data-all-page-sidebar-add-button]')) {
             return;
         }
 
         const category = event.currentTarget;
         const categoryId = category.dataset.categoryId;
         const categoryUrl = category.dataset.categoryUrl;
-        const categoryName = category.querySelector('.category-title').textContent;
+        const categoryName = category.querySelector('.all-page-sidebar-category-title').textContent;
         const isExpandable = category.dataset.expandable === 'true';
 
         this._addClickFeedback(category);
@@ -283,12 +283,12 @@ export default class WowBoostMenuPlugin extends Plugin {
         event.preventDefault();
 
         const button = event.currentTarget;
-        const category = button.closest('.menu-category');
+        const category = button.closest('.all-page-sidebar-menu-category');
         const subcategories = category.querySelector(this.options.subcategoriesSelector);
 
         if (!subcategories) return;
 
-        const isExpanded = subcategories.style.display === 'block' || subcategories.classList.contains('context-expanded');
+        const isExpanded = subcategories.style.display === 'block' || subcategories.classList.contains('all-page-sidebar-context-expanded');
         
         if (isExpanded) {
             this._collapseSubcategories(subcategories, button);
@@ -302,7 +302,7 @@ export default class WowBoostMenuPlugin extends Plugin {
         event.preventDefault();
 
         const button = event.currentTarget;
-        const subcategoryGroup = button.closest('.subcategory-group');
+        const subcategoryGroup = button.closest('.all-page-sidebar-subcategory-group');
         const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
 
         if (!subcategoryItems) return;
@@ -340,24 +340,24 @@ export default class WowBoostMenuPlugin extends Plugin {
     _isElementExpanded(element) {
         // Более надежная проверка состояния элемента
         const isDisplayed = element.style.display === 'block';
-        const hasExpandedClass = element.classList.contains('expanded');
-        const hasContextClass = element.classList.contains('context-expanded');
+        const hasExpandedClass = element.classList.contains('all-page-sidebar-expanded');
+        const hasContextClass = element.classList.contains('all-page-sidebar-context-expanded');
         
         return isDisplayed || hasExpandedClass || hasContextClass;
     }
 
     _expandSubcategories(subcategories, button) {
-        const category = button.closest('.menu-category');
+        const category = button.closest('.all-page-sidebar-menu-category');
 
         // Убираем конфликтующие классы
-        subcategories.classList.remove('context-expanded');
+        subcategories.classList.remove('all-page-sidebar-context-expanded');
         
         // Устанавливаем состояние
         subcategories.style.display = 'block';
-        subcategories.classList.add('expanded');
+        subcategories.classList.add('all-page-sidebar-expanded');
         
-        if (!category.classList.contains('context-category')) {
-            category.classList.add('expanded');
+        if (!category.classList.contains('all-page-sidebar-context-category')) {
+            category.classList.add('all-page-sidebar-expanded');
         }
 
         // Обновляем иконку
@@ -380,7 +380,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _collapseSubcategories(subcategories, button) {
-        const category = button.closest('.menu-category');
+        const category = button.closest('.all-page-sidebar-menu-category');
 
         // Обновляем иконку сразу
         this._updateButtonIcon(button, false);
@@ -392,10 +392,10 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         setTimeout(() => {
             subcategories.style.display = 'none';
-            subcategories.classList.remove('expanded', 'context-expanded');
+            subcategories.classList.remove('all-page-sidebar-expanded', 'all-page-sidebar-context-expanded');
             
-            if (!category.classList.contains('context-category')) {
-                category.classList.remove('expanded');
+            if (!category.classList.contains('all-page-sidebar-context-category')) {
+                category.classList.remove('all-page-sidebar-expanded');
             }
 
             // Сбрасываем стили
@@ -411,9 +411,9 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _expandSubcategoryItems(subcategoryItems, button) {
-        const subcategoryGroup = button.closest('.subcategory-group');
+        const subcategoryGroup = button.closest('.all-page-sidebar-subcategory-group');
 
-        subcategoryGroup.classList.add('expanded');
+        subcategoryGroup.classList.add('all-page-sidebar-expanded');
         subcategoryItems.style.display = 'block';
 
         // Обновляем иконку
@@ -436,7 +436,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     }
 
     _collapseSubcategoryItems(subcategoryItems, button) {
-        const subcategoryGroup = button.closest('.subcategory-group');
+        const subcategoryGroup = button.closest('.all-page-sidebar-subcategory-group');
 
         // Обновляем иконку
         this._updateButtonIcon(button, false);
@@ -448,7 +448,7 @@ export default class WowBoostMenuPlugin extends Plugin {
 
         setTimeout(() => {
             subcategoryItems.style.display = 'none';
-            subcategoryGroup.classList.remove('expanded');
+            subcategoryGroup.classList.remove('all-page-sidebar-expanded');
 
             // Сбрасываем стили
             subcategoryItems.style.transition = '';
@@ -470,7 +470,7 @@ export default class WowBoostMenuPlugin extends Plugin {
                     <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             `;
-            button.classList.add('expanded');
+            button.classList.add('all-page-sidebar-expanded');
         } else {
             button.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -478,7 +478,7 @@ export default class WowBoostMenuPlugin extends Plugin {
                     <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             `;
-            button.classList.remove('expanded');
+            button.classList.remove('all-page-sidebar-expanded');
         }
     }
 
@@ -494,9 +494,9 @@ export default class WowBoostMenuPlugin extends Plugin {
         event.stopPropagation();
 
         const button = event.currentTarget;
-        const category = button.closest('.menu-category');
+        const category = button.closest('.all-page-sidebar-menu-category');
         const categoryId = category.dataset.categoryId;
-        const categoryName = category.querySelector('.category-title').textContent;
+        const categoryName = category.querySelector('.all-page-sidebar-category-title').textContent;
 
         this._addClickFeedback(button);
 
@@ -522,7 +522,7 @@ export default class WowBoostMenuPlugin extends Plugin {
         this._updateShowAllButton();
 
         if (!this.isShowAllActive) {
-            const menuContent = this.el.querySelector('.wow-menu-content');
+            const menuContent = this.el.querySelector('.all-page-sidebar-menu-content');
             if (menuContent) {
                 menuContent.scrollTop = 0;
             }
@@ -545,7 +545,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     expandAllSubcategories() {
         const expandButtons = this.el.querySelectorAll(this.options.expandButtonSelector);
         expandButtons.forEach(button => {
-            const category = button.closest('.menu-category');
+            const category = button.closest('.all-page-sidebar-menu-category');
             const subcategories = category.querySelector(this.options.subcategoriesSelector);
             if (subcategories && !this._isElementExpanded(subcategories)) {
                 this._expandSubcategories(subcategories, button);
@@ -555,7 +555,7 @@ export default class WowBoostMenuPlugin extends Plugin {
         setTimeout(() => {
             const subcategoryExpandButtons = this.el.querySelectorAll(this.options.subcategoryExpandSelector);
             subcategoryExpandButtons.forEach(button => {
-                const subcategoryGroup = button.closest('.subcategory-group');
+                const subcategoryGroup = button.closest('.all-page-sidebar-subcategory-group');
                 const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
                 if (subcategoryItems && !this._isElementExpanded(subcategoryItems)) {
                     this._expandSubcategoryItems(subcategoryItems, button);
@@ -567,7 +567,7 @@ export default class WowBoostMenuPlugin extends Plugin {
     collapseAllSubcategories() {
         const subcategoryExpandButtons = this.el.querySelectorAll(this.options.subcategoryExpandSelector);
         subcategoryExpandButtons.forEach(button => {
-            const subcategoryGroup = button.closest('.subcategory-group');
+            const subcategoryGroup = button.closest('.all-page-sidebar-subcategory-group');
             const subcategoryItems = subcategoryGroup.querySelector(this.options.subcategoryItemsSelector);
             if (subcategoryItems && this._isElementExpanded(subcategoryItems)) {
                 this._collapseSubcategoryItems(subcategoryItems, button);
@@ -577,13 +577,13 @@ export default class WowBoostMenuPlugin extends Plugin {
         setTimeout(() => {
             const expandButtons = this.el.querySelectorAll(this.options.expandButtonSelector);
             expandButtons.forEach(button => {
-                const category = button.closest('.menu-category');
+                const category = button.closest('.all-page-sidebar-menu-category');
                 const subcategories = category.querySelector(this.options.subcategoriesSelector);
                 
                 if (subcategories && 
                     this._isElementExpanded(subcategories) && 
-                    !subcategories.classList.contains('context-expanded') &&
-                    !category.classList.contains('context-category')) {
+                    !subcategories.classList.contains('all-page-sidebar-context-expanded') &&
+                    !category.classList.contains('all-page-sidebar-context-category')) {
                     this._collapseSubcategories(subcategories, button);
                 }
             });

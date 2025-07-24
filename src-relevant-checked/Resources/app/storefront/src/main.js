@@ -11,7 +11,7 @@ import MMCurrencySwitcherPlugin from './js/mm-currency-switcher.plugin';
 import MMAmazonPayConfirmPagePlugin from './js/mm-amazon-pay-confirm-page.plugin';
 import GameSectionPlugin from './js/game-section.plugin.js';
 import HeroSectionPlugin from './js/hero-section.plugin.js';
-import WowBoostMenuPlugin from './js/wow-boost-menu.plugin.js';
+import AllPageSidebarMenuPlugin from './js/all-page-sidebar-menu.plugin.js';
 
 const PluginManager = window.PluginManager;
 
@@ -27,7 +27,7 @@ PluginManager.register('ListingPlugin', MMListingPlugin, '[data-listing]');
 PluginManager.register('CopyClipboard', MMCopyClipboardPlugin, '[data-copy-clipboard]');
 PluginManager.register('GameSection', GameSectionPlugin, '[data-game-section]');
 PluginManager.register('HeroSection', HeroSectionPlugin, '[hero-game-section]');
-PluginManager.register('WowBoostMenu', WowBoostMenuPlugin, '[data-wow-boost-menu]');
+PluginManager.register('AllPageSidebarMenu', AllPageSidebarMenuPlugin, '[data-all-page-sidebar-menu]');
 
 if (window.gtagActive) {
 	PluginManager.register('GoogleAnalyticsClient', MMGoogleAnalyticsClientPlugin, '[data-ga-client]');

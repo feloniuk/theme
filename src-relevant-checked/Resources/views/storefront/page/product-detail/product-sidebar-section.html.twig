@@ -48,10 +48,10 @@
     {% set currentCategoryId = currentCategoryId|trim %}
 {% endif %}
 
-<div class="wow-boost-menu" data-wow-boost-menu data-current-category="{{ currentCategoryId }}">
+<div class="all-page-sidebar-boost-menu" data-all-page-sidebar-menu data-current-category="{{ currentCategoryId }}">
 
     <!-- Menu Content with Scroll -->
-    <div class="wow-menu-content">
+    <div class="all-page-sidebar-menu-content">
         {% if page.header.navigation.tree is defined %}
             {% set chooseGameCategory = null %}
             
@@ -181,31 +181,31 @@
                         {% endfor %}
                     {% endif %}
                     
-                    <div class="menu-category context-category{% if categoryId == currentCategoryId %} current-category{% endif %}" 
+                    <div class="all-page-sidebar-menu-category all-page-sidebar-context-category{% if categoryId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                          data-category-id="{{ categoryId }}"
                          {% if shouldShowCategory %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
                          {% if hasVisibleChildren %}data-expandable="true"{% endif %}
                          {% if categoryId == currentCategoryId %}data-current="true"{% endif %}>
                         
-                        <div class="category-header">
+                        <div class="all-page-sidebar-category-header">
                             {# Иконка категории #}
                             {% set iconHandler = category.translated.customFields.mm_theme_sidebar_icon|default(null) %}
                             {% if iconHandler %}
                                 {% set iconMediaCollection = searchMedia([iconHandler], context.context) %}
                                 {% if iconMediaCollection %}
                                     {% set iconImage = iconMediaCollection.get(iconHandler) %}
-                                    <span class="category-icon">
+                                    <span class="all-page-sidebar-category-icon">
                                         <img src="{{ iconImage.url }}" alt="{{ name }}" loading="lazy">
                                     </span>
                                 {% endif %}
                             {% endif %}
                             
-                            <span class="category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} font-bold{% endif %}">
+                            <span class="all-page-sidebar-category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} all-page-sidebar-font-bold{% endif %}">
                                 {{ name }}
                             </span>
                             
                             {% if hasVisibleChildren %}
-                                <button class="expand-button expanded" data-expand-button>
+                                <button class="all-page-sidebar-expand-button all-page-sidebar-expanded" data-all-page-sidebar-expand-button>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                         <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                                     </svg>
@@ -214,7 +214,7 @@
                         </div>
                         
                         {% if hasVisibleChildren %}
-                            <div class="subcategories context-expanded" data-subcategories style="display: block;">
+                            <div class="all-page-sidebar-subcategories all-page-sidebar-context-expanded" data-all-page-sidebar-subcategories style="display: block;">
                                 {% for firstLevelItem in contextCategory.children %}
                                     {% set firstLevelCategory = firstLevelItem.category %}
                                     {% set firstLevelName = firstLevelCategory.translated.name %}
@@ -237,14 +237,14 @@
                                     {% if firstLevelShouldShow or firstLevelHasVisibleChildren %}
                                         {% if firstLevelHasVisibleChildren %}
                                             {# Category with subcategories #}
-                                            <div class="subcategory-group" data-subcategory-group>
+                                            <div class="all-page-sidebar-subcategory-group" data-all-page-sidebar-subcategory-group>
                                                 <a href="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}" 
-                                                   class="subcategory-title{% if firstLevelId == currentCategoryId %} current-category{% endif %}" 
+                                                   class="all-page-sidebar-subcategory-title{% if firstLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                    data-subcategory-id="{{ firstLevelId }}"
                                                    data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
                                                    data-expandable="true"
                                                    {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                    <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                    <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                         {{ firstLevelName }}
                                                     </span>
                                                     
@@ -259,7 +259,7 @@
                                                         {% endfor %}
                                                     {% endif %}
                                                     
-                                                    <button class="subcategory-expand{% if shouldExpand or firstLevelId == currentCategoryId %} expanded{% endif %}" data-subcategory-expand>
+                                                    <button class="all-page-sidebar-subcategory-expand{% if shouldExpand or firstLevelId == currentCategoryId %} all-page-sidebar-expanded{% endif %}" data-all-page-sidebar-subcategory-expand>
                                                         {% if shouldExpand or firstLevelId == currentCategoryId %}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                                 <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
@@ -273,7 +273,7 @@
                                                     </button>
                                                 </a>
                                                 
-                                                <div class="subcategory-items" data-subcategory-items 
+                                                <div class="all-page-sidebar-subcategory-items" data-all-page-sidebar-subcategory-items 
                                                      {% if shouldExpand or firstLevelId == currentCategoryId %}style="display: block;"{% endif %}>
                                                     {% if firstLevelItem.children is defined %}
                                                         {% for secondLevelItem in firstLevelItem.children %}
@@ -287,17 +287,17 @@
                                                                 {% set subcategoryName = secondLevelName|lower %}
                                                                 
                                                                 <a href="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}" 
-                                                                   class="subcategory-subitem{% if secondLevelId == currentCategoryId %} current-category{% endif %}" 
+                                                                   class="all-page-sidebar-subcategory-subitem{% if secondLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                                    data-subcategory-id="{{ secondLevelId }}"
                                                                    data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
                                                                    {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                                                    {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
                                                                    {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                                    <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                                    <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                                         {{ secondLevelName }}
                                                                     </span>
                                                                     {% if 'Badge' in secondLevelName %}
-                                                                        <span class="item-badge">Badge</span>
+                                                                        <span class="all-page-sidebar-item-badge">Badge</span>
                                                                     {% endif %}
                                                                 </a>
                                                             {% endif %}
@@ -309,17 +309,17 @@
                                             {# Simple category without subcategories #}
                                             {% set subcategoryName = firstLevelName|lower %}
                                             <a href="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}" 
-                                               class="subcategory-item{% if firstLevelId == currentCategoryId %} current-category{% endif %}" 
+                                               class="all-page-sidebar-subcategory-item{% if firstLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                data-subcategory-id="{{ firstLevelId }}"
                                                data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
                                                {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                                {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
                                                {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                     {{ firstLevelName }}
                                                 </span>
                                                 {% if 'Badge' in firstLevelName %}
-                                                    <span class="item-badge">Badge</span>
+                                                    <span class="all-page-sidebar-item-badge">Badge</span>
                                                 {% endif %}
                                             </a>
                                         {% endif %}
@@ -362,28 +362,28 @@
                         {% endif %}
                         
                         {% if shouldShowCategory or hasVisibleChildren %}
-                            <div class="menu-category{% if categoryId == currentCategoryId %} current-category{% endif %}" 
+                            <div class="all-page-sidebar-menu-category{% if categoryId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                  data-category-id="{{ categoryId }}"
                                  {% if shouldShowCategory %}data-category-url="{% if category.externalLink %}{{ category.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}{% endif %}"{% endif %}
                                  {% if hasVisibleChildren %}data-expandable="true"{% endif %}>
                                 
-                                <div class="category-header">
+                                <div class="all-page-sidebar-category-header">
                                     {# Иконка категории #}
                                     {% set iconHandler = category.translated.customFields.mm_theme_sidebar_icon|default(null) %}
                                     {% if iconHandler %}
                                         {% set iconMediaCollection = searchMedia([iconHandler], context.context) %}
                                         {% if iconMediaCollection %}
                                             {% set iconImage = iconMediaCollection.get(iconHandler) %}
-                                            <span class="category-icon">
+                                            <span class="all-page-sidebar-category-icon">
                                                 <img src="{{ iconImage.url }}" alt="{{ name }}" loading="lazy">
                                             </span>
                                         {% endif %}
                                     {% endif %}
                                     
-                                    <span class="category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} font-bold{% endif %}">{{ name }}</span>
+                                    <span class="all-page-sidebar-category-title{% if customFields.mm_theme_sidebar_bold|default(false) %} all-page-sidebar-font-bold{% endif %}">{{ name }}</span>
                                     
                                     {% if hasVisibleChildren %}
-                                        <button class="expand-button" data-expand-button>
+                                        <button class="all-page-sidebar-expand-button" data-all-page-sidebar-expand-button>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                 <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                                                 <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
@@ -393,7 +393,7 @@
                                 </div>
                                 
                                 {% if hasVisibleChildren %}
-                                    <div class="subcategories" data-subcategories>
+                                    <div class="all-page-sidebar-subcategories" data-all-page-sidebar-subcategories>
                                         {% for firstLevelItem in gameItem.children %}
                                             {% set firstLevelCategory = firstLevelItem.category %}
                                             {% set firstLevelName = firstLevelCategory.translated.name %}
@@ -416,18 +416,18 @@
                                             {% if firstLevelShouldShow or firstLevelHasVisibleChildren %}
                                                 {% if firstLevelHasVisibleChildren %}
                                                     {# Category with subcategories #}
-                                                    <div class="subcategory-group" data-subcategory-group>
+                                                    <div class="all-page-sidebar-subcategory-group" data-all-page-sidebar-subcategory-group>
                                                         <a href="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}" 
-                                                           class="subcategory-title{% if firstLevelId == currentCategoryId %} current-category{% endif %}" 
+                                                           class="all-page-sidebar-subcategory-title{% if firstLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                            data-subcategory-id="{{ firstLevelId }}"
                                                            data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
                                                            data-expandable="true"
                                                            {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                            <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                            <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                                 {{ firstLevelName }}
                                                             </span>
                                                             
-                                                            <button class="subcategory-expand" data-subcategory-expand>
+                                                            <button class="all-page-sidebar-subcategory-expand" data-all-page-sidebar-subcategory-expand>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                                     <path d="M8 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                                                                     <path d="M2 8L14 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
@@ -435,7 +435,7 @@
                                                             </button>
                                                         </a>
                                                         
-                                                        <div class="subcategory-items" data-subcategory-items>
+                                                        <div class="all-page-sidebar-subcategory-items" data-all-page-sidebar-subcategory-items>
                                                             {% if firstLevelItem.children is defined %}
                                                                 {% for secondLevelItem in firstLevelItem.children %}
                                                                     {% set secondLevelCategory = secondLevelItem.category %}
@@ -448,17 +448,17 @@
                                                                         {% set subcategoryName = secondLevelName|lower %}
                                                                         
                                                                         <a href="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}" 
-                                                                           class="subcategory-subitem{% if secondLevelId == currentCategoryId %} current-category{% endif %}" 
+                                                                           class="all-page-sidebar-subcategory-subitem{% if secondLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                                            data-subcategory-id="{{ secondLevelId }}"
                                                                            data-subcategory-url="{% if secondLevelCategory.externalLink %}{{ secondLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: secondLevelId }) }}{% endif %}"
                                                                            {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                                                            {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
                                                                            {% if secondLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                                            <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                                            <span{% if secondLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                                                 {{ secondLevelName }}
                                                                             </span>
                                                                             {% if 'Badge' in secondLevelName %}
-                                                                                <span class="item-badge">Badge</span>
+                                                                                <span class="all-page-sidebar-item-badge">Badge</span>
                                                                             {% endif %}
                                                                         </a>
                                                                     {% endif %}
@@ -470,17 +470,17 @@
                                                     {# Simple category without subcategories #}
                                                     {% set subcategoryName = firstLevelName|lower %}
                                                     <a href="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}" 
-                                                       class="subcategory-item{% if firstLevelId == currentCategoryId %} current-category{% endif %}" 
+                                                       class="all-page-sidebar-subcategory-item{% if firstLevelId == currentCategoryId %} all-page-sidebar-current-category{% endif %}" 
                                                        data-subcategory-id="{{ firstLevelId }}"
                                                        data-subcategory-url="{% if firstLevelCategory.externalLink %}{{ firstLevelCategory.externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: firstLevelId }) }}{% endif %}"
                                                        {% if 'heroic' in subcategoryName %}data-difficulty="heroic"{% endif %}
                                                        {% if 'mythic' in subcategoryName %}data-difficulty="mythic"{% endif %}
                                                        {% if firstLevelId == currentCategoryId %}data-current="true"{% endif %}>
-                                                        <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="font-bold"{% endif %}>
+                                                        <span{% if firstLevelCustomFields.mm_theme_sidebar_bold|default(false) %} class="all-page-sidebar-font-bold"{% endif %}>
                                                             {{ firstLevelName }}
                                                         </span>
                                                         {% if 'Badge' in firstLevelName %}
-                                                            <span class="item-badge">Badge</span>
+                                                            <span class="all-page-sidebar-item-badge">Badge</span>
                                                         {% endif %}
                                                     </a>
                                                 {% endif %}
@@ -497,8 +497,8 @@
     </div>
 
     <!-- Navigation Controls -->
-    <div class="menu-footer">
-        <button class="show-all-button" data-show-all-button style="display: none;">
+    <div class="all-page-sidebar-menu-footer">
+        <button class="all-page-sidebar-show-all-button" data-all-page-sidebar-show-all-button style="display: none;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 9L12 15L18 9"/>
             </svg>
