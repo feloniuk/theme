@@ -1,0 +1,42 @@
+<div class="blog-post">
+    {% if post.image %}
+        {% block blog_content_post_inner_image %}
+            {% set thumbnailClass = (config.layoutdetail == 'largeimage') ? "image-large-cover" : "image-large-contain" %}
+            {% sw_thumbnails '' with {
+                media: post.image,
+                sizes: {
+                    'default': '100vw'
+                },
+                attributes: {
+                    'class': 'card-img-top ' ~ thumbnailClass,
+                    'alt':   post.image.translated.alt ?: '',
+                    'title': post.translated.title ?: ''
+                }
+            } %}
+        {% endblock %}
+    {% endif %}
+
+    <div class="mt-3">
+        {% if config.showmeta %}
+            {% block blog_content_post_inner_meta %}
+                <small class="text-muted">{{ post.postdate is empty ? "" : post.postdate|format_datetime('long', 'none') }}</small>
+                {% if post.category.title %}
+                    <small class="text-muted"> | {{ post.category.title }}</small>
+                {% endif %}
+            {% endblock %}
+        {% endif %}
+
+        {% block blog_content_post_inner_author %}
+            {% if config.showmeta and config.showauthor %}
+                {% sw_include "@Storefront/storefront/page/blog/post-author.html.twig" %}
+            {% endif %}
+        {% endblock %}
+
+        {% block blog_content_post_inner_contents %}
+        <div class="mt-3">
+            {{ render_blog_listing_template(post.translated.contents, post)|raw }}
+        </div>
+        {% endblock %}
+
+    </div>
+</div>

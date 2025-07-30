@@ -1,0 +1,60 @@
+.custom-options {
+	--color-primary: var(--color-theme-500);
+	--color-active-alt: var(--color-theme-900);
+	--color-active: var(--color-theme-900);
+	--color-hover: var(--color-theme-900);
+	--color-hover-alt: var(--color-theme-400);
+
+	.vue-slider {
+		--main-color: var(--color-theme-600);
+		--rail-color: var(--color-theme-400);
+		--step-color: var(--color-theme-400);
+		--tooltip-color: var(--color-theme-500);
+
+		--disabled-color: var(--color-theme-400);
+		--disabled-rail-color: var(--color-theme-400);
+	}
+
+	.vc-container {
+		--grey-500: var(--color-theme-400) !important;
+		--gray-800: var(--color-theme-400) !important;
+
+		font-family: $font-family-base !important;
+		border-radius: 0 !important;
+
+		&.vc-is-dark {
+			background-color: var(--color-theme-300) !important;
+			border-color: var(--color-theme-400) !important;
+		}
+
+		.vc-title {
+			&:hover {
+				opacity: 1 !important;
+				cursor: default;
+			}
+		}
+
+		.is-disabled {
+
+			&:hover,
+			&:focus {
+				background-color: transparent !important;
+				cursor: not-allowed !important;
+				font-weight: $font-weight-normal !important;
+			}
+		}
+
+		.is-today>span {
+			border: 2px solid var(--color-theme-500);
+
+			&:hover,
+			&:focus {
+				border: 2px solid var(--color-theme-500);
+			}
+		}
+
+		.vc-day.is-not-in-month>.vc-day-content.vc-focusable {
+			opacity: 0.2 !important;
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/review/review-widget.html.twig' %}
+
+{% block page_product_detail_review_info_container %}{% endblock %}
+{% block page_product_detail_review_form_teaser_header %}{% endblock %}
+{% block page_product_detail_review_form_teaser_text %}{% endblock %}
+
+{% block page_product_detail_review_form_teaser %}
+  {{ block('page_product_detail_review_form_teaser_button') }}
+{% endblock %}
+
+{% block page_product_detail_review_form_teaser_button %}
+<div id="review-button" class="collapse multi-collapse show">
+  <button class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target=".multi-collapse"
+          aria-expanded="false"
+          aria-controls="review-form review-button">
+      {% if not reviews.customerReview %}
+        {{ "detail.reviewTeaserButton"|trans|sw_sanitize }}
+      {% else %}
+        {{ "detail.reviewExistsTeaserButton"|trans|sw_sanitize }}
+      {% endif %}
+  </button>
+</div>
+{% endblock %}

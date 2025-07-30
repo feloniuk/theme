@@ -1,0 +1,67 @@
+{% block product_details_microdata %}
+    {% set product = page.product %}
+    {% set buyable = product.available and product.childCount <= 0 and product.calculatedMaxPurchase > 0 %}
+
+    {% set fromPrice = product.customFields.custom_options_min_price %}
+    {% set factor = context.currency.factor %}
+    {% if context.currency.isoCode === 'USD' and product.customFields.custom_options_min_price_usd is not empty %}
+        {% set factor = 1 %}
+        {% set fromPrice = product.customFields.custom_options_min_price_usd %}
+    {% endif %}
+
+    {% set discount = product.customFields.custom_options_discount %}
+    {% set simplePrice = product.calculatedPrice.unitPrice %}
+    {% set additionalPrice = product.customFields.custom_options_ghost_additional_price %}
+    {% if context.currency.isoCode === 'USD' and product.customFields.custom_options_ghost_additional_price_usd is not empty %}
+        {% set additionalPrice = product.customFields.custom_options_ghost_additional_price_usd %}
+    {% endif %}
+    {% set additionalPriceMode = product.customFields.custom_options_ghost_additional_price_mode %}
+    {% set additionalPriceRounding = product.customFields.custom_options_ghost_additional_price_rounding %}
+
+    {% set productMinPrice = 0 %}
+    {% set productQuantity = product.minPurchase %}
+    {% set productDiscountedPrice = null %}
+
+    {% if discount == empty and additionalPrice == empty %}
+        {% if fromPrice != empty %}
+            {% set productMinPrice = (0 + fromPrice * factor) %}
+        {% else %}
+            {% set productMinPrice = simplePrice %}
+        {% endif %}
+    {% else %}
+        {% if fromPrice != empty %}
+            {% set productMinPrice = fromPrice * factor * (100 - discount) / 100 %}
+        {% else %}
+            {% set productMinPrice = simplePrice * (100 - discount) / 100 %}
+        {% endif %}
+    {% endif %}
+
+    <span data-qty="{{ productQuantity }}"></span>
+
+    <meta itemprop="productID" content="{{ page.product.parentId ?? page.product.id }}">
+    <meta itemprop="sku" content="{{ page.product.parentId ?? page.product.id }}">
+    <meta itemprop="name" content="{{ product_seo_name ? product_seo_name|raw : product.translated.name|raw }}">
+    <meta itemprop="brand" content="{{ context.salesChannel.customFields.custom_schema_brand ?: "MmonsteR" }}">
+    <meta itemprop="image" content="{{ product.cover.media.url }}">
+    <meta itemprop="description" content='{{ product.translated.metaDescription|raw }}'>
+    <meta itemprop="url" content="{{ seoUrl('frontend.detail.page', {'productId': product.canonicalProductId ?? product.id}) }}">
+
+    <meta itemprop="category" content="{{ page.product.seoCategory.metaTitle }}">
+
+    <span itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <meta itemprop="price" content="{{ productMinPrice|format_number({fraction_digit: 2})|replace({',': ''}) }}">
+        <meta itemprop="priceValidUntil" content="{{ 'now'|date_modify('+3 day')|date('Y-m-d') }}">
+        <meta itemprop="priceCurrency" content="{{ context.currency.isoCode }}">
+        <link itemprop="availability" href="{{ buyable ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock' }}">
+        <meta itemprop="url" content="{{ seoUrl('frontend.detail.page', {'productId': product.canonicalProductId ?? product.id}) }}">
+
+        <span itemprop="seller" itemscope itemtype="https://schema.org/Organization">
+              <meta itemprop="name" content="MmonsteR">
+        </span>
+    </span>
+
+    <span itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+        <meta itemprop="ratingValue" content="{{ context.salesChannel.customFields.custom_reviews_rating }}">
+        <meta itemprop="reviewCount" content="{{ context.salesChannel.customFields.custom_reviews_count }}">
+    </span>
+{% endblock %}

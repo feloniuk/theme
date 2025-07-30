@@ -1,0 +1,43 @@
+{% set productReviewCount = page.reviews.totalReviews %}
+
+{% if productReviewCount > 0 %}
+    {% set productAvgRating = page.reviews.matrix.averageRating|round(2, 'common') %}
+{% endif %}
+
+{% block page_product_detail_review_widget %}
+    {% if productReviewCount > 0 %}
+        <div class="product-detail-review-widget mb-3">
+            {% block page_product_detail_review_info_container %}
+                {% block page_product_detail_review_info %}
+                    <a class="product-detail-review-info" href="#review-tab-pane" aria-controls="review-tab-pane">
+
+                        {% block page_product_detail_review_overview %}
+                            <div class="product-detail-review-rating"
+                                {% if productReviewCount > 0 %}
+                                    itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating"
+                                {% endif %}>
+
+                                {% if productReviewCount > 0 %}
+                                    <meta itemprop="bestRating" content="5">
+                                    <meta itemprop="ratingCount" content="{{ productReviewCount }}">
+                                    <meta itemprop="ratingValue" content="{{ productAvgRating }}">
+                                {% endif %}
+
+                                {% sw_include '@Storefront/storefront/component/review/rating.html.twig' with {
+                                    points: productAvgRating,
+                                    style: 'text-primary'
+                                } %}
+
+                                {% if productReviewCount > 0 %}
+                                    <p class="h6">
+                                        {{ "detail.reviewTitle"|trans({'%count%': page.reviews.total, '%total%':page.reviews.totalReviews })|sw_sanitize }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endblock %}
+                    </a>
+                {% endblock %}
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_meta_tags_charset %}
+    {% sw_include '@Storefront/storefront/utilities/redirects.html.twig' %}
+
+    <meta charset="utf-8">
+{% endblock %}
+
+{% block layout_head_canonical %}
+    {% if page.metaInformation.canonical %}
+        <link rel="canonical" href="{{ page.metaInformation.canonical }}">
+    {% endif %}
+
+    {% if activeRoute == 'frontend.blog.post' %}
+        <link rel="canonical" href="{{seoUrl('frontend.blog.post', {'postId': post.id})}}" />
+    {% endif %}
+{% endblock %}
+
+{% block layout_head_stylesheet %}
+    <link href="{{ asset('/assets/fonts/inter.css', 'theme') }}" rel="stylesheet">
+  {{ parent() }}
+{% endblock %}
+
+{% block layout_head_favicon %}
+  <link rel="icon" href="{{ asset('/assets/logo/favicon.ico', 'theme') }}" sizes="32x32">
+  <link rel="icon" href="{{ asset('/assets/logo/favicon.svg', 'theme') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ asset('/assets/logo/apple-touch-icon.png', 'theme') }}">
+{% endblock %}
+
+{% block layout_head_meta_tags_opengraph %}
+    <meta property="og:url"
+            content="{% block layout_head_meta_tags_url_og %}{{ (page.metaInformation.canonical is defined) ? page.metaInformation.canonical : app.request.uri }}{% endblock %}">
+    <meta property="og:type"
+            content="{% block layout_head_meta_tags_type_og %}website{% endblock %}">
+    <meta property="og:site_name"
+            content="{% block layout_head_meta_tags_sitename_og %}{{ basicConfig.shopName }}{% endblock %}">
+    <meta property="og:title"
+            content="{% block layout_head_meta_tags_title_og %}{{ metaTitle }}{% endblock %}">
+    <meta property="og:description"
+            content="{% block layout_head_meta_tags_description_og %}{{ metaDescription }}{% endblock %}">
+    <meta property="og:image"
+            content="{% block layout_head_meta_tags_image_og %}{{ theme_config('sw-logo-share') }}{% endblock %}">
+
+    <meta name="twitter:card"
+            content="{% block layout_head_meta_tags_card_twitter %}summary{% endblock %}">
+    <meta name="twitter:site"
+            content="{% block layout_head_meta_tags_sitename_twitter %}{{ basicConfig.shopName }}{% endblock %}">
+    <meta name="twitter:title"
+            content="{% block layout_head_meta_tags_title_twitter %}{{ metaTitle }}{% endblock %}">
+    <meta name="twitter:description"
+            content="{% block layout_head_meta_tags_description_twitter %}{{ metaDescription }}{% endblock %}">
+    <meta name="twitter:image"
+            content="{% block layout_head_meta_tags_image_twitter %}{{ theme_config('sw-logo-share') }}{% endblock %}">
+{% endblock %}
+
+{% block layout_head_meta_tags_schema_webpage %}
+    <meta itemprop="copyrightHolder"
+            content="{% block layout_head_meta_tags_copyright_holder %}{{ basicConfig.shopName }}{% endblock %}">
+    <meta itemprop="copyrightYear"
+            content="{% block layout_head_meta_tags_copyright_year %}{{ metaInformation.copyrightYear|striptags }}{% endblock %}">
+    <meta itemprop="isFamilyFriendly"
+            content="{% block layout_head_meta_tags_family_friendly %}{% if basicConfig.familyFriendly %}true{% else %}false{% endif %}{% endblock %}">
+    <meta itemprop="image"
+            content="{% block layout_head_meta_tags_image_meta %}{{ theme_config('sw-logo-share') }}{% endblock %}">
+{% endblock %}

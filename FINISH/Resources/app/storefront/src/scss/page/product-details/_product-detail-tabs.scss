@@ -1,0 +1,158 @@
+.product-detail-tabs {
+	.product-detail-tabs-content {
+		display: block;
+	}
+
+	.product-detail-tab-navigation {
+		padding: 0;
+	}
+}
+
+.product-detail-tab-navigation {
+	display: flex;
+}
+
+.product-detail-tab-navigation-toggler.swiper-slide {
+	width: fit-content;
+}
+
+.product-detail-tab-navigation-link {
+	transition: 0.4s ease-in-out;
+	color: $color-theme-900;
+	background: $color-theme-500;
+	border-radius: $border-radius;
+	text-transform: none;
+	font-weight: $font-weight-medium;
+
+	font-size: $font-size-base;
+	padding: calc(#{$spacer} / 2) $spacer;
+
+	display: block;
+	text-decoration: none;
+
+	margin-right: $spacer-sm;
+
+	&:hover {
+		background: $color-theme-600;
+		color: $color-theme-900;
+		text-decoration: none;
+	}
+}
+
+.product-detail-tab-navigation-list {
+	width: 0 !important;
+	flex: 1 !important;
+
+	// display: flex;
+	// flex-direction: row;
+
+	// width: 0;
+
+	padding: 0;
+	margin: 0;
+	border-bottom: 0;
+
+	list-style: none;
+}
+
+.product-detail-properties-table {
+
+	th,
+	td {
+		border: 0;
+	}
+}
+
+.product-detail-tab-preview {
+	font-weight: $font-weight-normal;
+	margin-top: $spacer-sm;
+}
+
+.product-detail-tab-preview-more {
+	color: $primary;
+	font-weight: $font-weight-bold;
+}
+
+@include media-breakpoint-down(xs) {
+	.product-detail-tabs {
+		.product-detail-tab-navigation-link {}
+	}
+}
+
+@include media-breakpoint-up(sm) {
+	.product-detail-tabs {
+		margin-bottom: 0;
+	}
+
+	.product-detail-tab-navigation-list {
+		flex-direction: row;
+		padding-bottom: 0;
+	}
+}
+
+.product-detail-description,
+.product-detail-review {
+	padding: $padding 0 0;
+
+	&.service-includes {
+		ul {
+			li::marker {
+				color: var(--primary);
+			}
+		}
+	}
+}
+
+.product-detail-description-text {
+	font-size: $font-size-md;
+	line-height: 1.6;
+	margin-bottom: 0;
+
+	&>h1,
+	&>h2,
+	&>h3,
+	&>h4,
+	&>h5,
+	&>h6 {
+		text-align: left !important;
+		margin-bottom: 1em;
+	}
+
+	dt,
+	strong,
+	b {
+		color: $color-theme-900;
+	}
+
+	table {
+		max-width: 100% !important;
+		width: 100% !important;
+
+		display: block;
+		overflow-x: auto;
+
+		tbody {
+			width: 100%;
+			display: table;
+		}
+	}
+}
+
+.product-detail-description-title {
+	h2 {
+		font-size: $font-size-md;
+		color: $color-theme-700;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		margin-bottom: $spacer-lg;
+	}
+}
+
+.product-detail-tab-navigation-pane {
+	position: relative;
+}
+
+.product-detail-tab-navigation-anchor {
+	position: absolute;
+	top: -60px;
+}

@@ -1,0 +1,241 @@
+.product-detail-box {
+	display: grid;
+	margin-top: $spacer-lg;
+
+	column-gap: $spacer-xl;
+	row-gap: $spacer;
+
+	grid-template-columns: 1fr;
+	grid-template-rows: auto;
+
+	@include media-breakpoint-up(md) {
+		grid-template-columns: auto 400px;
+		grid-template-rows: max-content max-content 1fr;
+	}
+
+	@media screen and (min-width: 1400px) {
+		grid-template-columns: auto 600px;
+		grid-template-rows: max-content max-content 1fr;
+	}
+}
+
+.product-detail-headline {
+	margin-bottom: 0;
+	grid-row: 1 / 2;
+
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+	@include media-breakpoint-up(md) {
+		grid-row: auto;
+		grid-column: 1 / 2;
+	}
+}
+
+.product-detail-notes {
+	grid-row: 4 / 5;
+
+	@include media-breakpoint-up(md) {
+		grid-row: auto;
+	}
+}
+
+.product-detail-action {
+	position: relative;
+	grid-row: 3 / 4;
+
+	display: flex;
+	gap: $spacer;
+	flex-direction: column;
+
+	@include media-breakpoint-up(md) {
+		grid-column: 2 / 3;
+		grid-row: 1 / span 4;
+	}
+}
+
+.product-detail-pills {
+	grid-row: 2 / 3;
+
+	@include media-breakpoint-up(md) {
+		grid-row: auto;
+		grid-column: 1 / 2;
+	}
+}
+
+.product-detail-tabs {
+	grid-row: 5 / 6;
+	overflow: hidden;
+
+	@include media-breakpoint-up(md) {
+		grid-row: auto;
+		grid-column: 1 / 2;
+	}
+}
+
+.product-detail-action-image-wrapper {
+	position: absolute;
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+	border-radius: $border-radius-xl;
+
+	&::before {
+		border-radius: $border-radius-xl;
+		left: 0;
+		top: 0;
+		width: 100%;
+		padding-top: calc(100% + 3px);
+		content: '';
+		display: block;
+		position: absolute;
+		z-index: 15;
+		background-image: radial-gradient(circle farthest-side at 80% -40%, transparent 45%, var(--color-theme-50) 80%);
+	}
+}
+
+.product-detail-image {
+	width: 100%;
+
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	background-size: 100%;
+	background-position: 50% 0;
+
+	background-repeat: no-repeat;
+
+	border-radius: $border-radius-xl;
+
+	object-fit: contain;
+	object-position: top;
+
+	&__overlay {
+		position: absolute;
+		width: 100%;
+		padding-top: 100%;
+
+		z-index: -1;
+
+		left: 0;
+		top: 0;
+		content: '';
+
+		background-size: cover;
+
+		filter: grayscale(0.9) opacity(0.2) blur(2px) brightness(0.5) sepia(1) hue-rotate(180deg);
+		background-position: 50% 50%;
+		transform: scale(2);
+
+		mask-image: radial-gradient(circle at center, $black 45%, transparent 50%);
+		pointer-events: none;
+	}
+}
+
+.product-detail-media {
+	margin-bottom: 40px;
+}
+
+.product-detail-name {
+	color: $white;
+	margin-bottom: 0;
+}
+
+.product-detail-manufacturer-logo {
+	max-width: 200px;
+	max-height: 70px;
+}
+
+.product-detail-price {
+	color: $price-color;
+	margin-bottom: 0;
+	font-weight: $font-weight-bold;
+	vertical-align: middle;
+
+	&.with-list-price {
+		color: $primary;
+		display: inline-block;
+	}
+}
+
+.list-price-badge {
+	display: inline-block;
+	background: $primary;
+	color: $white;
+	text-align: center;
+	border-radius: 3px;
+	line-height: 32px;
+	height: 32px;
+	width: 32px;
+	font-size: 18px;
+	font-weight: $font-weight-bold;
+	vertical-align: middle;
+	margin-bottom: 8px;
+	margin-left: 5px;
+	margin-right: 6px;
+}
+
+.product-detail-list-price-wrapper {
+	color: $headings-color;
+	font-weight: $font-weight-normal;
+	font-size: 12px;
+	display: inline-block;
+	height: 26px;
+	vertical-align: bottom;
+
+	@include media-breakpoint-down(lg) {
+		height: 22px;
+	}
+
+	.list-price-price {
+		text-decoration: line-through;
+	}
+}
+
+.product-detail-ordernumber-label {
+	font-weight: $font-weight-bold;
+}
+
+.product-detail-quantity-select {
+	height: 100%;
+}
+
+.product-detail-form-container {
+	margin-bottom: 0;
+}
+
+.product-detail-action-wrapper {
+	border-radius: $border-radius-xl;
+
+	z-index: 10;
+	background-color: var(--color-theme-50);
+
+	position: relative;
+}
+
+.product-detail-action-benefits {
+	position: sticky;
+	top: 80px;
+
+	background-color: var(--color-theme-50);
+
+	padding: $spacer;
+	border-radius: $border-radius-xl;
+
+	@include media-breakpoint-up(sm) {
+		padding: $spacer-lg;
+	}
+}
+
+.product-detail-action-inner {
+	padding: $spacer;
+	position: relative;
+	z-index: 30;
+
+	@include media-breakpoint-up(sm) {
+		padding: $spacer-lg;
+	}
+}

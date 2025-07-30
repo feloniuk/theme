@@ -1,0 +1,264 @@
+/*
+Override variable defaults
+==================================================
+This file is used to override default SCSS variables from the Shopware Storefront or Bootstrap.
+
+Because of the flags, theme variable overrides have to be declared beforehand.
+https://getbootstrap.com/docs/4.0/getting-started/theming/#variable-defaults
+*/
+
+// COLORS
+$primary: hsl(358, 79%, 59%) !default;
+
+$primary-100: tint-color($primary, 80%) !default;
+$primary-200: tint-color($primary, 60%) !default;
+$primary-300: tint-color($primary, 40%) !default;
+$primary-400: tint-color($primary, 20%) !default;
+$primary-500: $primary !default;
+$primary-600: shade-color($primary, 20%) !default;
+$primary-700: shade-color($primary, 40%) !default;
+$primary-800: shade-color($primary, 60%) !default;
+$primary-900: shade-color($primary, 80%) !default;
+
+$secondary: hsl(223, 10%, 45%) !default;
+
+$color-theme-0: hsl(229, 25%, 5%) !default;
+$color-theme-50: hsl(229, 25%, 9%) !default;
+$color-theme-100: hsl(229, 25%, 13%) !default;
+$color-theme-200: hsl(229, 25%, 15%) !default;
+$color-theme-300: hsl(229, 25%, 15%) !default;
+$color-theme-400: hsl(229, 25%, 18%) !default;
+$color-theme-450: hsl(229, 25%, 20%) !default;
+$color-theme-500: hsl(229, 25%, 25%) !default;
+$color-theme-600: hsl(229, 25%, 45%) !default;
+$color-theme-700: hsl(229, 25%, 67%) !default;
+$color-theme-800: hsl(229, 25%, 85%) !default;
+$color-theme-900: hsl(229, 25%, 95%) !default;
+
+$light: $color-theme-500;
+$dark: $color-theme-300;
+
+$black: hsl(0, 0%, 0%);
+$white: hsl(0, 0%, 100%);
+
+$color-horde: hsl(0, 64%, 50%);
+$color-horde-900: hsl(0, 64%, 90%);
+$color-horde-400: hsl(0, 64%, 40%);
+$color-horde-500: $color-horde;
+$color-horde-300: hsl(0, 64%, 30%);
+$color-horde-100: hsl(0, 64%, 10%);
+$color-alliance: hsl(213, 76%, 50%);
+$color-alliance-900: hsl(213, 76%, 90%);
+$color-alliance-400: hsl(213, 76%, 50%);
+$color-alliance-500: $color-alliance;
+$color-alliance-300: hsl(213, 76%, 30%);
+$color-alliance-100: hsl(213, 76%, 10%);
+
+$color-discord: hsl(235, 86%, 65%);
+
+$transparent-400: hsla(223, 10%, 5%, 0.4);
+$transparent-500: hsla(223, 10%, 5%, 0.5);
+$transparent-950: hsla(223, 10%, 5%, 0.95);
+
+$success: $color-theme-600;
+$info: $color-theme-600;
+$warning: $white;
+$danger: $primary;
+$headings-color: $white;
+
+$color-game-icons: hsl(217, 8%, 33%);
+
+// SHADOWS & OVERLAYS
+
+$color-shadow: rgba(0, 0, 0, 0.4);
+$color-overlay: hsla(223, 10%, 10%, 95%);
+
+$size-shadow: 20px;
+
+// SKELETON
+
+$color-skeleton-1: hsla(223, 10%, 10%, 50%);
+$color-skeleton-2: hsla(223, 10%, 20%, 50%);
+
+// COMMON
+
+$padding: 20px;
+$gap: 20px;
+
+// Grid
+$grid-gutter-width: $padding * 2;
+
+// Body
+$body-bg: $color-theme-300;
+$body-color: $color-theme-800;
+
+// Components
+$component-active-color: $primary;
+
+$border-radius: 4px;
+$border-radius-lg: 6px;
+$border-radius-sm: 2px;
+
+$border-color: $color-theme-500;
+$hr-border-color: $border-color;
+
+// Typography
+// $font-family-base: 'Roboto Condensed', sans-serif;
+$font-family-base: 'Inter', sans-serif;
+
+$font-size-base: 0.875rem;
+$font-size-md: 1rem;
+$font-size-xl: 1.25rem;
+$font-size-lg: 1.125rem;
+$font-size-sm: 0.75rem;
+$font-size-xs: 0.6875rem;
+
+$h1-font-size: 36px;
+$h2-font-size: 28px;
+$h3-font-size: 24px;
+$h4-font-size: 20px;
+$h5-font-size: 16px;
+$h6-font-size: 14px;
+
+// weight
+$font-weight-normal: 400;
+$font-weight-regular: 400;
+$font-weight-medium: 400;
+$font-weight-semi-bold: 700;
+$font-weight-bold: 700;
+$font-weight-extra-bold: 800;
+
+$headings-font-weight: 700;
+// $headings-font-family: 'Roboto Condensed', sans-serif;
+$headings-font-family: 'Inter', sans-serif;
+
+// Buttons + Forms
+$input-btn-padding-y: 0.5625rem;
+$input-btn-padding-x: 0.5625rem;
+
+$input-placeholder-color: $color-theme-600;
+
+// Buttons
+$btn-padding-y: 2px;
+$btn-padding-x: 12px;
+$btn-line-height: 34px;
+
+$btn-padding-y-sm: 2px;
+$btn-padding-x-sm: 12px;
+$btn-font-size-sm: 12px;
+$btn-line-height-sm: 20px;
+
+$btn-padding-y-lg: 2px;
+$btn-padding-x-lg: 12px;
+$btn-font-size-lg: 16px;
+$btn-line-height-lg: 38px;
+
+// Forms
+$enable-validation-icons: false;
+$input-color: $white;
+$input-border-color: $border-color;
+$input-focus-border-color: $primary;
+
+$input-bg: $color-theme-400;
+$input-disabled-bg: $color-theme-500;
+
+$input-color-placeholder: $color-theme-600;
+$input-color: $color-theme-700;
+
+$custom-select-indicator-color: $input-color;
+$custom-control-indicator-active-bg: $primary;
+
+// Pagination
+$pagination-border-color: $border-color;
+$pagination-hover-border-color: $border-color;
+$pagination-focus-border-color: $border-color;
+$pagination-border-width: none;
+$pagination-bg: transparent;
+$pagination-hover-bg: $color-theme-400;
+$pagination-disabled-bg: $color-theme-200;
+
+// Dropdown
+$dropdown-border-color: $border-color;
+$dropdown-min-width: 1rem;
+
+$dropdown-item-padding-x: 1rem;
+
+// Badges
+$badge-font-size: 12px;
+
+// Spinners
+$spinner-width: 26px;
+$spinner-border-width: 2px;
+
+// Modals
+$modal-header-padding-y: 10px;
+$modal-header-padding-x: 10px;
+
+// Breadcrumb
+$breadcrumb-bg: transparent;
+$breadcrumb-border-radius: 2px;
+
+// Cards
+$card-border-color: transparent;
+$card-bg: transparent;
+// $card-spacer-x: 0;
+
+// Tables
+$table-accent-bg: $color-theme-200;
+
+// Switch
+$custom-switch-indicator-border-radius: 0.5rem;
+
+$modal-content-bg: $color-theme-200;
+$dropdown-bg: $color-theme-200;
+$dropdown-border: $color-theme-400;
+
+// links
+$link-hover-color: $primary;
+
+// tabs
+$nav-tabs-link-active-bg: $color-theme-400;
+
+// ddown
+$dropdown-bg: $color-theme-200;
+
+//hr
+$hr-opacity: 1;
+
+// lists
+$list-group-bg: transparent;
+$list-group-border: transparent;
+$list-group-active-color: $white;
+$list-group-color: $white;
+
+$list-group-active-bg: $color-theme-400;
+$list-group-action-active-bg: $color-theme-400;
+
+$list-group-action-color: $color-theme-700;
+$list-group-link-color: $white;
+$list-group-hover-color: $white;
+$list-group-hover-bg: transparent;
+
+$buy-btn-bg: hsl(358, 79%, 59%);
+$buy-btn-color: hsl(0, 0%, 100%);
+
+$disabled-btn-bg: $color-theme-500;
+$disabled-btn-border-color: $color-theme-500;
+
+$cms-block-text-hero-hr-color: $color-theme-500;
+$cms-element-text-quotes-color: $color-theme-700;
+$cms-element-product-listing-gutter-width: 30px;
+
+$price-color: $primary;
+
+$order-grid-gutter-width: 20px;
+$icon-base-color: $color-theme-700;
+
+$input-group-addon-border-color: $border-color;
+
+//
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}

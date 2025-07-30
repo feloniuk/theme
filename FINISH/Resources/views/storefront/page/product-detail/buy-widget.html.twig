@@ -1,0 +1,73 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget.html.twig' %}
+
+{% block page_product_detail_rich_snippets %}{% endblock %}
+
+{% block page_product_detail_buy_container %}
+    {% sw_include "@Storefront/storefront/page/product-detail/mm-options.html.twig" %}
+
+    {% block page_product_detail_buy_form %}
+        {% if page.product.active %}
+            <div class="product-detail-form-container">
+            {% sw_include "@Storefront/storefront/page/product-detail/buy-widget-form.html.twig" %}
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block page_product_detail_ordernumber_container %}{% endblock %}
+
+{% block page_product_detail_wishlist %}{% endblock %}
+
+{% block page_product_detail_buy_inner %}
+    <div class="product-detail-action-inner">
+        {{ block('page_product_detail_rich_snippets') }}
+        {{ block('page_product_detail_buy_container') }}
+        {% if config('core.cart.wishlistEnabled') %}
+            {% block page_product_express_checkout %}
+  {% if page.extensions.expressCheckoutMethods.elements|first %}
+    <div class="express-checkout" data-express-checkout-ref>
+        <div class="express-checkout__title">{{ "express-checkout.title"|trans|sw_sanitize }}</div>
+        <div class="express-checkout__actions">
+        {% for paymentMethod in page.extensions.expressCheckoutMethods.elements %}
+          {% set options = {
+            paymentMethodId: paymentMethod.id,
+            contextToken: context.token,
+            accessKey: context.salesChannel.accessKey,
+            paymentMethodName: paymentMethod.name,
+            productId: page.product.id,
+            currencyId: context.currency.id,
+            customerId: context.customer.id,
+            customerEmail: context.customer.email,
+            productName: page.product.translated.name
+          } %}
+
+            {% set image = empty %}
+
+            {% if paymentMethod.customFields.express_checkout_image %}
+              {% set mediaCollection = searchMedia([paymentMethod.customFields.express_checkout_image], context.context) %}
+              {% if mediaCollection %}
+                  {% set image = mediaCollection.get(paymentMethod.customFields.express_checkout_image) %}
+              {% endif %}
+            {% endif %}
+
+            <Button
+              class="express-checkout__button"
+              data-express-checkout-plugin="true"
+              data-express-checkout-plugin-options="{{ options|json_encode|e }}"
+              style="{{ paymentMethod.customFields.express_checkout_bg_color ? '--checkout-bg-color:' ~ paymentMethod.customFields.express_checkout_bg_color ~ ';' : '' }}{{ paymentMethod.customFields.express_checkout_hover_color ? '--checkout-hover-color:' ~ paymentMethod.customFields.express_checkout_hover_color ~ ';' : '' }}">
+              {% if image is not empty %}
+                  <img class="express-checkout__image" src="{{image.url}}" loading="lazy">
+              {% else %}
+                  {{ paymentMethod.name }}
+              {% endif %}
+            </Button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+{% endblock %}
+            {{ block('page_product_detail_wishlist')}}
+        {% endif %}
+        {{ block('page_product_detail_ordernumber_container') }}
+    </div>
+{% endblock %}

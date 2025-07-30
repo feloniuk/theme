@@ -1,0 +1,130 @@
+{% sw_extends '@Storefront/storefront/component/line-item/type/generic.html.twig' %}
+
+{% block component_line_item_type_generic %}
+    <div class="{{ lineItemClasses }}">
+        <div class="line-item-row">
+
+            {% set showLineItemModal = controllerAction is same as('confirmPage') %}
+
+            {% if nestingLevel < 1 %}
+                {% block component_line_item_type_generic_image %}
+                    <div class="col-auto line-item-info-img">
+                        <div class="line-item-img-container">
+                            {% block component_line_item_type_generic_image_inner %}
+                                {% sw_include '@Storefront/storefront/component/line-item/element/image.html.twig' %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                {% endblock %}
+            {% endif %}
+
+            {% block component_line_item_type_generic_col_info %}
+                <div class="line-item-info">
+                        {% block component_line_item_type_generic_details %}
+                            <div class="line-item-details">
+                                <div class="line-item-details-container">
+                                    {% block component_line_item_type_generic_label %}
+                                        {% sw_include '@Storefront/storefront/component/line-item/element/label.html.twig' %}
+                                    {% endblock %}
+
+                                    {% if lineItem.payload.options is not empty %}
+                                        {{ block('component_line_item_type_generic_variant_characteristics') }}
+                                    {% endif %}
+
+                                    {% if lineItem.payload.features is not empty %}
+                                        {{ block('component_line_item_type_generic_features') }}
+                                    {% endif %}
+
+                                    {% if lineItem.payload.productNumber %}
+                                        {% block component_line_item_type_generic_product_number %}
+
+                                            {# @deprecated tag:v6.6.0 - Block will be removed. Use `component_line_item_type_generic_product_number` instead.  #}
+                                            {% block component_line_item_type_generic_order_number %}
+                                                {# @deprecated tag:v6.6.0 - Class `line-item-ordernumber` will be removed. Use `line-item-product-number` instead.  #}
+                                                <div class="line-item-ordernumber line-item-product-number">
+                                                    {{ "checkout.cartItemInfoId"|trans|sw_sanitize }} {{ lineItem.payload.productNumber }}
+                                                </div>
+                                            {% endblock %}
+                                        {% endblock %}
+                                    {% endif %}
+
+                                    {% if config('core.cart.showDeliveryTime') %}
+                                        {% block component_line_item_type_generic_delivery_date %}
+                                            {% sw_include '@Storefront/storefront/component/line-item/element/delivery-date.html.twig' %}
+                                        {% endblock %}
+                                    {% endif %}
+
+                                    {% if config('core.cart.wishlistEnabled') %}
+                                        {{ block('component_line_item_type_generic_wishlist') }}
+                                    {% endif %}
+
+                                    <div class="line-item-details-units">
+                                        {{ block('component_line_item_type_generic_col_quantity') }}
+                                        <div>×</div>
+                                        {{ block('component_line_item_type_generic_col_unit_price') }}
+                                    </div>
+
+                                    {{ block('component_line_item_type_generic_col_total_price') }}
+                                </div>
+                            </div>
+                        {% endblock %}
+                </div>
+            {% endblock %}
+
+            {{ block('component_line_item_type_generic_col_quantity') }}
+
+            {% if showTaxPrice %}
+                {{ block('component_line_item_type_generic_col_tax_price') }}
+            {% else %}
+                {{ block('component_line_item_type_generic_col_unit_price') }}
+            {% endif %}
+
+            {{ block('component_line_item_type_generic_col_total_price') }}
+
+            {% if showRemoveButton %}
+                {% block component_line_item_type_generic_col_remove %}
+                    <div class="line-item-remove">
+                        {% if lineItem.removable and nestingLevel < 1 %}
+                            {% sw_include '@Storefront/storefront/component/line-item/element/remove.html.twig' %}
+                        {% endif %}
+                    </div>
+                {% endblock %}
+            {% endif %}
+
+            {% if lineItem.children.count > 0 %}
+                {% block component_line_item_type_generic_children %}
+                    {% sw_include '@Storefront/storefront/component/line-item/element/children-wrapper.html.twig' %}
+                {% endblock %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block component_line_item_type_generic_variant_characteristics %}{% endblock %}
+{% block component_line_item_type_generic_features %}{% endblock %}
+{% block component_line_item_type_generic_number %}{% endblock %}
+{% block component_line_item_type_generic_wishlist %}{% endblock %}
+
+{% block component_line_item_type_generic_col_quantity %}
+    <div class="line-item-quantity">
+        {% if lineItem.payload.customFields.custom_options_double_quantity_mode %}
+            1
+        {% else %}
+            {{ lineItem.quantity }}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block component_line_item_type_generic_col_total_price %}
+    <div class="line-item-total-price">
+        {{ lineItem.price.totalPrice|currency }}
+    </div>
+{% endblock %}
+
+{% block component_line_item_type_generic_col_tax_price %}{% endblock %}
+
+{% block component_line_item_type_generic_col_unit_price %}
+    <div class="line-item-unit-price">
+        {{ lineItem.price.unitPrice|currency }}
+    </div>
+{% endblock %}

@@ -1,0 +1,124 @@
+/*
+Search suggest
+==================================================
+Contains styles for the search suggest popover in the shop header.
+*/
+
+.search-suggest-container {
+	position: absolute;
+	top: 55px;
+	left: 0;
+	list-style: none;
+	touch-action: manipulation;
+	background: $color-theme-400;
+	padding: 0;
+	border: 1px solid $border-color;
+	width: 100%;
+	z-index: $search-suggest-zindex;
+	box-shadow: 0 10px 25px -15px $black;
+	border-radius: $border-radius;
+
+	overflow-y: auto;
+	max-height: calc(90vh - 100px);
+
+	&::after {
+		transform: rotate(135deg);
+		width: 12px;
+		height: 12px;
+		top: -7px;
+		content: '';
+		display: block;
+		position: absolute;
+		background: $color-theme-400;
+		left: 48%;
+		border: 1px solid $border-color;
+		border-top: 0 none;
+		border-right: 0 none;
+	}
+}
+
+.search-suggest-product {
+	margin-left: $spacer;
+	margin-right: $spacer;
+
+	&:first-of-type {
+		margin-top: $spacer;
+	}
+
+	&:last-of-type {
+	}
+
+	&.is-active {
+		.search-suggest-product-link {
+			color: $primary;
+		}
+	}
+}
+
+.search-suggest-product-link,
+.search-suggest-total-link {
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.search-suggest-product-link {
+	display: block;
+	padding: $spacer-sm 0;
+}
+
+.search-suggest-product-name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	margin-right: $spacer-lg;
+}
+
+.search-suggest-product-reference-price {
+	color: $gray-400;
+	display: block;
+}
+
+.search-suggest-product-image-container {
+	width: 35px;
+	height: 35px;
+	margin: 0 $spacer-sm 0 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.search-suggest-product-image {
+	max-width: 35px;
+	max-height: 35px;
+	display: block;
+}
+
+.search-suggest-total {
+	padding-left: $spacer;
+	padding-right: $spacer;
+	padding-bottom: $spacer;
+
+	position: sticky;
+	bottom: 0;
+
+	background: $color-theme-400;
+}
+
+.search-suggest-no-result {
+	text-align: center;
+
+	margin: $spacer;
+}
+
+@include media-breakpoint-up(md) {
+	.search-suggest-container {
+		transform: translateX(-50%);
+
+		width: calc(100% - 48px);
+		left: calc(50% - 24px);
+
+		border-radius: $border-radius;
+	}
+}

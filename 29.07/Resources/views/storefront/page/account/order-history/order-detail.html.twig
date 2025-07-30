@@ -1,0 +1,17 @@
+{% block page_account_order_item_detail_overview %}
+    <div class="order-item-detail">
+            <div class="order-detail-content">
+                {% block page_account_order_item_detail_table_header %}
+                    {% sw_include '@Storefront/storefront/component/checkout/cart-header.html.twig' with {
+                        showRemoveColumn: false
+                    } %}
+                {% endblock %}
+
+                {% block page_account_order_item_detail_table_body %}
+                    <div class="order-detail-content-body">
+                        {% sw_include '@Storefront/storefront/page/account/order-history/order-detail-list.html.twig' %}
+                    </div>
+                {% endblock %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+.cms-block-text-hero {
+  .cms-element-text hr {
+    max-width: 160px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid $cms-block-text-hero-hr-color;
+  }
+}
+
+.cms-block-product-listing {
+  margin: -20px; // compensate
+}
+
+.cms-block-product-slider {
+  margin-right: -20px;
+  margin-left: -20px;
+}

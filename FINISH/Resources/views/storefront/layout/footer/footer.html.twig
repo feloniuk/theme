@@ -1,0 +1,140 @@
+{% sw_extends '@Storefront/storefront/layout/footer/footer.html.twig' %}
+
+{% block layout_footer_navigation_hotline %}
+  <div class="col-md-5 footer-column footer-column-left js-footer-column">
+    {% block layout_footer_navigation_hotline_headline %}
+      <div
+        class="footer-column-headline footer-headline js-footer-column-headline js-collapse-footer-column-trigger"
+        id="collapseFooterHotlineTitle"
+        data-target="#collapseFooterHotline"
+        aria-expanded="true"
+        aria-controls="collapseFooterHotline">
+        {{ 'footer.serviceHotlineHeadline'|trans|sw_sanitize }}
+
+        {% block layout_footer_navigation_hotline_icons %}
+          <div class="footer-column-toggle">
+            <span class="footer-plus-icon">
+              {% sw_icon 'plus' %}
+            </span>
+
+            <span class="footer-minus-icon">
+              {% sw_icon 'minus' %}
+            </span>
+          </div>
+        {% endblock %}
+      </div>
+    {% endblock %}
+
+    {% block layout_footer_navigation_hotline_content %}
+      <div id="collapseFooterHotline" class="footer-column-content collapse js-footer-column-content footer-contact" aria-labelledby="collapseFooterHotlineTitle">
+        <div class="footer-reviews">
+          {{ context.salesChannel.translated.customFields.custom_footer_feedback_rating|raw }}
+        </div>
+
+        <div class="footer-messengers">
+          {{ context.salesChannel.translated.customFields.custom_footer_messengers|raw }}
+        </div>
+
+      </div>
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block layout_footer_payment_shipping_logos %}
+    <div class="footer-logos">
+        <div class="footer__payments">
+            {{ context.salesChannel.translated.customFields.custom_footer_payment_logos|raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block layout_footer_navigation_columns %}
+  <div class="col-md-7">
+    <div class="row">
+
+
+      {% for root in page.footer.navigation.tree %}
+        {% block layout_footer_navigation_column %}
+          <div class="col-12 col-md footer-column js-footer-column">
+            {% block layout_footer_navigation_information_headline %}
+              <div
+                class="footer-column-headline footer-headline js-collapse-footer-column-trigger"
+                data-target="#collapseFooterTitle{{ loop.index }}"
+                aria-expanded="true"
+                aria-controls="collapseFooter{{ loop.index }}">
+
+                {{ root.category.translated.name }}
+                {% block layout_footer_navigation_information_icons %}
+                  <div class="footer-column-toggle">
+                    <span class="footer-plus-icon">
+                      {% sw_icon 'plus' %}
+                    </span>
+                    <span class="footer-minus-icon">
+                      {% sw_icon 'minus' %}
+                    </span>
+                  </div>
+                {% endblock %}
+              </div>
+            {% endblock %}
+
+            {% block layout_footer_navigation_information_content %}
+              <div id="collapseFooter{{ loop.index }}" class="footer-column-content collapse js-footer-column-content" aria-labelledby="collapseFooterTitle{{ loop.index }}">
+                <div class="footer-column-content-inner">
+                  {% block layout_footer_navigation_information_links %}
+                    <ul class="list-unstyled mb-0">
+                      {% for treeItem in root.children|slice(0, 12) %}
+                        {% set category = treeItem.category %}
+                        {% set name = category.translated.name %}
+                        {% set externalLink = category.translated.externalLink %}
+
+                        {{ block('layout_footer_navigation_information_link_item') }}
+                      {% endfor %}
+                    </ul>
+
+                    {% if root.children|length > 12 %}
+
+                    <input id="footer_{{root.id}}" type="checkbox" class="footer-column-content-cut-trigger">
+
+                    <label for="footer_{{root.id}}" class="footer-column-content-cut-label footer-column-content-cut-label--expand">{{ "mm-theme.footer.expandNavList"|trans|sw_sanitize }}</label>
+
+                    <ul class="list-unstyled mb-0">
+                      {% for treeItem in root.children|slice(12) %}
+                        {% set category = treeItem.category %}
+                        {% set name = category.translated.name %}
+                        {% set externalLink = category.translated.externalLink %}
+
+                        {{ block('layout_footer_navigation_information_link_item') }}
+                      {% endfor %}
+                    </ul>
+
+                    <label for="footer_{{root.id}}" class="footer-column-content-cut-label footer-column-content-cut-label--collapse">{{ "mm-theme.footer.collapseNavList"|trans|sw_sanitize }}</label>
+                    {% endif %}
+                  {% endblock %}
+                </div>
+              </div>
+            {% endblock %}
+          </div>
+        {% endblock %}
+      {% endfor %}
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block layout_footer_vat %}{% endblock %}
+
+{% block layout_footer_copyright %}
+  <div class="container">
+    <div class="footer-copyright px-4">{{ "footer.copyrightInfo"|trans|sw_sanitize }}</div>
+  </div>
+{% endblock %}
+
+{% block layout_footer_navigation_information_link_item %}
+  <li class="footer-link-item cutted">
+    {% block layout_footer_navigation_information_link %}
+      <a class="footer-link" href="{% if externalLink %}{{ externalLink }}{% else %}{{ seoUrl('frontend.navigation.page', { navigationId: category.id }) }}{% endif %}" title="{{ name }}">
+        {{ name }}
+      </a>
+    {% endblock %}
+  </li>
+{% endblock %}
