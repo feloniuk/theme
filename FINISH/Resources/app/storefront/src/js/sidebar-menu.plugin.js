@@ -1,6 +1,6 @@
 import Plugin from 'src/plugin-system/plugin.class';
 
-export default class AllPageSidebarMenuPlugin extends Plugin {
+export default class SidebarMenuPlugin extends Plugin {
     static options = {
         swiperConfig: {
             direction: 'vertical',
@@ -235,6 +235,8 @@ export default class AllPageSidebarMenuPlugin extends Plugin {
     }
 
     _onCategoryClick(event) {
+        event.stopPropagation();
+
         // Проверяем, был ли клик по кнопке expand или add
         if (event.target.closest('[data-all-page-sidebar-expand-button]') ||
             event.target.closest('[data-all-page-sidebar-add-button]')) {
@@ -247,7 +249,11 @@ export default class AllPageSidebarMenuPlugin extends Plugin {
         const categoryName = category.querySelector('.all-page-sidebar-category-title').textContent;
         const isExpandable = category.dataset.expandable === 'true';
 
-        this._addClickFeedback(category);
+        const clickedLink = event.target.closest('a');
+        if (clickedLink) {
+            this._addClickFeedback(clickedLink);
+        }
+
 
         // Если категория имеет URL, сразу переходим по ней
         if (categoryUrl) {
