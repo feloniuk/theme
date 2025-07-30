@@ -5,8 +5,8 @@
     {% set hasSidebarData = activeRoute != 'frontend.home.page' and sidebarEnabled %}
 
     {% if sidebarEnabled and hasSidebarData %}
-        <div class="all-page-sidebar-wrapper">
-            <div class="all-page-sidebar">
+        <div class="all-page-sidebar-wrapper" id="sidebar-wrapper">
+            <div class="all-page-sidebar" id="sidebar-element">
                 <div class="all-page-sidebar-inner">
                     {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
                 </div>
@@ -16,6 +16,40 @@
                 {{ parent() }}
             </div>
         </div>
+
+        <script>
+            function manageSidebar() {
+                const wrapper = document.getElementById('sidebar-wrapper');
+                const sidebar = document.getElementById('sidebar-element');
+                
+                if (!wrapper || !sidebar) return;
+                
+                if (window.innerWidth > 1200) {
+                    // Показываем сайдбар - flexbox структура
+                    wrapper.style.display = 'flex';
+                    sidebar.style.display = 'flex';
+                    sidebar.style.flexDirection = 'column';
+                    console.log('Показываем сайдбар продукта, ширина:', window.innerWidth);
+                } else {
+                    // Скрываем сайдбар - обычная структура
+                    wrapper.style.display = 'block';
+                    sidebar.style.display = 'none';
+                    console.log('Скрываем сайдбар продукта, ширина:', window.innerWidth);
+                }
+            }
+            
+            document.addEventListener('DOMContentLoaded', manageSidebar);
+            
+            if (document.readyState !== 'loading') {
+                manageSidebar();
+            }
+            
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(manageSidebar, 150);
+            });
+        </script>
     {% else %}
         {{ parent() }}
     {% endif %}
@@ -60,6 +94,35 @@
                             {% block page_product_detail_buy %}
                                 <div class="product-detail-action">
                                     <div class="product-detail-action-wrapper">
+
+                                    <style>
+                                        .product-detail-image__overlay {
+                                            position: absolute;
+                                            width: 85%;
+                                            padding-top: 100%;
+                                            z-index: -1;
+                                            left: 0;
+                                            top: -45em;
+                                            content: "";
+                                            background-size: cover;
+                                            filter: grayscale(0.9) opacity(0.2) blur(2px) brightness(0.5) sepia(1) hue-rotate(180deg);
+                                            background-position: 50% 50%;
+                                            transform: scale(2);
+                                            mask-image: radial-gradient(circle at center, black 45%, transparent 50%);
+                                            pointer-events: none;
+                                        }
+
+                                        .product-detail-image-wrapper {
+                                            position: relative;
+                                            overflow: visible; /* Важно! Разрешаем переполнение */
+                                        }
+
+                                        .product-detail-action,
+                                        .product-detail-action-wrapper {
+                                            overflow: visible !important;
+                                        }
+                                    </style>
+
                                         <div class="product-detail-action-image-wrapper">
                                             {% sw_thumbnails 'product-thumbnail' with {
                                                 media: page.product.cover.media,
@@ -78,8 +141,10 @@
                                         {% sw_include '@Storefront/storefront/page/product-detail/buy-widget.html.twig' %}
                                     </div>
 
-                                    <div class="product-detail-image__overlay" style="background-image: url({{ page.product.cover.media.url|replace({' ': '%20'}) }})"></div>
-                                </div>
+                                        <div class="product-detail-image-wrapper">
+                                            <div class="product-detail-image__overlay" style="background-image: url({{ page.product.cover.media.url|replace({' ': '%20'}) }})"></div>
+                                        </div>
+                                    </div>
                             {% endblock %}
                         </div>
                     {% endblock %}
@@ -89,4 +154,11 @@
             {{ block('page_product_detail_cross_selling') }}
         {% endblock %}
     </div>
+
+    <style>
+        .all-page-sidebar-with-content>* {
+            padding: 2rem 20px;
+        }
+    </style>
 {% endblock %}
+

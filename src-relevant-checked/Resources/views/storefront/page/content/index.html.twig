@@ -18,25 +18,54 @@
     {% endif %}
 
     {% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
-    {% set showSidebar = activeRoute != 'frontend.home.page' and sidebarEnabled %}
+    {% set showSidebarData = activeRoute != 'frontend.home.page' and sidebarEnabled %}
 
-    {# Для страниц продуктов проверяем, есть ли категории у продукта #}
     {% if activeRoute == 'frontend.detail.page' and page.product is defined %}
         {% set hasProductCategories = page.product.categories is defined and page.product.categories|length > 0 %}
-        {% set showSidebar = showSidebar and hasProductCategories %}
+        {% set showSidebarData = showSidebarData and hasProductCategories %}
     {% endif %}
 
-    {% if showSidebar %}
-        <div class="all-page-sidebar-wrapper">
-            <div class="all-page-sidebar">
+    {% if showSidebarData %}
+        <div class="all-page-sidebar-wrapper" id="sidebar-wrapper">
+            <div class="all-page-sidebar" id="sidebar-element">
                 <div class="all-page-sidebar-inner">
                     {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
                 </div>
             </div>
-
             <div class="all-page-sidebar-with-content">{{ parent() }}</div>
         </div>
+
+        <script>
+            function manageSidebar() {
+                const wrapper = document.getElementById('sidebar-wrapper');
+                const sidebar = document.getElementById('sidebar-element');
+
+                if (!wrapper || !sidebar) return;
+
+                if (window.innerWidth > 991) {
+                    wrapper.style.display = 'flex';
+                    sidebar.style.display = 'flex';
+                    sidebar.style.flexDirection = 'column';
+                } else {
+                    wrapper.style.display = 'block';
+                    sidebar.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', manageSidebar);
+
+            if (document.readyState !== 'loading') {
+                manageSidebar();
+            }
+
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(manageSidebar, 150);
+            });
+        </script>
     {% else %}
+
         {{ parent() }}
     {% endif %}
 {% endblock %}
