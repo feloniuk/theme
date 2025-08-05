@@ -1,24 +1,17 @@
 {% sw_extends '@Storefront/storefront/page/product-detail/index.html.twig' %}
 
 {% block base_main_inner %}
-    {% set sidebarEnabled = theme_config('mm-sidebar-enabled') %}
-    {% set hasSidebarData = activeRoute != 'frontend.home.page' and sidebarEnabled %}
-
-    {% if sidebarEnabled and hasSidebarData %}
+    <div class="container-main">
         <div class="sidebar-wrapper">
-            <div class="sidebar">
+            <div class="sidebar sidebar--product-page">
                 <div class="sidebar-inner">
-                    {% sw_include '@MmTheme/storefront/page/product-detail/product-sidebar-section.html.twig' %}
+                    {% sw_include '@Storefront/storefront/layout/sidebar/sidebar.html.twig' %}
                 </div>
             </div>
 
-            <div class="with-sidebar">
-                {{ parent() }}
-            </div>
+            <div class="with-sidebar with-sidebar--product">{{ parent() }}</div>
         </div>
-    {% else %}
-        {{ parent() }}
-    {% endif %}
+    </div>
 {% endblock %}
 
 {% block page_product_detail %}
@@ -26,7 +19,7 @@
         itemscope
         itemtype="https://schema.org/Product">
 
-        {% sw_include '@Storefront/storefront/page/product-detail/microdata.html.twig' %}
+    {% sw_include '@Storefront/storefront/page/product-detail/microdata.html.twig' %}
 
         {% block page_product_detail_inner %}
             {% block page_product_detail_content %}
@@ -41,7 +34,11 @@
                                     {# REVIEWS HIDDEN #}
                                     {# {% sw_include '@Storefront/storefront/page/product-detail/review/review-header.html.twig' %} #}
 
-                                    {{ context.salesChannel.translated.customFields.custom_tp_widget|raw }}
+                                    {% if context.salesChannel.translated.customFields.custom_tp_widget is not empty %}
+                                        <div class="tp-widget">
+                                            {{ context.salesChannel.translated.customFields.custom_tp_widget|raw }}
+                                        </div>
+                                    {% endif %}
                                 </div>
 
                                 <div class="product-detail-notes">
@@ -76,6 +73,12 @@
                                         </div>
 
                                         {% sw_include '@Storefront/storefront/page/product-detail/buy-widget.html.twig' %}
+                                    </div>
+
+                                    <div class="product-detail-action-benefits">
+                                        <div class="product-detail-action-benefits__action" id="custom-options__portal"></div>
+
+                                        {{ context.salesChannel.translated.customFields.mm_product_payment_benefits|raw }}
                                     </div>
 
                                     <div class="product-detail-image__overlay" style="background-image: url({{ page.product.cover.media.url|replace({' ': '%20'}) }})"></div>

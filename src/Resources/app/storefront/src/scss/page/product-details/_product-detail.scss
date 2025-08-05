@@ -13,8 +13,9 @@
 		grid-template-rows: max-content max-content 1fr;
 	}
 
-	@include media-breakpoint-up(lg) {
+	@media screen and (min-width: 1400px) {
 		grid-template-columns: auto 600px;
+		grid-template-rows: max-content max-content 1fr;
 	}
 }
 
@@ -43,6 +44,10 @@
 .product-detail-action {
 	position: relative;
 	grid-row: 3 / 4;
+
+	display: flex;
+	gap: $spacer;
+	flex-direction: column;
 
 	@include media-breakpoint-up(md) {
 		grid-column: 2 / 3;
@@ -209,6 +214,40 @@
 	background-color: var(--color-theme-50);
 
 	position: relative;
+}
+
+.product-detail-action-benefits {
+	position: sticky;
+	top: 80px;
+
+	background-color: var(--color-theme-50);
+
+	padding: $spacer;
+	border-radius: $border-radius-xl;
+
+	display: flex;
+	flex-direction: column;
+
+	&__action {
+		display: none;
+
+		@include media-breakpoint-up(md) {
+			display: flex;
+
+			&>* {
+				flex: 1;
+				padding-bottom: 20px;
+
+				.btn-mmo-buy {
+					font-size: $font-size-md
+				}
+			}
+		}
+	}
+
+	@include media-breakpoint-up(sm) {
+		padding: $spacer-lg;
+	}
 }
 
 .product-detail-action-inner {

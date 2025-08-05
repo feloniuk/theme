@@ -1,8 +1,0 @@
-.logo {
-  max-height: 25px;
-
-  @include media-breakpoint-up(sm) {
-    max-width: 150px;
-    max-height: 35px;
-  }
-}

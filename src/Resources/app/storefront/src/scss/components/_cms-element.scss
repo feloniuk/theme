@@ -18,49 +18,70 @@ Skin styling for cms elements
 			gap: $cms-element-product-listing-gutter-width;
 		}
 
+		// Базовая сетка - 1 колонка для мобильных
 		grid-template-columns: 1fr;
 
-		@include media-breakpoint-only(sm) {
+		// 576px - 991px: 2 колонки
+		@include media-breakpoint-up(sm) {
 			grid-template-columns: repeat(2, 1fr);
 		}
 
-		@include media-breakpoint-only(md) {
+		// 992px - 1199px: 2 элемент (с меню)
+		@include media-breakpoint-up(lg) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		// 1200px - 1365px: 2 элемента (с меню)
+		@include media-breakpoint-up(xl) {
 			grid-template-columns: repeat(3, 1fr);
 		}
 
-		@include media-breakpoint-only(lg) {
+		// 1366px - 1535px: 3 элемента
+		@media screen and (min-width: 1366px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		// 1536px - 1799px: 4 элемента
+		@media screen and (min-width: 1536px) {
 			grid-template-columns: repeat(4, 1fr);
 		}
 
-		@include media-breakpoint-up(xl) {
-			grid-template-columns: repeat(6, 1fr);
-		}
-
-		@media screen and (min-width: 1600px) {
-			grid-template-columns: repeat(6, 1fr);
+		// 1800px+: 5 элементов
+		@media screen and (min-width: 1800px) {
+			grid-template-columns: repeat(5, 1fr);
 		}
 
 		&--offer {
 			grid-template-columns: 1fr;
 			gap: $cms-element-product-listing-gutter-width / 2;
 
-			@include media-breakpoint-only(sm) {
+			// 576px - 991px: 1 элемент
+			@include media-breakpoint-up(sm) {
 				grid-template-columns: repeat(1, 1fr);
 			}
 
-			@include media-breakpoint-only(md) {
+			// 992px - 1199px: 2 элемент (с меню)
+			@include media-breakpoint-up(lg) {
 				grid-template-columns: repeat(2, 1fr);
 			}
 
-			@include media-breakpoint-only(lg) {
-				grid-template-columns: repeat(2, 1fr);
-			}
-
+			// 1200px - 1365px: 2 элемента (с меню)
 			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			// 1366px - 1535px: 2 элемента
+			@media screen and (min-width: 1366px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			// 1536px - 1799px: 3 элемента
+			@media screen and (min-width: 1536px) {
 				grid-template-columns: repeat(3, 1fr);
 			}
 
-			@media screen and (min-width: 1600px) {
+			// 1800px+: 3 элемента
+			@media screen and (min-width: 1800px) {
 				grid-template-columns: repeat(3, 1fr);
 			}
 		}
@@ -69,23 +90,33 @@ Skin styling for cms elements
 			grid-template-columns: 1fr;
 			gap: $cms-element-product-listing-gutter-width / 2;
 
+			// 576px - 991px: 2 элемента
 			@include media-breakpoint-up(sm) {
 				grid-template-columns: repeat(2, 1fr);
 			}
 
-			@include media-breakpoint-up(md) {
+			// 992px - 1199px: 2 элемент (с меню)
+			@include media-breakpoint-up(lg) {
 				grid-template-columns: repeat(2, 1fr);
 			}
 
-			@include media-breakpoint-up(lg) {
+			// 1200px - 1365px: 2 элемента (с меню)
+			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1366px - 1535px: 3 элемента
+			@media screen and (min-width: 1366px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1536px - 1799px: 4 элемента
+			@media screen and (min-width: 1536px) {
 				grid-template-columns: repeat(4, 1fr);
 			}
 
-			@include media-breakpoint-up(xl) {
-				grid-template-columns: repeat(5, 1fr);
-			}
-
-			@media screen and (min-width: 1600px) {
+			// 1800px+: 5 элементов
+			@media screen and (min-width: 1800px) {
 				grid-template-columns: repeat(5, 1fr);
 				gap: $cms-element-product-listing-gutter-width;
 			}
@@ -131,24 +162,6 @@ Skin styling for cms elements
 	}
 }
 
-.cms-section-sidebar-main-content {
-	.cms-element-product-listing {
-		.listing-grid-layout {
-			@include media-breakpoint-only(lg) {
-				grid-template-columns: repeat(3, 1fr);
-			}
-
-			@include media-breakpoint-up(xl) {
-				grid-template-columns: repeat(4, 1fr);
-			}
-
-			@media screen and (min-width: 1600px) {
-				grid-template-columns: repeat(4, 1fr);
-			}
-		}
-	}
-}
-
 .cms-element-text {
 	font-size: $font-size-md;
 
@@ -172,41 +185,90 @@ Skin styling for cms elements
 	}
 }
 
+// Стили для случаев с боковой панелью (меню скрывается на 991px и ниже)
 .with-sidebar {
 	.listing-grid-layout {
-		@include media-breakpoint-only(lg) {
+
+		// 992px - 1199px: 2 элемент (с меню)
+		@include media-breakpoint-up(lg) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		// 1200px - 1365px: 2 элемента (с меню)
+		@include media-breakpoint-up(xl) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		// 1366px - 1535px: 3 элемента
+		@media screen and (min-width: 1366px) {
 			grid-template-columns: repeat(3, 1fr);
 		}
 
-		@include media-breakpoint-up(xl) {
+		// 1536px - 1799px: 4 элемента
+		@media screen and (min-width: 1536px) {
 			grid-template-columns: repeat(4, 1fr);
 		}
 
-		@media screen and (min-width: 1550px) {
+		// 1800px+: 5 элементов
+		@media screen and (min-width: 1800px) {
 			grid-template-columns: repeat(5, 1fr);
 		}
 
-
 		&--offer {
-			@include media-breakpoint-only(lg) {
+
+			// 992px - 1199px: 2 элемент (с меню)
+			@include media-breakpoint-up(lg) {
 				grid-template-columns: repeat(2, 1fr);
 			}
 
+			// 1200px - 1365px: 2 элемента (с меню)
 			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			// 1366px - 1535px: 2 элемента
+			@media screen and (min-width: 1366px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1536px - 1799px: 3 элемента
+			@media screen and (min-width: 1536px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1800px+: 3 элемента
+			@media screen and (min-width: 1800px) {
 				grid-template-columns: repeat(3, 1fr);
 			}
 		}
 
 		&--modern {
-			@include media-breakpoint-up(lg) {
+			@include media-breakpoint-up(md) {
 				grid-template-columns: repeat(3, 1fr);
 			}
 
+			// 992px - 1199px: 2 элемент (с меню)
+			@include media-breakpoint-up(lg) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			// 1200px - 1365px: 2 элемента (с меню)
 			@include media-breakpoint-up(xl) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1366px - 1535px: 3 элемента
+			@media screen and (min-width: 1366px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			// 1536px - 1799px: 4 элемента
+			@media screen and (min-width: 1536px) {
 				grid-template-columns: repeat(4, 1fr);
 			}
 
-			@media screen and (min-width: 1550px) {
+			// 1800px+: 5 элементов
+			@media screen and (min-width: 1800px) {
 				grid-template-columns: repeat(5, 1fr);
 			}
 		}

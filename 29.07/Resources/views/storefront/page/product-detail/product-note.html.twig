@@ -1,9 +1,0 @@
-{% set customNote = page.product.translated.customFields.product_tabs_custom_note %}
-
-{% block product_custom_note %}
-  {% if customNote != '' %}
-    <div class="product-detail-description-text">
-      {% include(template_from_string(customNote|raw)) %}
-    </div>
-  {% endif %}
-{% endblock %}

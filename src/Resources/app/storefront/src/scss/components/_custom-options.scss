@@ -1,30 +1,30 @@
 .custom-options {
-	--color-primary: var(--primary);
-	--color-active: white;
-	--color-active-alt: white;
-	--color-hover: white;
+	--color-primary: var(--color-theme-500);
+	--color-active-alt: var(--color-theme-900);
+	--color-active: var(--color-theme-900);
+	--color-hover: var(--color-theme-900);
 	--color-hover-alt: var(--color-theme-400);
 
 	.vue-slider {
-		--main-color: var(--color-primary);
-		--rail-color: var(--color-theme-500);
-		--step-color: var(--color-theme-500);
+		--main-color: var(--color-theme-600);
+		--rail-color: var(--color-theme-400);
+		--step-color: var(--color-theme-400);
 		--tooltip-color: var(--color-theme-500);
 
-		--disabled-color: var(--color-theme-500);
-		--disabled-rail-color: var(--color-theme-500);
+		--disabled-color: var(--color-theme-400);
+		--disabled-rail-color: var(--color-theme-400);
 	}
 
 	.vc-container {
-		--grey-500: var(--color-theme-500) !important;
-		--gray-800: var(--color-theme-500) !important;
+		--grey-500: var(--color-theme-400) !important;
+		--gray-800: var(--color-theme-400) !important;
 
 		font-family: $font-family-base !important;
 		border-radius: 0 !important;
 
 		&.vc-is-dark {
 			background-color: var(--color-theme-300) !important;
-			border-color: var(--color-theme-500) !important;
+			border-color: var(--color-theme-400) !important;
 		}
 
 		.vc-title {
@@ -35,6 +35,7 @@
 		}
 
 		.is-disabled {
+
 			&:hover,
 			&:focus {
 				background-color: transparent !important;
@@ -43,7 +44,7 @@
 			}
 		}
 
-		.is-today > span {
+		.is-today>span {
 			border: 2px solid var(--color-theme-500);
 
 			&:hover,
@@ -52,7 +53,7 @@
 			}
 		}
 
-		.vc-day.is-not-in-month > .vc-day-content.vc-focusable {
+		.vc-day.is-not-in-month>.vc-day-content.vc-focusable {
 			opacity: 0.2 !important;
 		}
 	}

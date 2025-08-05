@@ -1,0 +1,16 @@
+.tp-widget {
+  @include media-breakpoint-up(md) {
+    color: $color-theme-900;
+    background: $color-theme-500;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    padding: calc(#{$spacer} / 2) calc(#{$spacer} / 2) calc((#{$spacer} - 8px) / 2);
+    display: flex;
+    width: 305px;
+
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 10px;
+  }
+}

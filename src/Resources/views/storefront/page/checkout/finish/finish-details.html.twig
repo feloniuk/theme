@@ -15,11 +15,7 @@
                     </h1>
                 {% endblock %}
 
-                {% block page_checkout_finish_ordernumber %}
-                    <p class="finish-ordernumber" data-order-number="{{ page.order.orderNumber }}">
-                        {{ "checkout.finishInfoOrdernumber"|trans|sw_sanitize }}{{ page.order.orderNumber }}
-                    </p>
-                {% endblock %}
+                {{ block('page_checkout_finish_ordernumber') }}
 
                 {% block page_checkout_finish_hidden_information_line_items %}
                   {% sw_include '@Storefront/storefront/component/checkout/hidden-line-items-information.html.twig' with {
@@ -36,24 +32,7 @@
                     {% endif %}
                 {% endblock %}
 
-                {% block page_checkout_finish_content %}
-                    <div class="finish-content">
-                        {% block page_checkout_finish_teaser %}
-                            {% if page.changedPayment != true %}
-                                <p class="finish-teaser">{{ "checkout.finishInfoConfirmationMail"|trans|sw_sanitize }}</p>
-                            {% endif %}
-                        {% endblock %}
-
-                        {% if page.order.customFields.ebayLink %}
-                            {% block page_checkout_finish_ebay %}
-                                {% set isCharSelectAllowed = false %}
-
-                                {% sw_include '@Storefront/storefront/page/checkout/finish/finish-ebay-link.html.twig' %}
-                            {% endblock %}
-                        {% endif %}
-
-                    </div>
-                {% endblock %}
+                {{ block('page_checkout_finish_content') }}
             </div>
         </div>
     {% endblock %}
